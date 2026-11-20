@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    actor User as Student
+    participant B as B Parking Owner
+    participant U as Shared UnitOfWork
+    participant C as C Charging Owner
+    participant DB as SQLite
+    User->>B: confirm parking with charging(intentId)
+    B->>U: executeAtomic(bundle booking)
+    U->>DB: BEGIN IMMEDIATE
+    U->>B: recheck parking right and capacity
+    B-->>U: available or conflict
+    alt parking and charger eligible
+        U->>C: reserveBundlePort(bundleId,rightId,portId,range,context)
+        C-->>U: BOOKED session or error
+        alt all committed
+            U->>DB: COMMIT right + port + intent receipt
+            U-->>B: one CONFIRMED result
+        else any precondition fails
+            U->>DB: ROLLBACK
+            U-->>B: no half bundle
+        end
+    else unavailable
+        U->>DB: ROLLBACK
+        U-->>B: rejected or conflict
+    end
+    B-->>User: final result or pending, same intent on retry

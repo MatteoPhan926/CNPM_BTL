@@ -1,0 +1,158 @@
+classDiagram
+    direction TB
+
+    %% Data contracts and state types - same canonical classes as Core
+    class OperationContext {
+        +actorId: String
+        +actorRole: String
+        +intentId: String
+        +correlationId: String
+        +expectedRevision: Integer
+        +requestedAtUTC: DateTime
+        +payloadFingerprint: String
+    }
+
+    class TelemetryPayloadDTO {
+        +sourceId: String
+        +eventId: String
+        +resourceId: String
+        +observedAt: DateTime
+        +payloadFingerprint: String
+    }
+    class VerifiedEventDTO {
+        +sourceId: String
+        +eventId: String
+        +kind: String
+        +resourceId: String
+        +vehicleId: String
+        +hubId: String
+        +spotId: String
+        +portId: String
+        +sessionId: String
+        +observedAt: DateTime
+        +receivedAt: DateTime
+        +revision: Integer
+        +verificationId: String
+        +payloadFingerprint: String
+    }
+
+    class VehicleObservationDTO {
+        +vehicleId: String
+        +soc: Decimal
+        +location: VehicleLocationKind
+        +observedAt: DateTime
+        +revision: Integer
+        +isStale: Boolean
+    }
+
+    class TransferRequestDTO {
+        +sourceHubId: String
+        +destHubId: String
+        +vehicleIds: List_String
+        +assignedStaffId: String
+        +truckId: String
+    }
+
+    class TransferPreviewDTO {
+        +previewId: String
+        +expiresAtUTC: DateTime
+        +baseRevision: Integer
+        +eligibleVehicleIds: List_String
+        +destinationCapacityAvailable: Integer
+        +conflicts: List_String
+    }
+
+    class HandoverEvidenceDTO {
+        +orderId: String
+        +vehicleId: String
+        +sourceId: String
+        +eventId: String
+        +stage: String
+    }
+
+    class IncidentReportDTO {
+        +resourceId: String
+        +issueType: String
+        +description: String
+        +originRecordId: String
+    }
+
+    class RepairEvidenceDTO {
+        +ticketId: String
+        +technicianId: String
+        +inspectionResult: String
+        +safetyPassed: Boolean
+        +observedAt: DateTime
+    }
+
+    class ScenarioInputDTO {
+        +scenarioType: String
+        +horizonMinutes: Integer
+        +stepMinutes: Integer
+        +parameters: Map
+    }
+
+    class SimulationResultDTO {
+        +resultId: String
+        +baseRevision: Integer
+        +unmetRequests: Integer
+        +recommendations: List_RecommendationDTO
+    }
+
+    class OrderOutcomeDTO {
+        +orderId: String
+        +status: RedistributionStatus
+        +receiptId: String
+        +pending: Boolean
+    }
+
+    class VerificationReceiptDTO {
+        +sourceId: String
+        +eventId: String
+        +status: VerificationStatus
+        +reason: String
+    }
+
+    class RedistributionStatus {
+        <<enumeration>>
+        ISSUED
+        IN_PROGRESS
+        COMPLETED
+        CANCELLED
+    }
+
+    class IncidentState {
+        <<enumeration>>
+        OPEN
+        IN_PROGRESS
+        ESCALATED_WORKSHOP
+        RESOLVED
+        CLOSED_UNFULFILLED
+    }
+
+    class VerificationStatus {
+        <<enumeration>>
+        RECEIVED
+        VERIFIED
+        PENDING
+        REJECTED
+        DUPLICATE
+    }
+
+    class VehicleLocationKind {
+        <<enumeration>>
+        HUB_SPOT
+        IN_TRIP
+        ON_TRUCK
+        WORKSHOP
+        UNKNOWN
+    }
+
+    OperationContext ..> VerificationReceiptDTO : correlated by ID
+    TelemetryPayloadDTO --> VerificationReceiptDTO : receipt
+    VerifiedEventDTO ..> TelemetryPayloadDTO : verified from
+    VehicleObservationDTO --> VehicleLocationKind : location
+    TransferPreviewDTO ..> TransferRequestDTO : previews
+    OrderOutcomeDTO --> RedistributionStatus : status
+    VerificationReceiptDTO --> VerificationStatus : state
+    IncidentReportDTO ..> RepairEvidenceDTO : incident lifecycle

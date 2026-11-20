@@ -1,0 +1,65 @@
+classDiagram
+    direction TB
+    class OperationContext {
+        +actorId: String
+        +actorRole: String
+        +intentId: String
+        +correlationId: String
+        +expectedRevision: Integer
+        +requestedAtUTC: DateTime
+        +payloadFingerprint: String
+    }
+    class VerifiedEventDTO {
+        +sourceId: String
+        +eventId: String
+        +kind: String
+        +resourceId: String
+        +vehicleId: String
+        +hubId: String
+        +spotId: String
+        +portId: String
+        +sessionId: String
+        +observedAt: DateTime
+        +receivedAt: DateTime
+        +revision: Integer
+        +verificationId: String
+        +payloadFingerprint: String
+    }
+    class TransferPreviewDTO {
+        +previewId: String
+        +baseRevision: Integer
+        +expiresAtUTC: DateTime
+        +eligibleVehicleIds: List_String
+        +destinationCapacityAvailable: Integer
+        +conflicts: List_String
+    }
+    class OperationResultDTO {
+        +status: OperationStatus
+        +code: String
+        +isFinal: Boolean
+        +retryWithSameIntent: Boolean
+        +correlationId: String
+        +currentRevision: Integer
+    }
+    class SnapshotMeta {
+        +revision: Integer
+        +observedAtUTC: DateTime
+        +verifiedAtUTC: DateTime
+        +freshness: FreshnessStatus
+    }
+    class OperationStatus {
+        <<enumeration>>
+        CONFIRMED
+        PENDING_VERIFICATION
+        REJECTED
+        ALREADY_APPLIED
+        CONFLICT
+    }
+    class FreshnessStatus {
+        <<enumeration>>
+        FRESH
+        STALE
+        UNKNOWN
+    }
+    OperationResultDTO --> OperationStatus
+    SnapshotMeta --> FreshnessStatus

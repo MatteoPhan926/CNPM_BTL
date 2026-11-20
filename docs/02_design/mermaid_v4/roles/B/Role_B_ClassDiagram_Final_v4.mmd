@@ -1,0 +1,259 @@
+classDiagram
+    direction TB
+
+    %% Role B - integrated detailed design UC-B01..B05
+    %% No colors; no independent AUTO use cases.
+
+    %% Presentation / Controller / UC-B01/B02
+    class ParkingReservationController {
+        +sendParkingRequest(hubId: String, vehicleId: String, startTime: DateTime, endTime: DateTime, chargingNeed: Boolean, intentId: String) ParkingPreviewDTO
+        +confirmReservation(intentId: String) ParkingOutcomeDTO
+        +requestCancelParkingRight(rightId: String, intentId: String) CancellationPreviewDTO
+        +confirmOrRejectCancellation(rightId: String, confirm: Boolean, intentId: String) ParkingOutcomeDTO
+        +getParkingRightStatus(rightId: String) ParkingRightDTO
+    }
+
+    %% Presentation / Controller / UC-B03/B04
+    class ParkingCheckInOutController {
+        +presentQRCodeOrRequestForCheckIn(sourceId: String, eventId: String, rightId: String) ParkingEffectDTO
+        +sendVehicleDepartureEvent(sourceId: String, eventId: String) ParkingEffectDTO
+        +getEventEffectStatus(sourceId: String, eventId: String) ParkingEffectDTO
+    }
+
+    %% Presentation / Controller / UC-B05
+    class HubCapacityController {
+        +getHubOccupancyAndAffectedRequests(hubId: String) HubCapacityStatusDTO
+        +selectProcessOption(requestId: String, option: CapacityOptionDTO, intentId: String) ProcessStatusDTO
+    }
+
+    %% Business Logic / Service / UC-B01/B02
+    class ParkingReservationService {
+        +processParkingRequest(request: ParkingRequestDTO) ParkingPreviewDTO
+        +validateBusinessRules(request: ParkingRequestDTO, state: ResourceStatusDTO) ValidationResultDTO
+        +confirmBooking(intentId: String) ParkingOutcomeDTO
+        +reconcileBookingStatus(intentId: String) ParkingOutcomeDTO
+        +suggestAlternativeHubs(hubId: String, startTime: DateTime, endTime: DateTime) List_HubOptionDTO
+        +previewCancellation(userId: String, rightId: String) CancellationPreviewDTO
+        +cancelUnusedRight(rightId: String, intentId: String) ParkingOutcomeDTO
+        +getRightStatus(userId: String, rightId: String) ParkingRightDTO
+        +expireUnusedRights(now: DateTime) Integer
+    }
+
+    %% Business Logic / Service / UC-B03/B04
+    class ParkingCheckInOutService {
+        +checkReception(tripId: String, hubId: String, rightId: String, asOf: DateTime) ReceptionDecisionDTO
+        +processVehicleCheckIn(event: VerifiedEventDTO, rightId: String) ParkingEffectDTO
+        +processVehicleDeparture(event: VerifiedEventDTO) ParkingEffectDTO
+        +guideAndConfirmAssignSpot(rightId: String, spotId: String) ReceptionDecisionDTO
+        +reconcileEventEffect(sourceId: String, eventId: String) ParkingEffectDTO
+    }
+
+    %% Business Logic / Service / UC-B05
+    class HubCapacityService {
+        +evaluateHubCapacity(hubId: String, asOf: DateTime) HubCapacityStatusDTO
+        +proposeAlternativeOptions(requestId: String) List_CapacityOptionDTO
+        +handleHubOvercapacity(requestId: String, option: CapacityOptionDTO, intentId: String) ProcessStatusDTO
+        +reserveTransferCapacity(orderId: String, vehicleIds: List_String, hubId: String, context: OperationContext) ParkingEffectDTO
+    }
+
+    %% Business Logic / Policy / BR-P01/P02/P03/P04/P06
+    class ParkingPolicy {
+        +validateTimeWindow(request: ParkingRequestDTO) ValidationResultDTO
+        +calculateEffectiveOccupancy(snapshot: HubCapacitySnapshotDTO) Decimal
+        +decideAdmission(snapshot: HubCapacitySnapshotDTO, request: ParkingRequestDTO) ReceptionDecisionDTO
+    }
+
+    %% Persistence / Interface
+    class IParkingRepository {
+        <<interface>>
+        +getRightsOccupancyScheduleAndFreshData(hubId: String, vehicleId: String) ResourceStatusDTO
+        +recheckConflictsAndSaveRightByIntentId(intentId: String, right: ParkingRight) ParkingRight
+        +queryExistingRightByIntentId(intentId: String) ParkingRight
+        +findParkingRight(rightId: String) ParkingRight
+        +findActiveVisit(vehicleId: String) ParkingVisit
+        +recordEventCheckIn(event: VerifiedEventDTO, rightId: String) ParkingEffectDTO
+        +recordOccupancyIndexOrCheckOut(event: VerifiedEventDTO) ParkingEffectDTO
+        +updateSpotObservation(spotId: String, observation: SpotObservation, revision: Integer) Boolean
+        +reserveTransferCapacityOnce(orderId: String, vehicleIds: List_String, hubId: String) ParkingEffectDTO
+        +recordOutcomeByIntent(intentId: String, outcome: ParkingOutcomeDTO) Boolean
+        +findProcessedEffect(sourceId: String, eventId: String, kind: String) ParkingEffectDTO
+    }
+
+    %% Domain / Hub parking aggregate
+    class MobilityHub {
+        -hubId: String
+        -totalCapacityC: Integer
+        -occupiedO: Integer
+        -unknownX: Integer
+        -committedH: Integer
+        -parkingOpen: Boolean
+        +effectiveOccupancy(asOf: DateTime) Decimal
+        +admissionBand(asOf: DateTime) String
+        +canReserve(request: ParkingRequestDTO) Boolean
+    }
+
+    %% Domain / Physical observation
+    class ParkingSpot {
+        -spotId: String
+        -hubId: String
+        -observation: SpotObservation
+        -operationStatus: SpotOperationStatus
+        -revision: Integer
+        +observeOccupancy(observation: SpotObservation, revision: Integer) void
+        +setOperationalStatus(status: SpotOperationStatus) void
+        +canAllocate(range: TimeRangeDTO) Boolean
+    }
+
+    %% Domain / Reservation entitlement
+    class ParkingRight {
+        -rightId: String
+        -ownerId: String
+        -vehicleId: String
+        -hubId: String
+        -spotId: String
+        -startTime: DateTime
+        -endTime: DateTime
+        -status: ParkingRightStatus
+        -bundleId: String
+        -originHoldId: String
+        +markHandoverPending(eventId: String) void
+        +consumeOnArrival(eventId: String) void
+        +cancelUnused() void
+        +expireUnused(now: DateTime) void
+    }
+
+    %% Domain / Physical parking session
+    class ParkingVisit {
+        -visitId: String
+        -vehicleId: String
+        -spotId: String
+        -arrivalEventId: String
+        -departureEventId: String
+        -isActive: Boolean
+        +recordDeparture(eventId: String) void
+        +markAnomaly(reason: String) void
+    }
+
+    %% Integration / Owner API / B-facing contract
+    class IParkingOperations {
+        <<interface>>
+        +checkReception(tripId: String, hubId: String, rightId: String, asOf: DateTime) ReceptionDecisionDTO
+        +recordDeparture(event: VerifiedEventDTO, context: OperationContext) ParkingEffectDTO
+        +recordArrival(event: VerifiedEventDTO, rightId: String, context: OperationContext) ParkingEffectDTO
+        +cancelUnusedRight(rightId: String, context: OperationContext) ParkingOutcomeDTO
+        +reserveTransferCapacity(orderId: String, vehicleIds: List_String, hubId: String, context: OperationContext) ParkingEffectDTO
+        +cancelDependentByHold(holdId: String, context: OperationContext) ParkingOutcomeDTO
+    }
+
+    %% Integration / Required Port / Role C
+    class IChargingOperations {
+        <<interface>>
+        +estimateBundle(vehicleId: String, hubId: String, range: TimeRangeDTO) ChargingEstimateDTO
+        +reserveBundlePort(bundleId: String, rightId: String, portId: String, range: TimeRangeDTO, context: OperationContext) OperationResultDTO
+        +processDependentCancellation(rightId: String, context: OperationContext) OperationResultDTO
+        +readPlugAndCharge(vehicleId: String) ChargingConstraintDTO
+    }
+
+    %% Integration / Required Port / Role D07
+    class IVerifiedEventReader {
+        <<interface>>
+        +getVerifiedEvent(sourceId: String, eventId: String) VerifiedEventDTO
+    }
+
+    %% Integration / Required Port / Role D04
+    class IIncidentOperations {
+        <<interface>>
+        +openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO
+        +getIncidentStatus(ticketId: String) IncidentStatusDTO
+        +recordPlanResponse(ticketId: String, response: PlanResponseDTO, context: OperationContext) IncidentReceiptDTO
+    }
+
+    %% Integration / Required Port / Role D02
+    class IRedistributionOperations {
+        <<interface>>
+        +previewTransfer(sourceHubId: String, destHubId: String, vehicleIds: List_String) TransferPreviewDTO
+        +issueOrder(previewId: String, expectedRevision: Integer, context: OperationContext) OperationResultDTO
+        +confirmVehicleHandover(orderId: String, event: VerifiedEventDTO, context: OperationContext) HandoverOutcomeDTO
+    }
+
+    %% Integration / Shared / Shared infrastructure
+    class IUnitOfWork {
+        <<interface>>
+        +executeAtomic(command: CompositeCommandDTO) OperationResultDTO
+    }
+
+    class ParkingRepositoryImpl
+
+    class ParkingOperationsAdapter
+
+    class ParkingRightStatus {
+        <<enumeration>>
+        CONFIRMED
+        HANDOVER_PENDING
+        CONSUMED
+        CANCELLED
+        EXPIRED
+    }
+
+    class SpotObservation {
+        <<enumeration>>
+        EMPTY
+        OCCUPIED
+        UNKNOWN
+    }
+
+    class SpotOperationStatus {
+        <<enumeration>>
+        OPEN
+        CLOSED
+    }
+
+    %% Controller to service
+    ParkingReservationController ..> ParkingReservationService : B01/B02
+    ParkingCheckInOutController ..> ParkingCheckInOutService : B03/B04
+    HubCapacityController ..> HubCapacityService : B05
+
+    %% Domain and persistence
+    ParkingReservationService ..> ParkingPolicy : policy
+    HubCapacityService ..> ParkingPolicy : policy
+    ParkingCheckInOutService ..> IParkingRepository : effects
+    ParkingReservationService ..> IParkingRepository : rights
+    HubCapacityService ..> IParkingRepository : C/O/X/H
+    ParkingRepositoryImpl ..|> IParkingRepository
+    MobilityHub "1" *-- "1..*" ParkingSpot : contains
+    MobilityHub "1" --> "0..*" ParkingRight : reservations
+    ParkingRight "0..1" --> "0..1" ParkingVisit : consumed in
+    ParkingVisit --> ParkingSpot : occupies
+    ParkingRight --> ParkingRightStatus : state
+    ParkingSpot --> SpotObservation : observed
+    ParkingSpot --> SpotOperationStatus : operation
+    IParkingRepository ..> ParkingRight : persists
+    IParkingRepository ..> ParkingVisit : persists
+
+    %% Cross-module contracts
+    ParkingOperationsAdapter ..|> IParkingOperations
+    ParkingOperationsAdapter ..> ParkingReservationService : B01/B02
+    ParkingOperationsAdapter ..> ParkingCheckInOutService : B03/B04
+    ParkingOperationsAdapter ..> HubCapacityService : B05
+    ParkingReservationService ..> IChargingOperations : B01/B02 - C01/C02
+    ParkingCheckInOutService ..> IVerifiedEventReader : D07
+    ParkingCheckInOutService ..> IIncidentOperations : D04
+    HubCapacityService ..> IIncidentOperations : D04
+    HubCapacityService ..> IRedistributionOperations : D02
+    ParkingReservationService ..> IUnitOfWork : atomic bundle
+    ParkingCheckInOutService ..> IUnitOfWork : physical effect
+    HubCapacityService ..> IUnitOfWork : capacity claim
+
+
+    class IParkingRightReader {
+        <<interface>>
+        +verifyRight(rightId: String, ownerId: String, vehicleId: String, hubId: String, range: TimeRangeDTO) ParkingRightCheckDTO
+        +getHubCapacity(hubId: String, range: TimeRangeDTO) HubCapacitySnapshotDTO
+    }
+
+
+    class ParkingRightReadAdapter {
+    }
+    ParkingRightReadAdapter ..|> IParkingRightReader : implements
+    ParkingRightReadAdapter ..> ParkingReservationService : verify right
+    ParkingRightReadAdapter ..> HubCapacityService : capacity snapshot

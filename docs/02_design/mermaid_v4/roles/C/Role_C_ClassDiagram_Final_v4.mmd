@@ -1,0 +1,265 @@
+classDiagram
+    direction TB
+
+    %% Role C - Integrated detailed design: UC-C01, C02, C03
+    %% No theme colors; external contracts are references, not duplicated owners.
+
+    %% PRESENTATION
+    class ChargingRegistrationController {
+        +getSuitablePorts(request: RegistrationRequest) List_PortInfoDTO
+        +previewRegistration(request: RegistrationRequest) RegistrationPreviewDTO
+        +confirmRegistration(request: RegistrationRequest, portId: String, intentId: String) RegistrationResultDTO
+        +getRegistrationOutcome(intentId: String) RegistrationResultDTO
+    }
+
+    class ChargingSessionController {
+        +listSessions(actorId: String) List_ChargingSessionDTO
+        +getSessionDetail(sessionId: String, actorId: String) ChargingSessionDTO
+        +requestStart(sessionId: String, actorId: String) OperationResultDTO
+        +requestFinish(sessionId: String, actorId: String) OperationResultDTO
+        +cancelSession(sessionId: String, actorId: String) OperationResultDTO
+        +getEventEffectStatus(sourceId: String, eventId: String) EventResultDTO
+    }
+
+    class ChargingScheduleController {
+        +previewSchedule(operatorId: String) SchedulePlanDTO
+        +confirmSchedule(planId: String, operatorId: String) OperationResultDTO
+        +rejectSchedule(planId: String, operatorId: String) OperationResultDTO
+        +getCurrentSchedule(operatorId: String) SchedulePlanDTO
+    }
+
+    %% APPLICATION
+    class RegistrationService {
+        +validate(request: RegistrationRequest) ValidationResultDTO
+        +findSuitablePorts(request: RegistrationRequest) List_PortInfoDTO
+        +preview(request: RegistrationRequest) RegistrationPreviewDTO
+        +confirmWithExistingRight(request: RegistrationRequest, portId: String, rightId: String, intentId: String) RegistrationResultDTO
+        +reconcile(intentId: String) RegistrationResultDTO
+    }
+
+    class SessionService {
+        +listOwned(actorId: String) List_ChargingSessionDTO
+        +getDetail(sessionId: String, actorId: String) ChargingSessionDTO
+        +requestStart(sessionId: String, actorId: String) OperationResultDTO
+        +requestFinish(sessionId: String, actorId: String) OperationResultDTO
+        +cancel(sessionId: String, actorId: String) OperationResultDTO
+        +expireUnusedSessions(now: DateTime) Integer
+        +getChargingConstraint(vehicleId: String) ChargingConstraintDTO
+    }
+
+    class ChargingResourceService {
+        +findSuitablePorts(request: RegistrationRequest) List_PortInfoDTO
+        +recheckAvailability(portId: String, range: TimeRangeDTO, requiredKW: Decimal) ValidationResultDTO
+        +reservePortOnce(sessionId: String, portId: String, range: TimeRangeDTO, context: OperationContext) OperationResultDTO
+        +releaseUnusedPort(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+        +reconcilePhysicalState(portId: String) PortObservationDTO
+    }
+
+    class ChargingEventService {
+        +applyVerifiedEvent(sourceId: String, eventId: String) EventResultDTO
+        +reconcileEventEffect(sourceId: String, eventId: String) EventResultDTO
+        +markUnverified(sourceId: String, eventId: String, reason: String) void
+    }
+
+    class ChargingScheduleService {
+        +collectInput() SchedulingInputDTO
+        +generateDraft(operatorId: String) SchedulePlan
+        +confirmAndApply(planId: String, operatorId: String) OperationResultDTO
+        +reject(planId: String, operatorId: String) OperationResultDTO
+        +getCurrentPlan() SchedulePlan
+        +reevaluateAfterSessionChange(sessionId: String) void
+    }
+
+    class ChargingScheduler {
+        +determineNeeds(input: SchedulingInputDTO) List_ChargingNeedDTO
+        +prioritize(needs: List_ChargingNeedDTO) List_ChargingNeedDTO
+        +allocate(input: SchedulingInputDTO) SchedulePlan
+        +validatePlan(plan: SchedulePlan) ValidationResultDTO
+        +suggestAlternatives(plan: SchedulePlan) SchedulePlan
+    }
+
+    %% PERSISTENCE
+    class IChargingRepository {
+        <<interface>>
+        +save(session: ChargingSession) ChargingSession
+        +findById(sessionId: String) ChargingSession
+        +findByIntentId(intentId: String) ChargingSession
+        +findByParkingRightId(rightId: String) List_ChargingSession
+        +findActiveByVehicle(vehicleId: String) List_ChargingSession
+        +updateWithRevision(session: ChargingSession, revision: Integer) Boolean
+        +appendEffect(event: ChargingEvent) Boolean
+        +findEffect(sourceId: String, eventId: String) EventResultDTO
+    }
+
+    class IScheduleRepository {
+        <<interface>>
+        +saveDraft(plan: SchedulePlan) SchedulePlan
+        +findById(planId: String) SchedulePlan
+        +getCurrentPlan() SchedulePlan
+        +applyAtomically(plan: SchedulePlan, expectedRevision: Integer) Boolean
+        +rejectDraft(planId: String, expectedRevision: Integer) Boolean
+    }
+
+    class ChargingRepositoryImpl
+
+    class ScheduleRepositoryImpl
+
+    %% DOMAIN
+    class ChargingSession {
+        -sessionId: String
+        -ownerId: String
+        -vehicleId: String
+        -parkingRightId: String
+        -bundleId: String
+        -portId: String
+        -startTime: DateTime
+        -endTime: DateTime
+        -status: ChargingSessionStatus
+        -intentId: String
+        -revision: Integer
+        +markStartPending() void
+        +beginFromEvidence(eventId: String) void
+        +markStopPending() void
+        +completeFromEvidence(eventId: String) void
+        +cancelUnused() void
+        +expireUnused(now: DateTime) void
+    }
+
+    class ChargingPort {
+        -portId: String
+        -hubId: String
+        -ratedKW: Decimal
+        -plugState: PlugState
+        -powerState: PowerState
+        -health: PortHealth
+        -observedAt: DateTime
+        -revision: Integer
+        +isAvailableAt(range: TimeRangeDTO) Boolean
+        +applyVerifiedObservation(event: VerifiedEventDTO) void
+        +blockOnFault(eventId: String) void
+        +canReleasePhysicalCapacity() Boolean
+    }
+
+    class ChargingEvent {
+        -sourceId: String
+        -eventId: String
+        -sessionId: String
+        -portId: String
+        -observedAt: DateTime
+        -effectKind: String
+        -appliedRevision: Integer
+        +markApplied(revision: Integer) void
+        +markPending(reason: String) void
+    }
+
+    class SchedulePlan {
+        -planId: String
+        -status: SchedulePlanStatus
+        -baseRevision: Integer
+        -createdBy: String
+        -approvedBy: String
+        -unmetDemand: Decimal
+        +confirm(operatorId: String) void
+        +markApplied(expectedRevision: Integer) void
+        +reject(operatorId: String) void
+    }
+
+    %% INTEGRATION
+    class IChargingOperations {
+        <<interface>>
+        +estimateBundle(vehicleId: String, hubId: String, range: TimeRangeDTO) ChargingEstimateDTO
+        +reserveBundlePort(bundleId: String, rightId: String, portId: String, range: TimeRangeDTO, context: OperationContext) OperationResultDTO
+        +processDependentCancellation(rightId: String, context: OperationContext) OperationResultDTO
+        +readPlugAndCharge(vehicleId: String) ChargingConstraintDTO
+    }
+
+    class ChargingServiceFacade
+
+    class IParkingRightReader {
+        <<interface>>
+        +verifyRight(rightId: String, ownerId: String, vehicleId: String, hubId: String, range: TimeRangeDTO) ParkingRightCheckDTO
+        +getHubCapacity(hubId: String, range: TimeRangeDTO) HubCapacitySnapshotDTO
+    }
+
+    class IVerifiedEventReader {
+        <<interface>>
+        +getVerifiedEvent(sourceId: String, eventId: String) VerifiedEventDTO
+    }
+
+    class IVehicleObservationReader {
+        <<interface>>
+        +getVerifiedVehicleSnapshot(vehicleId: String) VehicleObservationDTO
+    }
+
+    class IUsageDemandReader {
+        <<interface>>
+        +getUsageDemand(vehicleId: String) UsageDemandDTO
+    }
+
+    class IIncidentOperations {
+        <<interface>>
+        +openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO
+        +getIncidentStatus(ticketId: String) IncidentStatusDTO
+        +recordPlanResponse(ticketId: String, response: PlanResponseDTO, context: OperationContext) IncidentReceiptDTO
+    }
+
+    class IUnitOfWork {
+        <<interface>>
+        +executeAtomic(command: CompositeCommandDTO) OperationResultDTO
+    }
+
+    class IPolicyGateway {
+        <<interface>>
+        +canRegister(studentId: String, vehicleId: String) Boolean
+        +canManageSession(actorId: String, sessionId: String) Boolean
+        +canManageSchedule(operatorId: String) Boolean
+    }
+
+    class IDeviceCommandPort {
+        <<interface>>
+        +requestStart(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+        +requestStop(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+    }
+
+    class IAuditGateway {
+        <<interface>>
+        +record(entry: AuditEntryDTO) void
+    }
+
+    %% RELATIONSHIPS
+    ChargingRegistrationController ..> RegistrationService : C01
+    ChargingSessionController ..> SessionService : C02
+    ChargingSessionController ..> ChargingEventService : status
+    ChargingScheduleController ..> ChargingScheduleService : C03
+    RegistrationService ..> ChargingResourceService : ports
+    RegistrationService ..> IChargingRepository : sessions
+    RegistrationService ..> IParkingRightReader : B right
+    RegistrationService ..> IPolicyGateway : auth
+    RegistrationService ..> IUnitOfWork : commit
+    SessionService ..> IChargingRepository : sessions
+    SessionService ..> ChargingResourceService : physical state
+    SessionService ..> IDeviceCommandPort : device request
+    SessionService ..> IPolicyGateway : auth
+    ChargingResourceService ..> IChargingRepository : port claims
+    ChargingEventService ..> IVerifiedEventReader : D07
+    ChargingEventService ..> IChargingRepository : dedup
+    ChargingEventService ..> IIncidentOperations : D04
+    ChargingScheduleService ..> ChargingScheduler : plan
+    ChargingScheduleService ..> IScheduleRepository : schedule
+    ChargingScheduleService ..> IChargingRepository : sessions
+    ChargingScheduleService ..> IParkingRightReader : B capacity
+    ChargingScheduleService ..> IVehicleObservationReader : D SOC
+    ChargingScheduleService ..> IUsageDemandReader : A demand
+    ChargingScheduleService ..> IPolicyGateway : operator
+    ChargingServiceFacade ..|> IChargingOperations : implements
+    ChargingServiceFacade ..> RegistrationService : B01
+    ChargingServiceFacade ..> SessionService : B02 / constraints
+    ChargingServiceFacade ..> ChargingResourceService : C port
+    ChargingRepositoryImpl ..|> IChargingRepository : implements
+    ScheduleRepositoryImpl ..|> IScheduleRepository : implements
+    IChargingRepository ..> ChargingSession : persists
+    IChargingRepository ..> ChargingPort : claims
+    IChargingRepository ..> ChargingEvent : effect receipt
+    IScheduleRepository ..> SchedulePlan : persists
+    ChargingSession --> ChargingPort : assigned port
+    ChargingSession ..> SchedulePlan : allocation

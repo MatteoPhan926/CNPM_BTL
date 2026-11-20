@@ -1,0 +1,200 @@
+'use strict';
+
+const app = document.querySelector('#app');
+const notice = document.querySelector('#notice');
+let state = null;
+let tab = 'overview';
+let selectedHub = '';
+let busy = false;
+let noticeTimer;
+const tabs = [
+  ['overview', '◈', 'Explore hubs'], ['journeys', '↗', 'My journeys'],
+  ['parking', '▦', 'Parking'], ['charging', 'ϟ', 'Charging'],
+  ['support', '◎', 'Support'], ['operations', '≋', 'Operations'],
+  ['history', '◷', 'Activity']
+];
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const list = key => Array.isArray(state?.[key]) ? state[key] : [];
+const find = (key, id) => list(key).find(row => row.id === id);
+const title = value => String(value || '').replaceAll('_', ' ').toLowerCase().replace(/^./, c => c.toUpperCase());
+const date = value => value ? new Date(value * 1000).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '—';
+const inputDate = value => { const d = new Date(value * 1000); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0,16); };
+const now = () => state?.now || Date.now()/1000;
+const hubName = id => find('hubs', id)?.name || id || 'In transit';
+const vehicleName = id => {const v = find('vehicles', id); return v ? `${v.label || v.id} · ${v.kind === 'shared' ? 'Shared' : 'Personal'}` : id;};
+const statusClass = status => /PENDING|UNKNOWN|STALE|WARNING|RESERVED|BOOKED|PROPOSED|WAIT|DRAFT|ASSISTANCE/i.test(status) ? 'warn' : /FAULT|REJECT|OUT_OF_SERVICE|EXPIRED|CANCEL|CLOSED_UNFULFILLED/i.test(status) ? 'bad' : /ACTIVE|AVAILABLE|CONFIRM|OPEN|CLOSED|COMPLETED|ACK|APPLIED|OPERABLE|EMPTY|UNPLUGGED/i.test(status) ? 'good' : 'neutral';
+const chip = status => `<span class="chip ${statusClass(status)}">${esc(title(status))}</span>`;
+const actionButton = (label, action, payload, style='secondary small') => `<button class="${style}" data-action="${esc(action)}" data-payload="${esc(JSON.stringify(payload))}">${esc(label)}</button>`;
+const option = (value, label, selected=false) => `<option value="${esc(value)}" ${selected?'selected':''}>${esc(label)}</option>`;
+const empty = (heading, text='') => `<div class="empty"><strong>${esc(heading)}</strong>${esc(text)}</div>`;
+const pendingKey = () => `emobility_pending_${state?.actor?.id}`;
+const pending = () => {try{return JSON.parse(localStorage.getItem(pendingKey()) || 'null');}catch{return null;}};
+
+async function request(path, data) {
+  const response = await fetch(path, {method:data === undefined?'GET':'POST', credentials:'same-origin', headers:data === undefined?{}:{'Content-Type':'application/json'}, body:data === undefined?undefined:JSON.stringify(data)});
+  const result = await response.json();
+  if (!response.ok) {const error = new Error(result.error?.message || 'Request failed.'); error.code=result.error?.code; error.status=response.status; throw error;}
+  return result;
+}
+
+function showNotice(message, error=false, retry=false) {
+  clearTimeout(noticeTimer);
+  notice.hidden = false;
+  notice.className = `notice${error?' error':''}`;
+  notice.innerHTML = `<span>${esc(message)}</span><button data-notice="${retry?'retry':'close'}">${retry?'Retry same request':'Dismiss'}</button>`;
+  if (!error && !retry) noticeTimer = setTimeout(()=>notice.hidden=true, 9000);
+}
+
+async function refresh(renderView=true) {
+  try {
+    state = await request('/api/state');
+    if (renderView) render();
+    return true;
+  } catch (error) {
+    if (error.status === 401) {state=null;renderLogin();}
+    else showNotice(`Unable to refresh: ${error.message}`, true);
+    return false;
+  }
+}
+
+async function command(action, payload, retry=false) {
+  if (busy) return;
+  const saved = pending();
+  if (saved && !retry) return showNotice('A previous request has an uncertain outcome. Recover it before submitting another change.', true, true);
+  const envelope = retry ? saved : {action, payload, intent_id:crypto.randomUUID()};
+  if (!envelope) return;
+  busy = true;
+  localStorage.setItem(pendingKey(), JSON.stringify(envelope));
+  document.querySelectorAll('button[data-action], form button[type=submit]').forEach(button=>button.disabled=true);
+  try {
+    const result = await request('/api/commands', envelope);
+    localStorage.removeItem(pendingKey());
+    await refresh();
+    const message = result.status === 'PENDING_VERIFICATION' ? 'Request recorded. Awaiting external evidence; no physical action has been confirmed.' : `${title(result.code || result.status || 'Saved')}. Your records are updated.`;
+    showNotice(message);
+  } catch (error) {
+    if (error.status && error.status < 500) {
+      localStorage.removeItem(pendingKey());
+      if (error.status === 401) {state=null;renderLogin();}
+      showNotice(`${error.code ? title(error.code)+': ' : ''}${error.message}`, true);
+    } else showNotice('The response was lost or the server could not confirm the outcome. Retry the same request to recover its recorded result.', true, true);
+  } finally {
+    busy=false;
+    document.querySelectorAll('button[data-action], form button[type=submit]').forEach(button=>button.disabled=false);
+  }
+}
+
+function renderLogin() {
+  app.innerHTML = `<div class="login-shell"><section class="login-story"><div class="brand"><span class="brand-symbol">ϟ</span><div><strong>Smart E-Mobility</strong><small>VNU–HCM MOBILITY NETWORK</small></div></div><div><div class="eyebrow">A better way across campus</div><h1>Your next journey.<br>A little greener.</h1><p>Find a shared vehicle, reserve a place to park, and manage your charging in one connected workspace.</p></div><div class="login-story-footer">A/B/C implementation · Local demonstration · Original specifications preserved</div></section><main class="login-panel" id="main"><div class="login-card"><div class="eyebrow">Welcome to the hub</div><h2>Sign in to get moving</h2><p class="muted">Use a local demo account to explore the working journeys.</p><form id="login-form" class="form"><label>Username<input name="username" autocomplete="username" required value="alice"></label><label>Password<input name="password" type="password" autocomplete="current-password" required value="alice-demo"></label><button type="submit">Sign in →</button><p class="login-error" id="login-error" role="alert"></p></form><div class="demo-note"><strong>Local demo accounts</strong><p><code>alice / alice-demo</code><br><code>bob / bob-demo</code><br><code>operator / operator-demo</code></p><p>Passwords may be overridden by the server environment. Hardware verification requires Role D; operator simulation is explicitly labeled.</p></div></div></main></div>`;
+}
+
+function render() {
+  if (!state) return renderLogin();
+  const operator = state.actor.role === 'operator';
+  if (tab==='operations' && !operator) tab='overview';
+  const views = {overview, journeys, parking, charging, support, operations, history};
+  app.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-symbol">ϟ</span><div class="brand-text"><strong>Smart<br>E-Mobility</strong><small>VNU–HCM NETWORK</small></div></div><div class="nav-label">YOUR WORKSPACE</div><nav class="nav" aria-label="Main navigation">${tabs.filter(row=>row[0]!=='operations'||operator).map(([id,icon,label])=>`<button data-tab="${id}" class="${tab===id?'active':''}" ${tab===id?'aria-current="page"':''} title="${label}"><span class="icon" aria-hidden="true">${icon}</span><span class="nav-text">${label}</span></button>`).join('')}</nav><div class="sidebar-foot"><strong>Connected campus.<br>Considered journeys.</strong><p class="spaced">A · Rentals & journeys<br>B · Parking & capacity<br>C · Charging & schedules</p><p class="spaced">Local MVP · ${operator?'Operator':'Student'} access</p></div></aside><div class="main-column"><header class="topbar"><div class="breadcrumb">VNU–HCM / Mobility services / <strong>${esc(tabs.find(row=>row[0]===tab)[2])}</strong></div><div class="account"><span class="avatar">${esc(state.actor.id[0].toUpperCase())}</span><div><strong>${esc(title(state.actor.id))}</strong><div class="small-text muted">${esc(title(state.actor.role))}</div></div><button class="secondary small" id="logout">Sign out</button></div></header><main class="content" id="main"><div class="mode-banner"><strong>${state.simulator?'◇ Controlled simulation enabled':'◇ Role D integration pending'}</strong><span>${state.simulator?'All device evidence is synthetic. An operator must explicitly deliver each simulated outcome.':'Requests can be saved; physical handovers and charging remain pending until a verified external event arrives.'}</span></div>${views[tab]()}</main></div></div>`;
+  if (pending()) showNotice('A request has an uncertain outcome. Recover it using the same saved intent.', true, true);
+}
+
+function heading(kicker, name, description, extra='') {
+  return `<div class="page-title"><div><div class="eyebrow">${esc(kicker)}</div><h1>${esc(name)}</h1><p>${esc(description)}</p></div><div class="toolbar"><button class="secondary small" id="refresh">↻ Refresh</button>${extra}</div></div>`;
+}
+
+function overview() {
+  const hubs=list('hubs'), vehicles=list('vehicles').filter(v=>v.kind==='shared' && (!selectedHub||v.hub_id===selectedHub));
+  return heading('Explore the network', 'Where are you heading?', 'Live resource snapshots, committed reservations and observed occupancy — together in one view.')+
+    `<section class="stats" aria-label="Network summary"><div class="stat"><div class="label">Mobility hubs</div><div class="number">${hubs.length}</div><div class="hint">Metro · campus · dormitories</div></div><div class="stat"><div class="label">Available shared vehicles</div><div class="number">${list('vehicles').filter(v=>v.kind==='shared'&&v.available).length}</div><div class="hint">Fresh, eligible and unclaimed</div></div><div class="stat"><div class="label">Available parking spaces</div><div class="number">${hubs.reduce((n,h)=>n+(h.available||0),0)}</div><div class="hint">Subject to time and reception policy</div></div><div class="stat"><div class="label">Your active services</div><div class="number">${['holds','trips','sessions'].flatMap(list).filter(r=>r.owner_id===state.actor.id&&!['CLOSED','COMPLETED','CANCELLED','EXPIRED','CONSUMED'].includes(r.status)).length}</div><div class="hint">Manage from your workspace</div></div></section>`+
+    `<div class="section-heading"><h2>Find your hub</h2><span class="state-age">Updated ${esc(date(state.now))} · Revision ${esc(state.revision)}</span></div><div class="grid">${hubs.map((hub,i)=>`<article class="card hub-card"><div class="hub-art"><span>0${i+1} / ${esc(hub.name)}</span></div><div class="card-body"><div class="card-heading"><div><h3>${esc(hub.name)}</h3><p class="muted small-text">${esc(hub.id)} · ${esc(hub.power_kw)} kW charging budget</p></div>${chip(hub.level||'OPEN')}</div><div class="capacity"><div class="capacity-line"><span>Effective commitments</span><strong>${(hub.occupied||0)+(hub.unknown||0)+(hub.held||0)} / ${hub.capacity}</strong></div><progress class="meter ${hub.available<3?'warn':''}" max="${hub.capacity||1}" value="${(hub.occupied||0)+(hub.unknown||0)+(hub.held||0)}" aria-label="Effective parking commitments"></progress><div class="facts"><span>${hub.occupied||0} occupied</span><span>${hub.held||0} held</span><span>${hub.unknown||0} unknown</span></div></div><div class="card-footer"><span class="small-text muted">${list('vehicles').filter(v=>v.kind==='shared'&&v.hub_id===hub.id&&v.available).length} vehicles available</span><button class="link" data-hub="${esc(hub.id)}">View vehicles →</button></div></div></article>`).join('')}</div>`+
+    `<div class="section-heading"><h2>Shared vehicles</h2><label class="visually-hidden" for="hub-filter">Filter by hub</label><select id="hub-filter" class="inline-input">${option('','All hubs',!selectedHub)}${hubs.map(h=>option(h.id,h.name,h.id===selectedHub)).join('')}</select></div>${vehicles.length?`<div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Location</th><th>Battery</th><th>Observation</th><th>Availability</th><th>Action</th></tr></thead><tbody>${vehicles.map(v=>`<tr><td class="vehicle-name">${esc(v.label||v.id)}</td><td>${esc(hubName(v.hub_id))}</td><td><span class="battery">▰ ${esc(v.soc)}%</span></td><td>${chip(v.freshness||(now()-v.observed_at>90?'STALE':'FRESH'))}</td><td>${chip(v.available?'AVAILABLE':v.health!=='OPERABLE'?v.health:'UNAVAILABLE')}</td><td>${state.actor.role==='student'&&v.available?actionButton('Reserve · 10 min','reserve_vehicle',{vehicle_id:v.id},'small'):'—'}</td></tr>`).join('')}</tbody></table></div>`:empty('No shared vehicles here','Choose another hub or check back after a verified arrival.')}<p class="muted small-text spaced">A vehicle hold lasts 10 minutes. Destination parking is reserved separately. Stale observations cannot support a new allocation.</p>`;
+}
+
+function journeys() {
+  const holds=list('holds').slice().reverse(), trips=list('trips').slice().reverse();
+  const openTrips=trips.filter(t=>t.status!=='CLOSED');
+  return heading('A · Rentals and journeys', 'Your journey, end to end', 'A request to pick up or return records your intent. The journey changes only after external handover evidence.')+
+    `<div class="split"><section><div class="section-heading"><h2>Vehicle reservations</h2><button class="link" data-tab="overview">Find a vehicle →</button></div><div class="records">${holds.length?holds.map(h=>`<article class="record"><div class="record-main"><div><div class="record-title"><h3>${esc(vehicleName(h.vehicle_id))}</h3><span class="record-id">${esc(h.id)}</span></div><div class="record-meta"><span>Hold until ${date(h.expires_at)}</span></div></div>${chip(h.status)}</div>${h.status==='ACTIVE'?`<div class="record-actions">${actionButton('Request pickup','pickup',{hold_id:h.id},'small')}${actionButton('Cancel reservation','cancel_hold',{hold_id:h.id},'danger small')}</div>`:''}${/PENDING/.test(h.status)?'<div class="record-note">Handover is awaiting evidence. Expiry and cancellation will not silently free this vehicle.</div>':''}</article>`).join(''):empty('No vehicle reservations yet','Reserve an eligible shared vehicle from Explore hubs.')}</div><div class="section-heading"><h2>Journeys</h2></div><div class="records">${trips.length?trips.map(t=>`<article class="record"><div class="record-main"><div><div class="record-title"><h3>${esc(vehicleName(t.vehicle_id))}</h3><span class="record-id">${esc(t.id)}</span></div><div class="record-meta"><span>Started ${date(t.started_at)}</span><span>${t.ended_at?'Returned '+date(t.ended_at):'Handover responsibility remains open'}</span></div></div>${chip(t.status)}</div>${t.status==='ASSISTANCE_PENDING'?'<div class="record-note">Reception needs operator assistance. Your trip remains open; see Support for a capacity proposal.</div>':''}</article>`).join(''):empty('Your next journey starts here','A trip appears after pickup evidence has been accepted.')}</div></section><aside><div class="card"><div class="card-body"><div class="eyebrow">Ready to return?</div><h2>Request a handover</h2><p class="muted small-text spaced">Choose your destination. If no suitable space is available, the trip stays open and support is recorded.</p><form class="form spaced" data-command="return_vehicle"><label>Open trip<select name="trip_id" required>${option('','Choose a trip')}${openTrips.map(t=>option(t.id,`${t.id} · ${t.vehicle_id}`)).join('')}</select></label><label>Destination hub<select name="hub_id" required>${hubOptions()}</select></label><label>Existing return parking right (optional)<select name="right_id">${option('','Request walk-in reception')}${list('rights').filter(r=>['CONFIRMED','HANDOVER_PENDING'].includes(r.status)).map(r=>option(r.id,`${r.id} · ${hubName(r.hub_id)} · ${r.vehicle_id}`)).join('')}</select></label><button type="submit">Request return</button></form></div></div><div class="card spaced"><div class="card-body"><h3>Need a place at your destination?</h3><p class="muted small-text spaced">A hold does not include a return bay. Reserve a separate shared-vehicle parking right before arrival.</p><button class="link spaced" data-tab="parking">Reserve parking →</button></div></div></aside></div>`;
+}
+
+const hubOptions = () => list('hubs').map(h=>option(h.id,h.name,selectedHub===h.id)).join('');
+const myVehicles = () => list('vehicles').filter(v=>v.owner_id===state.actor.id || (v.kind==='shared' && [...list('holds'),...list('trips')].some(r=>r.owner_id===state.actor.id&&r.vehicle_id===v.id&&!['CANCELLED','EXPIRED','CONSUMED','CLOSED'].includes(r.status))));
+
+function parking() {
+  const rights=list('rights').slice().reverse(), visits=list('visits').slice().reverse();
+  return heading('B · Parking and capacity', 'A place when you need it', 'Reserve up to 24 hours ahead. Personal parking lasts 15 minutes to 12 hours, with a 15-minute gap before the next reservation.')+
+    `<div class="split"><section><div class="section-heading"><h2>Parking rights</h2></div><div class="records">${rights.length?rights.map(r=>`<article class="record"><div class="record-main"><div><div class="record-title"><h3>${esc(hubName(r.hub_id))}</h3><span class="record-id">${esc(r.id)}</span></div><div class="record-meta"><span>${esc(vehicleName(r.vehicle_id))}</span><span>Bay ${esc(r.spot_id)}</span></div><p class="muted small-text">${date(r.start)} → ${r.end?date(r.end):'Verified departure'}</p></div>${chip(r.status)}</div>${r.status==='CONFIRMED'?`<div class="record-actions">${actionButton('Request arrival','arrive',{right_id:r.id},'small')}${actionButton('Cancel unused right','cancel_parking',{right_id:r.id},'danger small')}</div>`:''}${r.status==='HANDOVER_PENDING'?'<div class="record-note">Arrival evidence is pending. This commitment remains protected.</div>':''}</article>`).join(''):empty('No parking rights yet','Reserve a bay, or reserve parking and charging together.')}</div><div class="section-heading"><h2>Observed visits</h2></div><div class="records">${visits.length?visits.map(v=>`<article class="record"><div class="record-main"><div><h3>${esc(vehicleName(v.vehicle_id))}</h3><div class="record-meta"><span>Bay ${esc(v.spot_id)}</span><span class="record-id">${esc(v.id)}</span></div></div>${chip(v.status)}</div>${v.status==='PARKED'?`<div class="record-actions">${actionButton('Request departure','depart',{visit_id:v.id},'small')}</div>`:''}<div class="record-note">Elapsed booking time never frees a physically occupied bay. Departure requires evidence and a disconnected charger.</div></article>`).join(''):empty('No recorded visits','An accepted arrival event creates an occupied visit.')}</div></section><aside><div class="card"><div class="card-body"><div class="eyebrow">Reserve your space</div><h2>Parking, with options</h2><form class="form spaced" data-command="reserve_parking"><label>Vehicle<select name="vehicle_id" required>${option('','Choose your vehicle')}${myVehicles().map(v=>option(v.id,vehicleName(v.id))).join('')}</select></label><label>Hub<select name="hub_id" required>${hubOptions()}</select></label><label>Arrival time<input name="start" type="datetime-local" required value="${inputDate(now()+120)}"></label><label>Expected departure<input name="end" type="datetime-local" required value="${inputDate(now()+3720)}"><span class="form-help">Shared vehicles occupy their return bay until verified departure.</span></label><label class="check-label"><input type="checkbox" name="charging">Include charging (personal vehicles)</label><label>Charging target SOC (%)<input name="target_soc" type="number" min="1" max="100" value="80"></label><label>Link to active vehicle hold (optional)<select name="hold_id">${option('','Independent parking right')}${list('holds').filter(h=>h.status==='ACTIVE').map(h=>option(h.id,`${h.id} · ${h.vehicle_id}`)).join('')}</select></label><button type="submit">Confirm reservation</button><p class="form-help">A charging bundle commits both resources together. It will not silently fall back to parking alone.</p></form></div></div><div class="card spaced"><div class="card-body"><h3>Register a personal vehicle</h3>${vehicleForm()}</div></div></aside></div>`;
+}
+
+function vehicleForm() {
+  return `<form class="form spaced" data-command="register_vehicle"><label>Vehicle name<input name="label" maxlength="80" required placeholder="My electric bicycle"></label><div class="form-row"><label>Battery capacity (kWh)<input name="battery_kwh" type="number" min="0.1" max="100" step="0.1" value="2" required></label><label>Current SOC (%)<input name="soc" type="number" min="0" max="99" value="30" required></label></div><label>Connector<select name="connector">${option('TYPE2','Type 2')}${option('SCHUKO','Schuko')}</select></label><button class="secondary" type="submit">Register vehicle</button><p class="form-help">Declared battery data is used for estimates; it is not a physical measurement.</p></form>`;
+}
+
+function charging() {
+  const sessions=list('sessions').slice().reverse();
+  const eligibleRights=list('rights').filter(r=>['CONFIRMED','CONSUMED'].includes(r.status));
+  return heading('C · Charging services', 'Charge with confidence', 'A booked session is an allocation. Plugging in, starting, stopping and unplugging each require external evidence.')+
+    `<div class="split"><section><div class="section-heading"><h2>Charging sessions</h2><button class="link" data-tab="parking">Book parking + charging →</button></div><div class="records">${sessions.length?sessions.map(s=>{const port=find('ports',s.port_id);return `<article class="record"><div class="record-main"><div><div class="record-title"><h3>${esc(vehicleName(s.vehicle_id))}</h3><span class="record-id">${esc(s.id)}</span></div><div class="record-meta"><span>Port ${esc(s.port_id)}</span><span>Target ${esc(s.target_soc)}%</span><span>${esc(s.kw||'—')} kW</span></div><p class="muted small-text">Window ${date(s.start)} → ${date(s.end)}</p><p class="muted small-text">Scheduled ${date(s.scheduled_start)} → ${date(s.scheduled_end)}</p></div>${chip(s.status)}</div><div class="record-note">Physical port: ${esc(title(port?.plug||'UNKNOWN'))} · Power ${esc(title(port?.power||'UNKNOWN'))} · ${esc(title(port?.health||'UNKNOWN'))}</div><div class="record-actions">${s.status==='BOOKED'?actionButton('Request plug-in','plug',{session_id:s.id},'small')+actionButton('Request start','start_charge',{session_id:s.id},'small')+actionButton('Cancel unused session','cancel_charge',{session_id:s.id},'danger small'):''}${['CHARGING','START_PENDING','INTERRUPTED'].includes(s.status)?actionButton('Request stop','stop_charge',{session_id:s.id},'small'):''}${['COMPLETED','CANCELLED','INTERRUPTED','BOOKED'].includes(s.status)&&port?.plug==='CONNECTED'?actionButton('Request unplug','unplug',{session_id:s.id},'secondary small'):''}</div>${s.status==='COMPLETED'?'<p class="muted small-text spaced">Session complete. The port remains occupied until unplugging is observed; the parking bay remains occupied until departure.</p>':''}</article>`;}).join(''):empty('No charging sessions','Create a parking + charging bundle, or add charging to a compatible existing right.')}</div><div class="section-heading"><h2>Ports and observations</h2></div><div class="table-wrap"><table><thead><tr><th>Port / bay</th><th>Connection</th><th>Power</th><th>Health</th><th>Observation</th></tr></thead><tbody>${list('ports').map(p=>`<tr><td>${esc(p.id)} / ${esc(p.spot_id)}</td><td>${chip(p.plug)}</td><td>${chip(p.power)}</td><td>${chip(p.health)}</td><td>${chip(p.freshness||(now()-p.observed_at>90?'STALE':'FRESH'))}</td></tr>`).join('')}</tbody></table></div></section><aside><div class="card"><div class="card-body"><div class="eyebrow">Use an existing parking right</div><h2>Add charging</h2><form class="form spaced" data-command="register_charge"><label>Parking right<select name="right_id" required>${option('','Choose a compatible right')}${eligibleRights.map(r=>option(r.id,`${r.id} · ${r.vehicle_id} · ${r.spot_id}`)).join('')}</select></label><label>Target SOC (%)<input type="number" name="target_soc" min="1" max="100" value="80" required></label><button type="submit">Reserve charging</button><p class="form-help">The right must cover the session window and belong to a compatible charging bay. Independently created parking rights are preserved when charging is canceled.</p></form></div></div><div class="card spaced"><div class="card-body"><h3>How a session progresses</h3><ol class="review-list"><li>Reserve parking and charging.</li><li>Request arrival; await accepted evidence.</li><li>Request plug-in; await connection evidence.</li><li>Request start; await power-on acknowledgement.</li><li>Request stop; await power-off acknowledgement.</li><li>Request unplug, then parking departure.</li></ol></div></div></aside></div>`;
+}
+
+function support() {
+  const records=[...list('holds'),...list('trips'),...list('rights'),...list('sessions')];
+  return heading('A + B · Journey assistance', 'Support that stays with you', 'Keep a traceable record of an issue or reception problem. Operator proposals require your response and never close a trip by themselves.')+
+    `<div class="split"><section><div class="section-heading"><h2>Support records</h2></div><div class="records">${list('incidents').length?list('incidents').slice().reverse().map(i=>`<article class="record"><div class="record-main"><div><h3>${esc(i.message||'Reception assistance')}</h3><div class="record-meta"><span class="record-id">${esc(i.id)}</span><span>Related record ${esc(i.record_id)}</span></div></div>${chip(i.status)}</div>${i.response?`<div class="record-note">${esc(typeof i.response==='string'?i.response:JSON.stringify(i.response))}</div>`:''}${state.actor.role==='student'&&/PROPOS|OFFER|AWAIT|PLAN/.test(i.status)?`<div class="record-actions">${actionButton('Accept proposed reception','accept_capacity',{incident_id:i.id,accept:true},'small')}${actionButton('Decline proposal','accept_capacity',{incident_id:i.id,accept:false},'danger small')}</div>`:''}</article>`).join(''):empty('No support records','You can report an issue against one of your own service records.')}</div></section><aside><div class="card"><div class="card-body"><h2>Request support</h2><form class="form spaced" data-command="support"><label>Related service<select name="record_id" required>${option('','Select a service record')}${records.map(r=>option(r.id,`${r.id} · ${r.vehicle_id||r.status}`)).join('')}</select></label><label>What happened?<textarea name="message" required minlength="5" maxlength="1000" placeholder="Describe the problem and where you are."></textarea></label><button type="submit">Send support request</button><p class="form-help">This creates an A/B/C support record. Real technician assignment and dispatch remain Role D dependencies.</p></form></div></div></aside></div>`;
+}
+
+function operations() {
+  const commands=list('commands');
+  return heading('Operator workspace', 'Keep the network moving', 'Review reception proposals and charging schedules. Confirming a plan does not assert that a physical movement has happened.')+
+    `<div class="grid two"><div class="card"><div class="card-body"><div class="eyebrow">B05 · Recovery capacity</div><h2>Propose a reception option</h2><form class="form spaced" data-command="capacity_plan"><label>Support case<select name="incident_id" required>${option('','Choose an unresolved case')}${list('incidents').filter(i=>!['RESOLVED','CLOSED'].includes(i.status)).map(i=>option(i.id,`${i.id} · ${i.message||i.record_id}`)).join('')}</select></label><label>Recovery hub<select name="hub_id" required>${hubOptions()}</select></label><label>Reason for reserve capacity<input name="reason" required minlength="5" maxlength="500" placeholder="Protect reception for an interrupted journey"></label><button type="submit">Propose reception</button><p class="form-help">Capacity is rechecked; existing commitments are protected. The owner must accept the proposal before requesting handover.</p></form></div></div><div class="card"><div class="card-body"><div class="eyebrow">C03 · Charging allocation</div><h2>Preview the charging schedule</h2><p class="muted spaced">Build a plan using current session demand, port compatibility, fresh observations and hub power limits. Confirmation checks the current revision again.</p><div class="record-actions">${actionButton('Create schedule preview','schedule_preview',{},'')}</div><div class="records spaced">${list('plans').filter(p=>p.kind!=='capacity').slice().reverse().map(p=>`<article class="record"><div class="row-spread"><span class="record-id">${esc(p.id)}</span>${chip(p.status)}</div><div class="record-actions"><button class="secondary small" data-detail="plans" data-id="${esc(p.id)}">Review allocation</button>${['DRAFT','PROPOSED','PREVIEW'].includes(p.status)?actionButton('Confirm schedule','schedule_confirm',{plan_id:p.id},'small'):''}</div></article>`).join('')||'<p class="muted small-text">No schedule previews yet.</p>'}</div></div></div></div>`+
+    `<div class="section-heading"><h2>Device command outbox</h2><span class="muted small-text">Persisted intent · acknowledgement required</span></div><div class="records">${commands.length?commands.slice().reverse().map(c=>`<article class="record"><div class="record-main"><div><div class="record-title"><h3>${esc(title(c.kind))}</h3><span class="record-id">${esc(c.id)}</span></div><div class="record-meta"><span>Record ${esc(c.record_id)}</span><span>Created ${date(c.created_at)}</span></div></div>${chip(c.status)}</div>${state.simulator&&!['ACK','ACKNOWLEDGED','CONFIRMED','APPLIED','REJECTED','COMPLETED'].includes(c.status)?`<div class="record-actions">${actionButton('Simulate ACK','simulate',{command_id:c.id,outcome:'ACK'},'small')}${actionButton('Simulate rejection','simulate',{command_id:c.id,outcome:'REJECT'},'danger small')}${actionButton('Simulate unknown outcome','simulate',{command_id:c.id,outcome:'UNKNOWN'},'secondary small')}</div><p class="muted small-text spaced">Synthetic test evidence only. No device is contacted.</p>`:''}</article>`).join(''):empty('No pending device requests','Student requests for handover and charging are recorded here.')}</div>`+
+    (state.simulator?`<section class="sim-area spaced"><div class="row-spread"><div><div class="eyebrow">Controlled test environment</div><h2>Synthetic observation controls</h2></div>${actionButton('Refresh simulated observations','sim_refresh',{},'secondary small')}</div><p class="muted small-text spaced">Refresh renews only simulated observations. Fault controls exercise eligibility and failure handling. These controls are disabled unless the server starts with --simulator.</p><form class="form spaced" data-command="sim_observe"><div class="form-row"><label>Resource<select name="resource_ref">${['ports','vehicles','spots'].flatMap(key=>list(key).map(r=>option(`${key}:${r.id}`,`${title(key)} · ${r.id}`))).join('')}</select></label><label>Technical condition<select name="health">${option('OUT_OF_SERVICE','Out of service')}${option('OPERABLE','Operable')}</select></label></div><button type="submit" class="secondary">Submit synthetic observation</button></form></section>`:'')+
+    `<div class="section-heading"><h2>Unresolved assistance</h2><button class="link" data-tab="support">View support records →</button></div><p class="muted">${list('incidents').filter(i=>!['RESOLVED','CLOSED'].includes(i.status)).length} support records need review. Real redistribution, repair and field work remain outside A/B/C.</p>`;
+}
+
+function history() {
+  return heading('Evidence and history', 'Every change leaves a trace', 'Recorded actions, outcomes and revisions from persisted state. Synthetic observations remain explicitly identified.')+
+    (list('audit').length?`<div class="table-wrap"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead><tbody>${list('audit').slice().reverse().map(a=>`<tr><td>${date(a.at)}</td><td>${esc(a.actor_id||a.actor||'system')}</td><td>${esc(title(a.action||a.kind))}</td><td class="history-detail">${esc(JSON.stringify(Object.fromEntries(Object.entries(a).filter(([key])=>!['id','at','actor_id','actor','action','kind'].includes(key)))))}</td></tr>`).join('')}</tbody></table></div>`:empty('No activity recorded yet','Complete a reservation or request to begin your history.'));
+}
+
+app.addEventListener('click', async event => {
+  const button=event.target.closest('button');
+  if (!button) return;
+  if (button.dataset.tab) {tab=button.dataset.tab;render();window.scrollTo(0,0);}
+  else if (button.dataset.hub) {selectedHub=button.dataset.hub;render();document.querySelector('#hub-filter')?.scrollIntoView({behavior:'smooth',block:'center'});}
+  else if (button.dataset.action) await command(button.dataset.action, JSON.parse(button.dataset.payload));
+  else if (button.id==='refresh') await refresh();
+  else if (button.id==='logout') {try {await request('/api/logout',{});state=null;notice.hidden=true;renderLogin();}catch(error){showNotice(error.message,true);}}
+  else if (button.dataset.detail) {const record=find(button.dataset.detail,button.dataset.id);document.querySelector('#detail-content').innerHTML=`<h2>Review ${esc(record?.id)}</h2><p class="muted spaced">Review the proposed allocations before confirming. Confirmation rechecks this plan against current state.</p><pre>${esc(JSON.stringify(record,null,2))}</pre>`;document.querySelector('#detail-dialog').showModal();}
+});
+
+app.addEventListener('change', event => {
+  if (event.target.id==='hub-filter') {selectedHub=event.target.value;render();}
+});
+
+app.addEventListener('submit', async event => {
+  event.preventDefault();
+  const form=event.target;
+  if (form.id==='login-form') {
+    const submit=form.querySelector('button'); submit.disabled=true;
+    try {await request('/api/login',Object.fromEntries(new FormData(form)));tab='overview';await refresh();}
+    catch(error) {document.querySelector('#login-error').textContent=error.message;}
+    finally {submit.disabled=false;}
+    return;
+  }
+  if (!form.dataset.command) return;
+  const payload=Object.fromEntries(new FormData(form));
+  for (const key of ['start','end']) if (key in payload) payload[key]=new Date(payload[key]).getTime()/1000;
+  for (const key of ['target_soc','battery_kwh','soc']) if (key in payload) payload[key]=Number(payload[key]);
+  if (form.dataset.command==='reserve_parking') payload.charging=form.elements.charging.checked;
+  for (const key of ['right_id','hold_id']) if (payload[key]==='') delete payload[key];
+  if (payload.resource_ref) {const [resource_type,resource_id]=payload.resource_ref.split(':');delete payload.resource_ref;Object.assign(payload,{resource_type,resource_id});}
+  await command(form.dataset.command,payload);
+});
+
+notice.addEventListener('click', event => {
+  const button=event.target.closest('button');
+  if (button?.dataset.notice==='retry') command(null,null,true);
+  else if (button) notice.hidden=true;
+});
+document.querySelector('#close-dialog').addEventListener('click',()=>document.querySelector('#detail-dialog').close());
+refresh();

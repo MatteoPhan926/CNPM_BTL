@@ -1,0 +1,181 @@
+Smart E-Mobility Hub – Electric Mobility Coordination System for the VNU-HCM
+Urban Area
+[Vietnamese below/ Bản Tiếng Việt phía dưới]
+
+The VNU-HCM Urban Area brings together multiple universities, student dormitories, libraries,
+service facilities, and public transportation hubs. In the future, students may travel to the area via
+Metro Line 1 and continue their journeys using shared electric bicycles, electric motorcycles, or
+other forms of electric mobility to travel between campuses and functional areas. This creates a
+software system problem that involves not only vehicle management, but also the coordination of
+parking capacity, charging resources, and mobility demand across different locations.
+
+The project aims to develop a Smart E-Mobility Hub system for managing and coordinating a
+network of electric mobility resources within the VNU-HCM Urban Area. The system models a
+number of Mobility Hubs located at key locations such as the Metro station, student dormitories,
+university campuses, and service areas. Each Hub contains a set of parking spaces, charging points,
+and electric vehicles. Information such as vehicle status, battery level, parking occupancy,
+charging-point availability, and Hub utilization is updated in near real time using either sensor data
+or simulated data.
+
+From the student perspective, the system supports finding suitable vehicles and Mobility Hubs for
+a journey, viewing vehicle availability and battery levels, reserving a vehicle or a parking space,
+picking up and returning vehicles, and submitting charging requests. Students using privately
+owned electric vehicles may also reserve parking spaces in advance and schedule charging sessions
+at selected Hubs. When allocating resources, the system needs to consider parking availability,
+charging capacity, vehicle battery levels, and expected demand in order to make appropriate
+allocation decisions.
+
+From the operator perspective, the system provides an overview of the entire Mobility Hub
+network. Operators can monitor vehicle and charging-point status, identify Hubs that may be
+approaching capacity limits, coordinate vehicle redistribution across Hubs, and handle operational
+incidents such as vehicle failures or unavailable charging points. The system also supports smart
+charging scheduling, where vehicles with low battery levels or upcoming usage requirements
+may be given higher priority for charging. The goal is to use limited charging resources efficiently,
+reduce congestion, and minimize unnecessary waiting time.
+
+Another key capability of the system is What-if Simulation. Based on the current state of the
+mobility network, operators can evaluate hypothetical operating scenarios before applying actual
+changes to the system. Example scenarios include a sudden increase in student arrivals at the Metro
+station during peak hours, a Mobility Hub reaching full parking capacity, a surge in charging
+demand, partial charging-point failures, or an excessive concentration of vehicles at a particular
+location. The system simulates how the network state may evolve, evaluates the impact on service
+capacity, and provides appropriate coordination recommendations. These recommendations may
+include redistributing vehicles between Hubs, adjusting charging schedules, or redirecting users to
+alternative Hubs.
+Note: The system may use either real IoT data or simulated data to represent the state of vehicles,
+parking spaces, charging facilities, and operational events. The primary focus of the project is not
+on developing physical hardware or sophisticated 3D map interfaces. Instead, students should
+concentrate on the core software engineering challenges of state management, resource
+allocation, reservation handling, charging scheduling, vehicle dispatching, event handling,
+and operational scenario simulation. Through this project, students are expected to apply
+Software Engineering principles to a system involving multiple actors, shared resources,
+concurrent state changes, and interacting business workflows in a distributed operational
+environment.
+Smart E-Mobility Hub – Hệ thống điều phối phương tiện điện trong Khu đô thị
+ĐHQG-HCM
+
+Khu đô thị ĐHQG-HCM tập trung nhiều trường đại học, ký túc xá, thư viện, khu dịch vụ và các
+điểm giao thông công cộng. Trong tương lai, sinh viên có thể di chuyển đến khu đô thị bằng Metro
+số 1 qua ga ĐHQG, sau đó sử dụng xe đạp điện, xe máy điện hoặc các phương tiện điện dùng
+chung để di chuyển giữa các trường và khu chức năng. Điều này đặt ra bài toán quản lý không chỉ
+phương tiện mà còn chỗ đỗ, trạm sạc và nhu cầu di chuyển giữa các khu vực.
+
+Đề tài yêu cầu xây dựng một hệ thống Smart E-Mobility Hub nhằm quản lý và điều phối mạng
+lưới phương tiện điện trong Khu đô thị ĐHQG-HCM. Hệ thống mô phỏng một số Mobility Hub
+đặt tại các vị trí như ga Metro, ký túc xá, khu trường đại học và các khu dịch vụ. Mỗi Hub có các
+vị trí đỗ xe, cổng sạc và phương tiện điện; trạng thái của xe, mức pin, vị trí đỗ, tình trạng cổng sạc
+và mức độ sử dụng của từng Hub được cập nhật gần thời gian thực thông qua dữ liệu cảm biến
+hoặc dữ liệu mô phỏng.
+
+Đối với sinh viên, hệ thống hỗ trợ tìm phương tiện và Hub phù hợp cho hành trình, xem tình trạng
+xe và mức pin, đặt xe hoặc đặt chỗ đỗ, nhận và trả phương tiện, cũng như đăng ký nhu cầu sạc.
+Đối với phương tiện cá nhân, sinh viên có thể đặt trước vị trí đỗ và đăng ký lịch sạc tại các Hub.
+Hệ thống cần xem xét tình trạng đầy chỗ, số lượng cổng sạc, mức pin của các phương tiện và nhu
+cầu sử dụng dự kiến để phân bổ tài nguyên phù hợp.
+
+Đối với đơn vị vận hành, hệ thống cung cấp khả năng giám sát toàn bộ mạng lưới Mobility Hub,
+theo dõi tình trạng phương tiện và trạm sạc, phát hiện các Hub có nguy cơ quá tải, điều phối
+phương tiện giữa các Hub và xử lý các sự cố như xe hỏng hoặc cổng sạc ngừng hoạt động. Hệ
+thống cũng hỗ trợ xây dựng lịch sạc thông minh, trong đó các phương tiện có mức pin thấp hoặc
+có lịch sử dụng gần sẽ được ưu tiên sử dụng tài nguyên sạc nhằm hạn chế tình trạng quá tải và
+giảm thời gian chờ.
+
+Một chức năng quan trọng của hệ thống là mô phỏng và phân tích kịch bản (What-if
+Simulation). Dựa trên trạng thái hiện tại của mạng lưới, hệ thống cho phép người vận hành thử
+nghiệm các tình huống như lượng sinh viên tăng đột biến tại ga Metro vào giờ cao điểm, một Hub
+hết chỗ đỗ, nhu cầu sạc tăng cao, một số cổng sạc bị hỏng hoặc một lượng lớn phương tiện tập
+trung tại một khu vực. Hệ thống mô phỏng sự thay đổi trạng thái của mạng lưới, đánh giá ảnh
+hưởng đến khả năng phục vụ và đưa ra phương án điều phối phù hợp, chẳng hạn như điều chuyển
+phương tiện giữa các Hub, thay đổi lịch sạc hoặc hướng người dùng đến Hub thay thế.
+
+Ghi chú: Hệ thống có thể sử dụng dữ liệu IoT thực tế hoặc dữ liệu giả lập để mô phỏng trạng thái
+của phương tiện, vị trí đỗ và thiết bị sạc. Trọng tâm của đề tài không nằm ở việc xây dựng phần
+cứng hay giao diện bản đồ 3D mà tập trung vào quản lý trạng thái, phân bổ tài nguyên, đặt chỗ,
+lập lịch sạc, điều phối phương tiện, xử lý sự kiện và mô phỏng các tình huống vận hành. Qua
+đó, sinh viên có cơ hội áp dụng các kiến thức Công nghệ phần mềm vào một bài toán có nhiều tác
+nhân, trạng thái và quy trình nghiệp vụ tương tác trong một hệ thống phân tán.
+Project guidelines
+1. Team & teamwork
+   a. Teams are formed randomly by the lecturer.
+   b. Each team member has to perform all works, including requirement specification,
+   architectural design and detail design.
+   c. At the end of the semester, team members have to give feedback to each others and
+   evaluation the individual and team performace.
+
+2. Team meeting & meeting minus
+    a. Team meetings should be carried out one a week
+    b. The first meeting should be focus on the team communication, commitment, common
+    problems/risks and solving mechanisms …
+    c. Meeting minuses are used to keep track of all works.
+
+3. Submissions
+    a. There are 04 individual documents:
+        i. #1- requirement document: Functional/Non-Functional requirement and Use-case
+        diagram.
+        ii. #2- requirement document: Sequence diagrams, Activity diagrams & UI design (State-
+        chart diagrams: bonus) .
+        iii. #3-design document: Architectural design, Class diagram, Class and Method
+        design/desc.
+        iv. #4-finall document.
+    b. All submissions are in .doc/.docx/.pdf format.
+    c. Deadlines will be announced on the LMS site.
+
+4. Demonstration
+     Develop MVP. Demonstrate the whole project.
+     You are free to choose the programming language (HTML, Javascript, Python, C#, etc). It is
+not required to implement a database in the backend. Data can be hard coded in code files.
+(a presentation slide shall be prepared. Each team should practice the demonstrations many times
+in advance. The presentation should be straight to the point, contains lessons learned for the team.
+The demonstration should be prepared, correct, brief and has good quality.)
+                                   Project Submission Detail
+  1. Submission #1 detail
+Students have to submit the following contents:
+- Project details specification (group work):
+      Students are required to thoroughly describe the project context based on the basic
+  information provided. This includes clearly identifying the relevant stakeholders, understanding
+  their roles and expectations, and outlining the objectives and scope of the project. The goal is to
+  ensure a comprehensive understanding of the project’s context, its key players, and its
+  boundaries. (group work)
+- Functional requirements:
+    + Use-case diagram for the whole system (group work)
+    + Use-case detail/scenario for use-case the student is in-charged (individual work)
+    + Other non-interactive functional requirement (bonus)
+- Non-functional requirements:
+    + General non-functional requirements for the whole system (group work)
+   2. Submission #2 detail
+Students have to submit the following contents:
+- UI design: Mockup (group work)
+- Sequence diagrams (individual work)
+- Activity diagrams (individual work)
+- State-chart diagrams (bonus)
+   3. Submission #3 detail
+Students have to submit the following contents:
+- Deployment view
+- Development/Implementation view
+- Class diagram and Method descriptions (for all methods in the class diagram).
+- Test case (bonus)
+   4. Submission #final
+Students have to submit the following contents by only 01 pdf file:
+- All contents from (#1, #2, #3)
+- A working demonstration (by sequence of screens)
+- A clear statement defining how Generative AI was used (tools, scope, and level of contribution)
+Generative AI using
+The use of AI is not prohibited in completing the project; however, students are required to
+declare their usage clearly and act responsibly. High scores will be awarded to those who
+utilize AI as a supporting tool for generating ideas or references, and then demonstrate their
+own understanding by analyzing, refining, and adding original contributions. Conversely,
+low scores will be given if students over-rely on AI, copy content verbatim, or show little
+understanding of their submitted work. Transparent disclosure of AI use is mandatory; any
+attempt to conceal or misrepresent the extent of AI involvement will be considered
+academic misconduct and may result in severe penalties, including significant point
+deductions or rejection of the submission.
+
+AI không bị cấm trong quá trình làm bài tập lớn, nhưng sinh viên bắt buộc phải khai
+báo rõ ràng và sử dụng có trách nhiệm. Điểm số cao sẽ dành cho những trường hợp
+biết tận dụng AI như một công cụ hỗ trợ để tìm ý tưởng, tham khảo, sau đó tự phân
+tích, chỉnh sửa và sáng tạo thêm để thể hiện năng lực cá nhân. Ngược lại, điểm số sẽ
+thấp nếu sinh viên lạm dụng AI, sao chép nguyên văn hoặc không nắm được nội dung
+đã nộp. Việc khai báo minh bạch là yêu cầu bắt buộc; mọi hành vi che giấu hoặc gian
+lận khi sử dụng AI sẽ bị xử lý nghiêm, có thể bị trừ điểm nặng hoặc không được chấm
+bài.
+

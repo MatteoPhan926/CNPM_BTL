@@ -1,0 +1,21 @@
+flowchart TB
+    U[Role-specific Web UI] --> API[Application API and Authentication]
+    subgraph SERVER[Single Modular Monolith]
+        API --> A[A Rental Journey]
+        API --> B[B Parking and Capacity]
+        API --> C[C Charging and Scheduling]
+        API --> D[D Operations and Telemetry]
+        A --> X[Shared Contracts and UoW]
+        B --> X
+        C --> X
+        D --> X
+        D --> IN[Verified Event Inbox and Dispatch]
+        X --> OUT[Intent and Effect Receipts]
+        D --> SIM[Read-only What-if Engine]
+    end
+    X --> DB[(Durable SQLite WAL database)]
+    IN --> DB
+    OUT --> DB
+    SIM -. read snapshot .-> DB
+    IOT[External IoT Simulator] --> D
+    OUT -. outbox after commit .-> IOT

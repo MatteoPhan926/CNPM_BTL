@@ -1,0 +1,160 @@
+{
+  "description": "Workspace packaging integrity manifest; SHA-256 is not a claim of original document authenticity.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 217,
+      "sha256": "0e4739f8d955ddfa4e81cf55dea84d2e2c4a1c8086d6bb8c516d55b5b6297c83"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 1104,
+      "sha256": "de885b87699bea08867c4e2ab0f3ed1a6d25a4efa3e735bdf7d70137847c5342"
+    },
+    {
+      "path": "CODEX_TASK.md",
+      "bytes": 2869,
+      "sha256": "4b86a9a3877b53200bac5002abf780f7b85a89507ba4aca85bd9926bdf5d2f29"
+    },
+    {
+      "path": "README_START_HERE.md",
+      "bytes": 3433,
+      "sha256": "5db5b318513761566b47e2df13530377e7280b24bff128400c310ea4f0f1d4a1"
+    },
+    {
+      "path": "docs/01_requirements/00_course_project_brief.pdf",
+      "bytes": 140294,
+      "sha256": "972603334e4b81976f22afc8fb2f7a9769a3c5e6ee4463bf8f34f727489ca67a"
+    },
+    {
+      "path": "docs/01_requirements/00_course_project_brief.txt",
+      "bytes": 13199,
+      "sha256": "db63f5faf62ce3678e996d5b5300181122898cf155e91246730e1eab85b8466c"
+    },
+    {
+      "path": "docs/01_requirements/01_assignment_1_submitted.pdf",
+      "bytes": 375081,
+      "sha256": "343587d895ba2174fc1a7c32a15fcc8da292b37b6275b198929358e190c94035"
+    },
+    {
+      "path": "docs/01_requirements/01_assignment_1_submitted.txt",
+      "bytes": 181517,
+      "sha256": "3696a2324f3efb7e7e221cdf90cfc2036c9786f4ea9cc257b80b506685497293"
+    },
+    {
+      "path": "docs/01_requirements/02_assignment_2_submitted.pdf",
+      "bytes": 44411502,
+      "sha256": "a23603575336c1ffd387cd5296c3b1081f8cf46e3a4dcc4e655ad49b902611d4"
+    },
+    {
+      "path": "docs/01_requirements/02_assignment_2_submitted.txt",
+      "bytes": 170575,
+      "sha256": "79692aa02e15337ab07a25460c9eb5a490072b7e499e2750df64b4918febdbb9"
+    },
+    {
+      "path": "docs/01_requirements/03_assignment_3_submitted.pdf",
+      "bytes": 1849045,
+      "sha256": "9fc131cb773e21397e836b3c6c5f2cbd97e7fff0c7f59c52e7309fcaba8d5bb3"
+    },
+    {
+      "path": "docs/01_requirements/03_assignment_3_submitted.txt",
+      "bytes": 192907,
+      "sha256": "60162c8415be5ce50d06d5b66ffae3dad3ff3def36f24c18b0febd52a49e5693"
+    },
+    {
+      "path": "docs/02_design/audit_reference/Issue_Ledger_Final_v4.csv",
+      "bytes": 2172,
+      "sha256": "ccd8c62d70626f6961585ac33c8fbe7c531de08bba3e10166c8d48a23c75617d"
+    },
+    {
+      "path": "docs/02_design/audit_reference/UC_22_traceability_final.csv",
+      "bytes": 12040,
+      "sha256": "f23e502e440d9497098ab4f099eeb7171320148027467d92103133880860817c"
+    },
+    {
+      "path": "docs/02_design/audit_reference/audit_validation_summary.json",
+      "bytes": 661,
+      "sha256": "102a505eed13caeb48bbcaa360c1758685ab065a884b8085f800cc223733a18c"
+    },
+    {
+      "path": "docs/02_design/audit_reference/canonical_contracts.json",
+      "bytes": 4054,
+      "sha256": "88157e389c0574c0d31aad53aa439e8cc79be3f5fb1e1a89f3f3c1b25ddd0c0a"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/01_B_C_Parking_Charging_Atomic.mmd",
+      "bytes": 940,
+      "sha256": "927ecbc3e106241aa1fefbdbffd204c7c37b7a970f141042df2445a16d42c91b"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/02_A_B_D_Pickup_Return.mmd",
+      "bytes": 1126,
+      "sha256": "e0d9fb92a297f34748b1c77d9e5802db628506717cd4d834a5f449031e721eda"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/03_D_A_B_C_Redistribution.mmd",
+      "bytes": 1034,
+      "sha256": "61d417f2a8403993dfcf4cb1e9e73bb7074beedd8e31ac299b6a092ecbc98cac"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/04_C_D07_Device_Commands.mmd",
+      "bytes": 804,
+      "sha256": "afc708801cb6890059ad22f85d8bcbfcfedf082b793aeb7633c41d7858b556e3"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/Deployment_View_Final_v4.mmd",
+      "bytes": 878,
+      "sha256": "5a4a4b4e4ef9d2dac3c0944991893029390c32614ca978fb668b25ed71437aa0"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/Development_Implementation_View_Final_v4.mmd",
+      "bytes": 721,
+      "sha256": "fb8d776af5f1a5c8b85501005b47d6fd86440ace7e64cb725748a59c69a10a67"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/Shared_Contracts_ClassDiagram_Final_v4.mmd",
+      "bytes": 4207,
+      "sha256": "c920f2cc542ab7b265c663055e8f1cd87049ad355013da77528f4bb8ab98eb30"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/architecture/Shared_Data_Contracts_Final_v4.mmd",
+      "bytes": 1668,
+      "sha256": "68ffa77701e63b844336005072055668eb36a61386c236c33011d7aea66869c8"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/roles/A/Role_A_ClassDiagram_Final_v4.mmd",
+      "bytes": 11437,
+      "sha256": "db9d5f1d510cb8d74e8e1e4a1d54eb3d7c6ca837031d7a16be2d5a4f816437d0"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/roles/B/Role_B_ClassDiagram_Final_v4.mmd",
+      "bytes": 11478,
+      "sha256": "6311130548848fe7b48def771a729b82f5092892ef0b831407af2b17e3f84fcb"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/roles/C/Role_C_ClassDiagram_Final_v4.mmd",
+      "bytes": 11106,
+      "sha256": "d0b085d4345555440fdb87f9462a92222a62b8b0a70f4dd60063605411697d1a"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/roles/C/Role_C_Data_Contracts_Final_v4.mmd",
+      "bytes": 2693,
+      "sha256": "988fd8ec0fcd999c74452ed2bbed95e0f4d5182a46f7facc5a1e4fb8b60d00c2"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/roles/D/Role_D_ClassDiagram_Final_v4.mmd",
+      "bytes": 18120,
+      "sha256": "a0f6eae244f5427787dbfae2c69d846f622be5688a8f69fae3b91fc2c06e0f89"
+    },
+    {
+      "path": "docs/02_design/mermaid_v4/roles/D/Role_D_Data_Contracts_Final_v4.mmd",
+      "bytes": 3811,
+      "sha256": "31f0ae5ae39d7103de97ac813d36a6bf29d91ba2630b94fc5d724654e5afe7a8"
+    },
+    {
+      "path": "prototype/smart-emobility-clean-ui.html",
+      "bytes": 135644,
+      "sha256": "880150d4b0e45313aaf5e36dffac9a813778e226cdff1f4687b7a08da10bcc64"
+    }
+  ]
+}

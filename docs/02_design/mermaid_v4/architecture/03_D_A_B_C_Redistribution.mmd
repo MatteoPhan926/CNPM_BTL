@@ -1,0 +1,25 @@
+sequenceDiagram
+    autonumber
+    actor Operator
+    participant D as D Redistribution Owner
+    participant A as Shared Vehicle Claim
+    participant B as B Parking Owner
+    participant C as C Charging Owner
+    participant U as Shared UnitOfWork
+    Operator->>D: previewTransfer(source,destination,vehicles)
+    D-->>Operator: previewId, revision, TTL
+    Operator->>D: issueOrder(previewId,revision,context)
+    D->>U: executeAtomic(issue)
+    U->>A: reserve exclusive claim for each vehicle
+    U->>C: readPlugAndCharge(vehicle)
+    U->>B: reserveTransferCapacity(orderId,vehicles,destination)
+    alt all preconditions pass
+        U->>D: persist ISSUED order
+        U-->>Operator: committed order receipt
+    else any conflict or stale data
+        U-->>Operator: rollback all resources
+    end
+    Note over D,B: Physical movement arrives later via D07 per vehicle
+    D->>B: recordArrival(verifiedEvent,rightId,context)
+    D->>D: mark vehicle delivered once
+    Note over D: Order remains IN_PROGRESS until all delivered

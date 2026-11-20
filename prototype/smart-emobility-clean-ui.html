@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="Bộ nguyên mẫu Smart E-Mobility Hub, gồm 14 màn hình minh họa quy trình sinh viên, điều hành và IoT tại ĐHQG-HCM." name="description"/><meta content="light" name="color-scheme"/><title>Smart E-Mobility · Giao diện quản lý phương tiện điện</title><style>
+*,*::before,*::after{box-sizing:border-box}body,h1,h2,h3,h4,p{margin:0}svg{display:block}img{max-width:100%}table{border-spacing:0}button,select,input{font-family:inherit}
+/*! tailwindcss v4.1.10 | MIT License | https://tailwindcss.com */
+@layer properties;
+:root, :host {
+  --color-red-50: oklch(97.1% 0.013 17.38);
+  --color-red-100: oklch(93.6% 0.032 17.717);
+  --color-red-200: oklch(88.5% 0.062 18.334);
+  --color-red-300: oklch(80.8% 0.114 19.571);
+  --color-red-400: oklch(70.4% 0.191 22.216);
+  --color-red-500: oklch(63.7% 0.237 25.331);
+  --color-red-600: oklch(57.7% 0.245 27.325);
+  --color-red-700: oklch(50.5% 0.213 27.518);
+  --color-red-800: oklch(44.4% 0.177 26.899);
+  --color-red-900: oklch(39.6% 0.141 25.723);
+  --color-orange-50: oklch(98% 0.016 73.684);
+  --color-orange-100: oklch(95.4% 0.038 75.164);
+  --color-orange-200: oklch(90.1% 0.076 70.697);
+  --color-orange-300: oklch(83.7% 0.128 66.29);
+  --color-orange-400: oklch(75% 0.183 55.934);
+  --color-orange-500: oklch(70.5% 0.213 47.604);
+  --color-orange-600: oklch(64.6% 0.222 41.116);
+  --color-orange-700: oklch(55.3% 0.195 38.402);
+  --color-orange-800: oklch(47% 0.157 37.304);
+  --color-orange-900: oklch(40.8% 0.123 38.172);
+  --color-orange-950: oklch(26.6% 0.079 36.259);
+  --color-amber-50: oklch(98.7% 0.022 95.277);
+  --color-amber-100: oklch(96.2% 0.059 95.617);
+  --color-amber-200: oklch(92.4% 0.12 95.746);
+  --color-amber-300: oklch(87.9% 0.169 91.605);
+  --color-amber-400: oklch(82.8% 0.189 84.429);
+  --color-amber-500: oklch(76.9% 0.188 70.08);
+  --color-amber-600: oklch(66.6% 0.179 58.318);
+  --color-amber-700: oklch(55.5% 0.163 48.998);
+  --color-amber-800: oklch(47.3% 0.137 46.201);
+  --color-amber-900: oklch(41.4% 0.112 45.904);
+  --color-emerald-50: oklch(97.9% 0.021 166.113);
+  --color-emerald-100: oklch(95% 0.052 163.051);
+  --color-emerald-200: oklch(90.5% 0.093 164.15);
+  --color-emerald-300: oklch(84.5% 0.143 164.978);
+  --color-emerald-400: oklch(76.5% 0.177 163.223);
+  --color-emerald-500: oklch(69.6% 0.17 162.48);
+  --color-emerald-600: oklch(59.6% 0.145 163.225);
+  --color-emerald-700: oklch(50.8% 0.118 165.612);
+  --color-emerald-800: oklch(43.2% 0.095 166.913);
+  --color-emerald-900: oklch(37.8% 0.077 168.94);
+  --color-emerald-950: oklch(26.2% 0.051 172.552);
+  --color-teal-50: oklch(98.4% 0.014 180.72);
+  --color-teal-100: oklch(95.3% 0.051 180.801);
+  --color-teal-200: oklch(91% 0.096 180.426);
+  --color-teal-300: oklch(85.5% 0.138 181.071);
+  --color-teal-400: oklch(77.7% 0.152 181.912);
+  --color-teal-500: oklch(70.4% 0.14 182.503);
+  --color-teal-600: oklch(60% 0.118 184.704);
+  --color-teal-700: oklch(51.1% 0.096 186.391);
+  --color-teal-800: oklch(43.7% 0.078 188.216);
+  --color-teal-900: oklch(38.6% 0.063 188.416);
+  --color-teal-950: oklch(27.7% 0.046 192.524);
+  --color-slate-50: oklch(98.4% 0.003 247.858);
+  --color-slate-100: oklch(96.8% 0.007 247.896);
+  --color-slate-200: oklch(92.9% 0.013 255.508);
+  --color-slate-300: oklch(86.9% 0.022 252.894);
+  --color-slate-400: oklch(70.4% 0.04 256.788);
+  --color-slate-500: oklch(55.4% 0.046 257.417);
+  --color-slate-600: oklch(44.6% 0.043 257.281);
+  --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-slate-800: oklch(27.9% 0.041 260.031);
+  --color-slate-900: oklch(20.8% 0.042 265.755);
+  --color-stone-50: oklch(98.5% 0.001 106.423);
+  --color-stone-100: oklch(97% 0.001 106.424);
+  --color-stone-200: oklch(92.3% 0.003 48.717);
+  --color-stone-300: oklch(86.9% 0.005 56.366);
+  --color-stone-400: oklch(70.9% 0.01 56.259);
+  --color-stone-600: oklch(44.4% 0.011 73.639);
+  --color-stone-700: oklch(37.4% 0.01 67.558);
+  --color-stone-800: oklch(26.8% 0.007 34.298);
+  --color-stone-900: oklch(21.6% 0.006 56.043);
+  --color-stone-950: oklch(14.7% 0.004 49.25);
+  --color-white: #fff;
+  --spacing: 0.25rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 0.875rem;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --tracking-wider: 0.05em;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-relaxed: 1.625;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+}
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+.col-span-4 {
+  grid-column: span 4 / span 4;
+}
+.col-span-5 {
+  grid-column: span 5 / span 5;
+}
+.col-span-6 {
+  grid-column: span 6 / span 6;
+}
+.col-span-7 {
+  grid-column: span 7 / span 7;
+}
+.col-span-8 {
+  grid-column: span 8 / span 8;
+}
+.row-span-2 {
+  grid-row: span 2 / span 2;
+}
+.mt-0\.5 {
+  margin-top: calc(var(--spacing) * 0.5);
+}
+.mt-1 {
+  margin-top: calc(var(--spacing) * 1);
+}
+.mt-1\.5 {
+  margin-top: calc(var(--spacing) * 1.5);
+}
+.mt-auto {
+  margin-top: auto;
+}
+.flex {
+  display: flex;
+}
+.grid {
+  display: grid;
+}
+.h-2 {
+  height: calc(var(--spacing) * 2);
+}
+.h-4 {
+  height: calc(var(--spacing) * 4);
+}
+.h-7 {
+  height: calc(var(--spacing) * 7);
+}
+.h-8 {
+  height: calc(var(--spacing) * 8);
+}
+.h-28 {
+  height: calc(var(--spacing) * 28);
+}
+.h-full {
+  height: 100%;
+}
+.w-7 {
+  width: calc(var(--spacing) * 7);
+}
+.w-8 {
+  width: calc(var(--spacing) * 8);
+}
+.w-28 {
+  width: calc(var(--spacing) * 28);
+}
+.w-full {
+  width: 100%;
+}
+.flex-1 {
+  flex: 1;
+}
+.shrink-0 {
+  flex-shrink: 0;
+}
+.border-collapse {
+  border-collapse: collapse;
+}
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+.grid-rows-5 {
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.items-center {
+  align-items: center;
+}
+.items-start {
+  align-items: flex-start;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.justify-center {
+  justify-content: center;
+}
+.gap-1 {
+  gap: calc(var(--spacing) * 1);
+}
+.gap-1\.5 {
+  gap: calc(var(--spacing) * 1.5);
+}
+.gap-2 {
+  gap: calc(var(--spacing) * 2);
+}
+.gap-2\.5 {
+  gap: calc(var(--spacing) * 2.5);
+}
+.gap-3 {
+  gap: calc(var(--spacing) * 3);
+}
+.gap-3\.5 {
+  gap: calc(var(--spacing) * 3.5);
+}
+.gap-4 {
+  gap: calc(var(--spacing) * 4);
+}
+.gap-5 {
+  gap: calc(var(--spacing) * 5);
+}
+.gap-6 {
+  gap: calc(var(--spacing) * 6);
+}
+.divide-y {
+  :where(& > :not(:last-child)) {
+    --tw-divide-y-reverse: 0;
+    border-bottom-style: var(--tw-border-style);
+    border-top-style: var(--tw-border-style);
+    border-top-width: calc(1px * var(--tw-divide-y-reverse));
+    border-bottom-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  }
+}
+.divide-slate-200 {
+  :where(& > :not(:last-child)) {
+    border-color: var(--color-slate-200);
+  }
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.rounded {
+  border-radius: 0.25rem;
+}
+.rounded-full {
+  border-radius: calc(infinity * 1px);
+}
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+.rounded-md {
+  border-radius: var(--radius-md);
+}
+.rounded-sm {
+  border-radius: var(--radius-sm);
+}
+.rounded-xl {
+  border-radius: var(--radius-xl);
+}
+.rounded-t-2xl {
+  border-top-left-radius: var(--radius-2xl);
+  border-top-right-radius: var(--radius-2xl);
+}
+.rounded-b-2xl {
+  border-bottom-right-radius: var(--radius-2xl);
+  border-bottom-left-radius: var(--radius-2xl);
+}
+.border {
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+}
+.border-2 {
+  border-style: var(--tw-border-style);
+  border-width: 2px;
+}
+.border-t {
+  border-top-style: var(--tw-border-style);
+  border-top-width: 1px;
+}
+.border-r {
+  border-right-style: var(--tw-border-style);
+  border-right-width: 1px;
+}
+.border-b {
+  border-bottom-style: var(--tw-border-style);
+  border-bottom-width: 1px;
+}
+.border-dashed {
+  --tw-border-style: dashed;
+  border-style: dashed;
+}
+.border-amber-200 {
+  border-color: var(--color-amber-200);
+}
+.border-amber-300 {
+  border-color: var(--color-amber-300);
+}
+.border-amber-400 {
+  border-color: var(--color-amber-400);
+}
+.border-amber-500 {
+  border-color: var(--color-amber-500);
+}
+.border-emerald-200 {
+  border-color: var(--color-emerald-200);
+}
+.border-emerald-300 {
+  border-color: var(--color-emerald-300);
+}
+.border-emerald-400\/30 {
+  border-color: color-mix(in srgb, oklch(76.5% 0.177 163.223) 30%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    border-color: color-mix(in oklab, var(--color-emerald-400) 30%, transparent);
+  }
+}
+.border-emerald-600 {
+  border-color: var(--color-emerald-600);
+}
+.border-orange-200 {
+  border-color: var(--color-orange-200);
+}
+.border-orange-300 {
+  border-color: var(--color-orange-300);
+}
+.border-orange-400 {
+  border-color: var(--color-orange-400);
+}
+.border-orange-500 {
+  border-color: var(--color-orange-500);
+}
+.border-red-200 {
+  border-color: var(--color-red-200);
+}
+.border-red-300 {
+  border-color: var(--color-red-300);
+}
+.border-red-500 {
+  border-color: var(--color-red-500);
+}
+.border-slate-100 {
+  border-color: var(--color-slate-100);
+}
+.border-slate-200 {
+  border-color: var(--color-slate-200);
+}
+.border-slate-300 {
+  border-color: var(--color-slate-300);
+}
+.border-slate-700 {
+  border-color: var(--color-slate-700);
+}
+.border-slate-800 {
+  border-color: var(--color-slate-800);
+}
+.border-stone-200 {
+  border-color: var(--color-stone-200);
+}
+.border-stone-300 {
+  border-color: var(--color-stone-300);
+}
+.border-stone-400 {
+  border-color: var(--color-stone-400);
+}
+.border-stone-600 {
+  border-color: var(--color-stone-600);
+}
+.border-teal-200 {
+  border-color: var(--color-teal-200);
+}
+.border-teal-300 {
+  border-color: var(--color-teal-300);
+}
+.border-teal-400 {
+  border-color: var(--color-teal-400);
+}
+.border-teal-500 {
+  border-color: var(--color-teal-500);
+}
+.border-teal-600 {
+  border-color: var(--color-teal-600);
+}
+.bg-amber-50 {
+  background-color: var(--color-amber-50);
+}
+.bg-amber-100 {
+  background-color: var(--color-amber-100);
+}
+.bg-amber-200 {
+  background-color: var(--color-amber-200);
+}
+.bg-amber-400 {
+  background-color: var(--color-amber-400);
+}
+.bg-amber-600 {
+  background-color: var(--color-amber-600);
+}
+.bg-amber-800 {
+  background-color: var(--color-amber-800);
+}
+.bg-emerald-50 {
+  background-color: var(--color-emerald-50);
+}
+.bg-emerald-50\/30 {
+  background-color: color-mix(in srgb, oklch(97.9% 0.021 166.113) 30%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-emerald-50) 30%, transparent);
+  }
+}
+.bg-emerald-100 {
+  background-color: var(--color-emerald-100);
+}
+.bg-emerald-200 {
+  background-color: var(--color-emerald-200);
+}
+.bg-emerald-500\/20 {
+  background-color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 20%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
+  }
+}
+.bg-emerald-600 {
+  background-color: var(--color-emerald-600);
+}
+.bg-emerald-700 {
+  background-color: var(--color-emerald-700);
+}
+.bg-orange-50 {
+  background-color: var(--color-orange-50);
+}
+.bg-orange-50\/30 {
+  background-color: color-mix(in srgb, oklch(98% 0.016 73.684) 30%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-orange-50) 30%, transparent);
+  }
+}
+.bg-orange-50\/40 {
+  background-color: color-mix(in srgb, oklch(98% 0.016 73.684) 40%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-orange-50) 40%, transparent);
+  }
+}
+.bg-orange-50\/60 {
+  background-color: color-mix(in srgb, oklch(98% 0.016 73.684) 60%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-orange-50) 60%, transparent);
+  }
+}
+.bg-orange-100 {
+  background-color: var(--color-orange-100);
+}
+.bg-orange-200 {
+  background-color: var(--color-orange-200);
+}
+.bg-orange-600 {
+  background-color: var(--color-orange-600);
+}
+.bg-orange-800 {
+  background-color: var(--color-orange-800);
+}
+.bg-red-50 {
+  background-color: var(--color-red-50);
+}
+.bg-red-50\/20 {
+  background-color: color-mix(in srgb, oklch(97.1% 0.013 17.38) 20%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-red-50) 20%, transparent);
+  }
+}
+.bg-red-50\/40 {
+  background-color: color-mix(in srgb, oklch(97.1% 0.013 17.38) 40%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-red-50) 40%, transparent);
+  }
+}
+.bg-red-50\/50 {
+  background-color: color-mix(in srgb, oklch(97.1% 0.013 17.38) 50%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-red-50) 50%, transparent);
+  }
+}
+.bg-red-100 {
+  background-color: var(--color-red-100);
+}
+.bg-red-600 {
+  background-color: var(--color-red-600);
+}
+.bg-slate-50 {
+  background-color: var(--color-slate-50);
+}
+.bg-slate-100 {
+  background-color: var(--color-slate-100);
+}
+.bg-slate-200 {
+  background-color: var(--color-slate-200);
+}
+.bg-slate-300 {
+  background-color: var(--color-slate-300);
+}
+.bg-slate-700 {
+  background-color: var(--color-slate-700);
+}
+.bg-slate-800 {
+  background-color: var(--color-slate-800);
+}
+.bg-slate-900 {
+  background-color: var(--color-slate-900);
+}
+.bg-stone-50 {
+  background-color: var(--color-stone-50);
+}
+.bg-stone-50\/30 {
+  background-color: color-mix(in srgb, oklch(98.5% 0.001 106.423) 30%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-stone-50) 30%, transparent);
+  }
+}
+.bg-stone-50\/40 {
+  background-color: color-mix(in srgb, oklch(98.5% 0.001 106.423) 40%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-stone-50) 40%, transparent);
+  }
+}
+.bg-stone-50\/50 {
+  background-color: color-mix(in srgb, oklch(98.5% 0.001 106.423) 50%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-stone-50) 50%, transparent);
+  }
+}
+.bg-stone-50\/60 {
+  background-color: color-mix(in srgb, oklch(98.5% 0.001 106.423) 60%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-stone-50) 60%, transparent);
+  }
+}
+.bg-stone-100 {
+  background-color: var(--color-stone-100);
+}
+.bg-stone-700 {
+  background-color: var(--color-stone-700);
+}
+.bg-stone-900 {
+  background-color: var(--color-stone-900);
+}
+.bg-teal-50 {
+  background-color: var(--color-teal-50);
+}
+.bg-teal-50\/20 {
+  background-color: color-mix(in srgb, oklch(98.4% 0.014 180.72) 20%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-teal-50) 20%, transparent);
+  }
+}
+.bg-teal-50\/30 {
+  background-color: color-mix(in srgb, oklch(98.4% 0.014 180.72) 30%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-teal-50) 30%, transparent);
+  }
+}
+.bg-teal-100 {
+  background-color: var(--color-teal-100);
+}
+.bg-teal-200 {
+  background-color: var(--color-teal-200);
+}
+.bg-teal-600 {
+  background-color: var(--color-teal-600);
+}
+.bg-teal-700 {
+  background-color: var(--color-teal-700);
+}
+.bg-teal-800 {
+  background-color: var(--color-teal-800);
+}
+.bg-white {
+  background-color: var(--color-white);
+}
+.p-1 {
+  padding: calc(var(--spacing) * 1);
+}
+.p-1\.5 {
+  padding: calc(var(--spacing) * 1.5);
+}
+.p-2 {
+  padding: calc(var(--spacing) * 2);
+}
+.p-2\.5 {
+  padding: calc(var(--spacing) * 2.5);
+}
+.p-3 {
+  padding: calc(var(--spacing) * 3);
+}
+.p-3\.5 {
+  padding: calc(var(--spacing) * 3.5);
+}
+.p-4 {
+  padding: calc(var(--spacing) * 4);
+}
+.p-5 {
+  padding: calc(var(--spacing) * 5);
+}
+.p-6 {
+  padding: calc(var(--spacing) * 6);
+}
+.px-1\.5 {
+  padding-inline: calc(var(--spacing) * 1.5);
+}
+.px-2 {
+  padding-inline: calc(var(--spacing) * 2);
+}
+.px-2\.5 {
+  padding-inline: calc(var(--spacing) * 2.5);
+}
+.px-3 {
+  padding-inline: calc(var(--spacing) * 3);
+}
+.px-4 {
+  padding-inline: calc(var(--spacing) * 4);
+}
+.px-5 {
+  padding-inline: calc(var(--spacing) * 5);
+}
+.px-6 {
+  padding-inline: calc(var(--spacing) * 6);
+}
+.py-0\.5 {
+  padding-block: calc(var(--spacing) * 0.5);
+}
+.py-1 {
+  padding-block: calc(var(--spacing) * 1);
+}
+.py-1\.5 {
+  padding-block: calc(var(--spacing) * 1.5);
+}
+.py-2 {
+  padding-block: calc(var(--spacing) * 2);
+}
+.py-2\.5 {
+  padding-block: calc(var(--spacing) * 2.5);
+}
+.py-3\.5 {
+  padding-block: calc(var(--spacing) * 3.5);
+}
+.pt-1 {
+  padding-top: calc(var(--spacing) * 1);
+}
+.pt-2 {
+  padding-top: calc(var(--spacing) * 2);
+}
+.pt-3 {
+  padding-top: calc(var(--spacing) * 3);
+}
+.pr-2 {
+  padding-right: calc(var(--spacing) * 2);
+}
+.pb-1 {
+  padding-bottom: calc(var(--spacing) * 1);
+}
+.pb-2 {
+  padding-bottom: calc(var(--spacing) * 2);
+}
+.pb-2\.5 {
+  padding-bottom: calc(var(--spacing) * 2.5);
+}
+.pb-3 {
+  padding-bottom: calc(var(--spacing) * 3);
+}
+.pb-4 {
+  padding-bottom: calc(var(--spacing) * 4);
+}
+.pl-1 {
+  padding-left: calc(var(--spacing) * 1);
+}
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+.text-sm {
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+}
+.text-xl {
+  font-size: var(--text-xl);
+  line-height: var(--tw-leading, var(--text-xl--line-height));
+}
+.text-xs {
+  font-size: var(--text-xs);
+  line-height: var(--tw-leading, var(--text-xs--line-height));
+}
+.text-\[10px\] {
+  font-size: 10px;
+}
+.text-\[11px\] {
+  font-size: 11px;
+}
+.leading-relaxed {
+  --tw-leading: var(--leading-relaxed);
+  line-height: var(--leading-relaxed);
+}
+.leading-snug {
+  --tw-leading: var(--leading-snug);
+  line-height: var(--leading-snug);
+}
+.leading-tight {
+  --tw-leading: var(--leading-tight);
+  line-height: var(--leading-tight);
+}
+.font-bold {
+  --tw-font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
+}
+.font-medium {
+  --tw-font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-medium);
+}
+.font-normal {
+  --tw-font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-normal);
+}
+.font-semibold {
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
+}
+.tracking-wider {
+  --tw-tracking: var(--tracking-wider);
+  letter-spacing: var(--tracking-wider);
+}
+.text-amber-100 {
+  color: var(--color-amber-100);
+}
+.text-amber-300 {
+  color: var(--color-amber-300);
+}
+.text-amber-700 {
+  color: var(--color-amber-700);
+}
+.text-amber-800 {
+  color: var(--color-amber-800);
+}
+.text-amber-900 {
+  color: var(--color-amber-900);
+}
+.text-emerald-200 {
+  color: var(--color-emerald-200);
+}
+.text-emerald-300 {
+  color: var(--color-emerald-300);
+}
+.text-emerald-400 {
+  color: var(--color-emerald-400);
+}
+.text-emerald-600 {
+  color: var(--color-emerald-600);
+}
+.text-emerald-700 {
+  color: var(--color-emerald-700);
+}
+.text-emerald-800 {
+  color: var(--color-emerald-800);
+}
+.text-emerald-900 {
+  color: var(--color-emerald-900);
+}
+.text-emerald-950 {
+  color: var(--color-emerald-950);
+}
+.text-orange-100 {
+  color: var(--color-orange-100);
+}
+.text-orange-700 {
+  color: var(--color-orange-700);
+}
+.text-orange-800 {
+  color: var(--color-orange-800);
+}
+.text-orange-900 {
+  color: var(--color-orange-900);
+}
+.text-orange-950 {
+  color: var(--color-orange-950);
+}
+.text-red-400 {
+  color: var(--color-red-400);
+}
+.text-red-700 {
+  color: var(--color-red-700);
+}
+.text-red-800 {
+  color: var(--color-red-800);
+}
+.text-red-900 {
+  color: var(--color-red-900);
+}
+.text-slate-200 {
+  color: var(--color-slate-200);
+}
+.text-slate-300 {
+  color: var(--color-slate-300);
+}
+.text-slate-400 {
+  color: var(--color-slate-400);
+}
+.text-slate-500 {
+  color: var(--color-slate-500);
+}
+.text-slate-600 {
+  color: var(--color-slate-600);
+}
+.text-slate-700 {
+  color: var(--color-slate-700);
+}
+.text-slate-800 {
+  color: var(--color-slate-800);
+}
+.text-slate-900 {
+  color: var(--color-slate-900);
+}
+.text-stone-200 {
+  color: var(--color-stone-200);
+}
+.text-stone-700 {
+  color: var(--color-stone-700);
+}
+.text-stone-800 {
+  color: var(--color-stone-800);
+}
+.text-stone-900 {
+  color: var(--color-stone-900);
+}
+.text-stone-950 {
+  color: var(--color-stone-950);
+}
+.text-teal-200 {
+  color: var(--color-teal-200);
+}
+.text-teal-600 {
+  color: var(--color-teal-600);
+}
+.text-teal-700 {
+  color: var(--color-teal-700);
+}
+.text-teal-800 {
+  color: var(--color-teal-800);
+}
+.text-teal-900 {
+  color: var(--color-teal-900);
+}
+.text-teal-950 {
+  color: var(--color-teal-950);
+}
+.text-white {
+  color: var(--color-white);
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.opacity-80 {
+  opacity: 80%;
+}
+.shadow {
+  --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.shadow-sm {
+  --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+}
+.hover\:border-teal-500 {
+  &:hover {
+    @media (hover: hover) {
+      border-color: var(--color-teal-500);
+    }
+  }
+}
+.hover\:bg-teal-700 {
+  &:hover {
+    @media (hover: hover) {
+      background-color: var(--color-teal-700);
+    }
+  }
+}
+@property --tw-divide-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-divide-y-reverse: 0;
+      --tw-border-style: solid;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+    }
+  }
+}
+
+
+:root{--ink:#1b2929;--ink-muted:#526563;--muted:#6d7d79;--line:#dce3df;--line-strong:#c8d3ce;--canvas:#f3f5f1;--paper:#ffffff;--sea:#17695f;--sea-dark:#104b44;--sea-soft:#e5f2ed;--amber:#a26025;--amber-soft:#fff4e7;--danger:#b33d37;--danger-soft:#fff0ec;--sidebar:#17352f;--sidebar-line:#38564f;--shadow:0 14px 35px rgba(25,46,40,.055);color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}body{margin:0;min-width:320px;background:var(--canvas);color:var(--ink);font-family:"Segoe UI", "Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.48}
+button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.6}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #87b6a3!important;outline-offset:3px}
+button:hover{transition:background .13s ease,border-color .13s ease,color .13s ease}
+button svg,.nav-heading svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.visually-hidden{position:absolute;clip:rect(0 0 0 0);height:1px;width:1px;overflow:hidden;white-space:nowrap}
+.app-shell{display:flex;min-height:100vh;align-items:stretch}
+.app-sidebar{position:sticky;top:0;height:100vh;flex:0 0 246px;width:246px;overflow:auto;background:var(--sidebar);color:#f1f6f3;padding:25px 14px 18px;scrollbar-color:#50766c transparent}
+.brand{display:flex;align-items:center;gap:13px;padding:4px 10px 24px;border-bottom:1px solid var(--sidebar-line);margin-bottom:24px}
+.brand-mark{display:grid;place-items:center;width:42px;height:42px;flex:none;color:#c8f0dd;background:#234b41;border:1px solid #527a6d;border-radius:11px}
+.brand-name{font-size:15px;font-weight:750;letter-spacing:-.025em;line-height:1.1}.brand-detail{font-size:11px;color:#acc9bd;letter-spacing:.02em;margin-top:5px}
+.nav-section{margin-bottom:24px}.nav-heading{display:flex;align-items:center;gap:9px;padding:6px 12px 10px;color:#afd2c4;font-size:12px;font-weight:700;letter-spacing:.02em}
+.nav-heading svg{opacity:.8}.nav-frame{border:0;color:#d5e5de;display:flex;align-items:center;gap:12px;text-align:left;min-height:38px;background:transparent;border-radius:7px;padding:7px 10px;width:100%;font-size:12.5px;line-height:1.35}
+.nav-num{font:600 11px Consolas,monospace;color:#8caf9f;width:18px;flex:none}.nav-frame:hover{color:#fff;background:#295248}.nav-frame[aria-current="true"]{background:#e2f1e9;color:#143e35;font-weight:650}.nav-frame[aria-current="true"] .nav-num{color:#2f796a}
+.sidebar-foot{padding:18px 11px 0;border-top:1px solid var(--sidebar-line);font-size:11.5px;color:#b6d0c4;line-height:1.55}.sidebar-foot strong{color:#e4f3eb;font-weight:600}
+.main{min-width:0;flex:1}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;gap:22px;backdrop-filter:blur(6px)}
+.top-ident .crumb{display:flex;align-items:center;gap:8px;color:#74847d;font-size:11px;font-weight:600;letter-spacing:.045em;margin-bottom:4px}.top-ident .crumb i{width:3px;height:3px;background:#8d9c95;border-radius:50%}
+.top-ident h1{font-size:20px;letter-spacing:-.04em;line-height:1.25;font-weight:720;margin:0}.top-ident p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.mode-toggle{display:flex;align-items:center;gap:2px;padding:3px;background:#eef2ee;border:1px solid #e0e8e1;border-radius:8px}
+.mode-btn{border:0;background:transparent;font-size:12px;color:#4d6058;padding:9px 13px;border-radius:5px;font-weight:600}.mode-btn[aria-pressed="true"]{background:#fff;color:#114c40;box-shadow:0 1px 5px #19382d1c}
+.filter-select{border:1px solid var(--line-strong);color:var(--ink);background:#fff;border-radius:8px;padding:9px 26px 9px 12px;font-size:12px;font-weight:600;min-height:38px}
+.mock-pill{display:flex;align-items:center;gap:7px;background:#faf8f0;color:#735d39;font-size:11px;padding:7px 10px;border:1px solid #e9dfc7;border-radius:5px;white-space:nowrap;font-weight:650}.mock-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:#bf8c45}
+.workspace{padding:38px clamp(22px,3vw,46px) 60px;max-width:1660px;margin:auto}
+.intro{max-width:1180px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:0 0 26px;border-bottom:1px solid var(--line-strong);margin-bottom:42px}
+.intro-label{font-size:11px;font-weight:800;letter-spacing:.11em;color:var(--sea);margin-bottom:8px;text-transform:uppercase}.intro h2{font-size:29px;line-height:1.18;margin:0 0 9px;font-weight:720;letter-spacing:-.045em}.intro p{font-size:13px;color:var(--ink-muted);max-width:640px;margin:0;line-height:1.65}.intro-stats{display:flex;gap:26px;flex:none;border-left:1px solid var(--line-strong);padding-left:28px}.intro-stats div{display:grid;gap:2px}.intro-stats strong{font-size:25px;line-height:1.1;font-weight:720;letter-spacing:-.04em}.intro-stats span{font-size:11px;color:var(--muted)}
+.workspace-section{margin-bottom:51px;scroll-margin-top:110px}.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px}.section-kicker{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#27695e;font-weight:750;margin:0 0 6px}.section-count{letter-spacing:0;text-transform:none;margin-left:8px;color:#8b9891;font-weight:500}
+.section-head h2{font-size:21px;line-height:1.25;letter-spacing:-.033em;font-weight:720;margin:0 0 5px}.section-head p:last-child{color:var(--ink-muted);font-size:12.5px;margin:0}
+.case-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}.case-grid--mobile{grid-template-columns:repeat(2,minmax(0,1fr))}.case-grid--mixed{grid-template-columns:repeat(2,minmax(0,1fr))}.case-grid--mixed .case--desktop{grid-column:1/-1}
+.case{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);scroll-margin-top:100px}
+.case-head{min-height:77px;padding:17px 22px;border-bottom:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.case-identity{display:flex;align-items:center;gap:12px;min-width:0}.case-index{width:36px;height:36px;border:1px solid var(--line);background:#f5f8f5;display:grid;place-items:center;border-radius:7px;color:#437368;flex:none;font:600 12px Consolas,monospace}
+.case-head h3{font-size:15px;line-height:1.22;font-weight:700;letter-spacing:-.02em;margin:0}.case-head p{color:#778981;font-size:11.5px;margin:4px 0 0}
+.case-actions{display:flex;align-items:center;gap:14px;flex:none}.case-kind{font-size:11px;color:#87958d;white-space:nowrap}.open-case{font-size:11.5px;color:var(--sea-dark);background:transparent;border:0;display:flex;align-items:center;gap:4px;font-weight:650;padding:8px 2px}.open-case:hover{color:#118271}
+.board-viewport{padding:24px;background:#f8faf8;overflow-x:auto;scrollbar-color:#bccdc4 transparent}
+.case--mobile .board-viewport{display:flex;justify-content:center;padding:25px 13px;background:#f4f7f4}.case--desktop .board-viewport{padding:19px}.case--desktop .figma-artboard{width:100%!important;min-width:0!important;max-width:100%!important}.case--mobile .figma-artboard{width:390px!important;min-width:390px!important;max-width:390px!important}
+/* Reworked frame components. These states have intentional weight, not decorated tiles. */
+.figma-artboard{display:flex;flex-direction:column;background:white;border:1px solid #dce5df;border-radius:9px!important;box-shadow:0 3px 11px #12352b09;color:#24362f;overflow:hidden;font-size:13px;line-height:1.5}
+.figma-artboard [class*="rounded"]{border-radius:6px}
+.figma-artboard h3{color:#18352d;font-weight:750!important;line-height:1.35;letter-spacing:-.025em}
+.figma-artboard :is(.bg-teal-700,.bg-teal-800,.bg-slate-900,.bg-slate-800) h3{color:#f5faf7!important}.figma-artboard :is(.bg-teal-700,.bg-teal-800,.bg-slate-900,.bg-slate-800) p{color:#d6e6de!important}
+.figma-artboard h4{font-size:13px!important;letter-spacing:-.02em;color:#243830}
+.figma-artboard [class*="text-\[10px\]"]{font-size:11.5px!important;line-height:1.44!important}
+.figma-artboard [class*="text-\[11px\]"]{font-size:12px!important;line-height:1.5!important}
+.figma-artboard .text-xs{font-size:12.5px!important;line-height:1.5!important}
+.figma-artboard .text-sm{font-size:13.5px!important}.figma-artboard .text-xl{font-size:20px!important}
+.figma-artboard .uppercase{text-transform:none!important;letter-spacing:.025em!important}
+.figma-artboard .rounded-full{border-radius:4px!important}
+.figma-artboard .shadow,.figma-artboard .shadow-lg{box-shadow:none!important}
+.figma-artboard .bg-slate-50{background-color:#f7f9f7}.figma-artboard .bg-slate-100{background-color:#f0f4f1}.figma-artboard .bg-slate-200{background-color:#e9eeea}
+.figma-artboard .bg-teal-50{background-color:#eaf5f0}.figma-artboard .bg-teal-100{background-color:#e1f2e9}
+.figma-artboard .bg-teal-600,.figma-artboard .bg-teal-700,.figma-artboard .bg-teal-800{background:#17695f!important}
+.figma-artboard .text-teal-900,.figma-artboard .text-teal-800,.figma-artboard .text-teal-700{color:#126357!important}
+.figma-artboard .text-teal-200,.figma-artboard .text-teal-300{color:#cde9df!important}
+.figma-artboard .border-teal-200,.figma-artboard .border-teal-300{border-color:#bdded1!important}
+.figma-artboard .bg-stone-50,.figma-artboard .bg-stone-50\/30{background:#f5f5f0!important}.figma-artboard .bg-stone-700,.figma-artboard .bg-stone-800{background:#3c5345!important}
+.figma-artboard .text-stone-900,.figma-artboard .text-stone-800{color:#45584a!important}
+.figma-artboard .border-slate-200,.figma-artboard .border-slate-300{border-color:#e1e9e3!important}
+.figma-artboard .bg-red-50{background:#fff3ef}.figma-artboard .bg-amber-50,.figma-artboard .bg-orange-50{background:#fff8ed}
+.figma-artboard [class*="bg-emerald-100"]{background:#e7f5ee}
+.figma-artboard p{margin-block-start:0;margin-block-end:0}
+.figma-artboard button{border-radius:6px!important;min-height:35px;line-height:1.35;white-space:normal;text-align:center;font-weight:650!important}
+.figma-artboard button:hover{filter:brightness(.95)}
+.figma-artboard table{border-collapse:collapse;width:100%;font-size:12.25px;line-height:1.45}.figma-artboard th{background:#edf3ef!important;color:#40574e!important;text-align:left;font-weight:650!important;font-size:11.5px!important;letter-spacing:0!important;text-transform:none!important}.figma-artboard td,.figma-artboard th{padding:10px 12px!important;border-color:#e4ebe5!important;vertical-align:middle}.figma-artboard tbody tr:nth-child(even){background:#f9fbf9}
+.figma-artboard .font-mono-code{font-family:Consolas,ui-monospace,monospace;font-size:.93em;font-variant-numeric:tabular-nums}
+.figma-artboard .bg-slate-900{background:#233e35!important}.figma-artboard .bg-slate-800{background:#2b453d!important}
+.figma-artboard .bg-emerald-600{background:#25755e!important}.figma-artboard .bg-orange-600,.figma-artboard .bg-amber-600{background:#9b642c!important}
+.figma-artboard :where(.bg-slate-50,.bg-slate-100,.bg-teal-50,.bg-amber-50,.bg-orange-50,.bg-red-50)[class*="border"]{border-width:1px!important}
+.figma-artboard [class*="bg-emerald-100"],.figma-artboard [class*="bg-amber-100"],.figma-artboard [class*="bg-red-100"]{font-weight:600}
+.figma-artboard [class*="tracking-wider"]{letter-spacing:.02em!important}
+.figma-artboard [class*="w-\[390px\]"]{width:390px}
+.figma-artboard .native-select{width:100%;border:0;background:transparent;color:#2a453c;padding:0;outline-offset:2px;font-size:12.5px;font-weight:600}
+.figma-artboard .striped-unknown{background:repeating-linear-gradient(135deg,#c2cbc6,#c2cbc6 5px,#e8eeea 5px,#e8eeea 10px)}
+/* State communication is still carried by text; colour is never the only cue. */
+.figma-artboard :where(.bg-red-50,.bg-orange-50,.bg-amber-50)[class*="border"]{border-left:3px solid #c28a42!important}
+.figma-artboard .bg-red-50[class*="border"]{border-left-color:#bb4b42!important}
+.figma-artboard .bg-teal-50[class*="border"]{border-left:3px solid #5b9984!important}
+/* Student shell: lighter utility app chrome, separate from desktop operator tables. */
+.case--mobile .figma-artboard{box-shadow:0 6px 22px rgba(21,49,39,.07);border-radius:12px!important}
+.case--mobile .figma-artboard>[class*="bg-teal-700"]{border-radius:0;background:#1a5a4f!important}
+.case--mobile .figma-artboard>div:first-child[class*="bg-teal"]{padding-top:20px;padding-bottom:20px}
+.case--mobile .figma-artboard>div:last-child{padding-bottom:22px}
+.frame-inset-note{display:none}
+.note-banner{display:flex;gap:10px;align-items:flex-start;border:1px solid #dbe5dc;background:#f8fbf8;color:#54675a;padding:11px 14px;border-radius:7px;font-size:12px;line-height:1.48;margin:0 0 18px}
+.note-banner svg{width:17px;height:17px;fill:none;stroke:#477764;stroke-width:1.6;flex:none;margin-top:1px}
+/* Focus is a real UI mode, not only a highlighted button. */
+body[data-mode="focus"] .app-sidebar{display:none}body[data-mode="focus"] .workspace{max-width:1480px}
+body[data-mode="focus"] .intro{display:none}body[data-mode="focus"] .section-head{display:none}
+body[data-mode="focus"] .workspace-section{margin-bottom:0}body[data-mode="focus"] .case-grid{display:block}
+body[data-mode="focus"] .case{display:none;border:0;box-shadow:none;background:transparent}
+body[data-mode="focus"] .case.is-selected{display:block}
+body[data-mode="focus"] .case-head{background:transparent;padding:5px 0 23px}
+body[data-mode="focus"] .case-head h3{font-size:23px}
+body[data-mode="focus"] .case-head p{font-size:13px}
+body[data-mode="focus"] .case-index{background:#e1eee6;border-color:#c7ddd0}
+body[data-mode="focus"] .case .board-viewport{background:transparent;padding:0;justify-content:center}
+body[data-mode="focus"] .case--desktop .figma-artboard{width:100%!important;max-width:1280px!important}
+body[data-mode="focus"] .case--mobile .figma-artboard{width:390px!important}
+body[data-mode="focus"] .open-case{display:none}
+body[data-mode="focus"] .workspace-section{display:none}body[data-mode="focus"] .workspace-section.has-selected{display:block}
+body[data-mode="focus"] .mock-pill{display:none}
+body[data-mode="focus"] .filter-select{min-width:220px}
+/* Interactive sample controls: click never claims to have changed backend data */
+.demo-status{position:fixed;z-index:100;right:24px;bottom:24px;width:min(400px,calc(100vw - 32px));background:#193b32;border:1px solid #416b59;color:#f8fffa;box-shadow:0 20px 50px #10282030;border-radius:9px;padding:16px 43px 16px 18px;display:none}
+.demo-status.is-visible{display:block}.demo-status strong{display:block;font-size:13.5px;margin-bottom:6px}.demo-status p{color:#cfe0d6;font-size:12px;line-height:1.55;margin:0}.toast-close{position:absolute;right:10px;top:8px;border:0;color:#fff;background:transparent;font-size:20px;line-height:1;padding:6px}
+.footer-note{margin-top:52px;border-top:1px solid var(--line-strong);padding-top:16px;display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:11.5px}
+@media(max-width:1280px){.intro-stats{display:none}}
+@media(max-width:1070px){.case-grid--mobile,.case-grid--mixed{grid-template-columns:1fr}.case--mobile .board-viewport{justify-content:center}.case-grid--mixed .case--desktop{grid-column:auto}}
+@media(max-width:1100px){.app-sidebar{width:216px;flex-basis:216px}.topbar{padding:16px 23px}.workspace{padding:27px 24px 50px}.case-actions .case-kind{display:none}}
+@media(max-width:760px){.app-shell{display:block}.app-sidebar{position:relative;width:100%;height:auto;display:block;padding:13px 14px 0}.brand{margin:0;padding:4px 0 12px;border-bottom:0}.brand-mark{width:35px;height:35px}.app-sidebar .nav-section,.app-sidebar .sidebar-foot{display:none}.topbar{top:0;padding:13px 16px;align-items:flex-start;flex-wrap:wrap}.top-ident h1{font-size:17px}.top-ident p{display:none}.toolbar{gap:6px}.workspace{padding:25px 13px 40px}.intro h2{font-size:23px}.intro{margin-bottom:28px}.section-head h2{font-size:19px}.case-head{padding:14px 13px;align-items:flex-start}.case-head h3{font-size:13.5px}.case-head p{font-size:11px}.case-kind{display:none}.open-case{font-size:10.5px}.board-viewport{padding:8px!important}.case--mobile .figma-artboard{width:390px!important;min-width:390px!important}.case--mobile .board-viewport{justify-content:flex-start}.case--desktop .figma-artboard{min-width:800px!important;width:800px!important}.section-count{margin-left:4px}.filter-select{max-width:166px}.footer-note{display:block}.footer-note span{display:block;margin-top:5px}body[data-mode="focus"] .case--desktop .figma-artboard{width:880px!important;min-width:880px!important}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media print{.app-sidebar,.topbar,.intro,.case-head,.footer-note,.demo-status,.section-head{display:none!important}.workspace{padding:0}.case,.figma-artboard{box-shadow:none!important;border:0!important}.board-viewport{padding:0!important}.case{break-after:page}}
+
+</style></head>
+<body data-mode="gallery"><div class="app-shell">
+<aside aria-label="Điều hướng màn hình" class="app-sidebar"><div class="brand"><div class="brand-mark"><svg aria-hidden="true" fill="none" height="28" viewbox="0 0 28 28" width="28"><path d="M5 20.5V7.5L14 3l9 4.5v13L14 25z" stroke="currentColor" stroke-width="1.7"></path><path d="M9 18.5V10l5-2.5 5 2.5v8.5l-5 2.5z" stroke="currentColor" stroke-width="1.7"></path><path d="M14 7.5V21" stroke="currentColor" stroke-width="1.7"></path></svg></div><div><div class="brand-name">E-Mobility</div><div class="brand-detail">ĐHQG-HCM · Trung tâm dịch vụ</div></div></div>
+<nav aria-label="Các màn hình nghiệp vụ"><div class="nav-section"><div class="nav-heading"><svg aria-hidden="true" viewbox="0 0 20 20"><path d="m10 2 8 4.3-8 4.4L2 6.3 10 2ZM2 10l8 4.3 8-4.3M2 13.6l8 4.4 8-4.4"></path></svg><span>Thiết kế</span></div><button aria-label="Mở Thư viện trạng thái" class="nav-frame" data-select-frame="0" type="button"><span class="nav-num">00</span><span>Thư viện trạng thái</span></button></div><div class="nav-section"><div class="nav-heading"><svg aria-hidden="true" viewbox="0 0 20 20"><circle cx="10" cy="6" r="3.3"></circle><path d="M3.5 17v-1.3a6.5 6.5 0 0 1 13 0V17"></path></svg><span>Sinh viên</span></div><button aria-label="Mở Tìm và đặt dịch vụ" class="nav-frame" data-select-frame="1" type="button"><span class="nav-num">01</span><span>Tìm và đặt dịch vụ</span></button><button aria-label="Mở Hoạt động của tôi" class="nav-frame" data-select-frame="2" type="button"><span class="nav-num">02</span><span>Hoạt động của tôi</span></button><button aria-label="Mở Bàn giao phương tiện" class="nav-frame" data-select-frame="3" type="button"><span class="nav-num">03</span><span>Bàn giao phương tiện</span></button><button aria-label="Mở Phiên sạc" class="nav-frame" data-select-frame="4" type="button"><span class="nav-num">04</span><span>Phiên sạc</span></button><button aria-label="Mở Gửi yêu cầu hỗ trợ" class="nav-frame" data-select-frame="5" type="button"><span class="nav-num">05</span><span>Gửi yêu cầu hỗ trợ</span></button></div><div class="nav-section"><div class="nav-heading"><svg aria-hidden="true" viewbox="0 0 20 20"><rect height="6.3" rx="1" width="6.3" x="2.5" y="2.5"></rect><rect height="6.3" rx="1" width="6.3" x="11.2" y="2.5"></rect><rect height="6.3" rx="1" width="6.3" x="2.5" y="11.2"></rect><rect height="6.3" rx="1" width="6.3" x="11.2" y="11.2"></rect></svg><span>Điều hành</span></div><button aria-label="Mở Tổng quan mạng lưới" class="nav-frame" data-select-frame="6" type="button"><span class="nav-num">06</span><span>Tổng quan mạng lưới</span></button><button aria-label="Mở Điều phối chỗ đỗ" class="nav-frame" data-select-frame="7" type="button"><span class="nav-num">07</span><span>Điều phối chỗ đỗ</span></button><button aria-label="Mở Quản lý lịch sạc" class="nav-frame" data-select-frame="8" type="button"><span class="nav-num">08</span><span>Quản lý lịch sạc</span></button><button aria-label="Mở Điều chuyển &amp; sự cố" class="nav-frame" data-select-frame="9" type="button"><span class="nav-num">09</span><span>Điều chuyển &amp; sự cố</span></button><button aria-label="Mở Phân tích kịch bản" class="nav-frame" data-select-frame="10" type="button"><span class="nav-num">10</span><span>Phân tích kịch bản</span></button></div><div class="nav-section"><div class="nav-heading"><svg aria-hidden="true" viewbox="0 0 20 20"><path d="M17 5.8a5 5 0 0 1-6 6L5.5 17.3a2 2 0 0 1-2.8-2.8L8.2 9A5 5 0 0 1 14.5 3L12 5.5l2.5 2.5L17 5.8Z"></path></svg><span>Hiện trường</span></div><button aria-label="Mở Lệnh điều chuyển" class="nav-frame" data-select-frame="11" type="button"><span class="nav-num">11</span><span>Lệnh điều chuyển</span></button><button aria-label="Mở Khắc phục sự cố" class="nav-frame" data-select-frame="12" type="button"><span class="nav-num">12</span><span>Khắc phục sự cố</span></button><button aria-label="Mở Bộ giả lập IoT" class="nav-frame" data-select-frame="13" type="button"><span class="nav-num">13</span><span>Bộ giả lập IoT</span></button></div></nav><div class="sidebar-foot"><strong>Bản xem trước giao diện</strong><div>Bộ dữ liệu kiểm thử, không phản ánh điều hành hoặc trạng thái IoT thực tế.</div></div></aside>
+<main class="main" id="main-content"><header class="topbar"><div class="top-ident"><div class="crumb">THIẾT KẾ SẢN PHẨM <i></i> PHIÊN BẢN THỬ NGHIỆM <i></i> 2026</div><h1>Smart E-Mobility Hub</h1><p>Dịch vụ phương tiện điện dành cho sinh viên và nhân viên tại ĐHQG-HCM</p></div>
+<div class="toolbar"><span class="mock-pill">Dữ liệu minh hoạ</span><div aria-label="Chế độ xem" class="mode-toggle" role="group"><button aria-pressed="true" class="mode-btn" data-mode="gallery" type="button">Bộ màn hình</button><button aria-pressed="false" class="mode-btn" data-mode="focus" type="button">Xem riêng</button></div><select aria-label="Lọc theo phân hệ" class="filter-select" id="role-filter"><option>Tất cả phân hệ</option></select></div></header>
+<div class="workspace"><div class="intro"><div><p class="intro-label">Tổng quan sản phẩm</p><h2>Hệ thống dịch vụ phương tiện điện</h2><p>Một trải nghiệm liền mạch từ tìm phương tiện, đặt chỗ, sạc pin đến xử lý sự cố và điều hành mạng lưới.</p></div><div class="intro-stats"><div><strong>14</strong><span>Khung giao diện</span></div><div><strong>04</strong><span>Nhóm chức năng</span></div></div></div>
+<div class="note-banner"><svg aria-hidden="true" viewbox="0 0 20 20"><circle cx="10" cy="10" r="7.4"></circle><path d="M10 9v5m0-8v.5"></path></svg><span>Đây là bản thiết kế tương tác, không phải ứng dụng vận hành thực tế. Các số liệu, hồ sơ, mã QR và trạng thái IoT là dữ liệu kiểm thử. Nút thao tác chỉ minh họa luồng nghiệp vụ khi chưa tích hợp backend.</span></div>
+<section class="workspace-section" data-role-group="DS" id="group-DS">
+<header class="section-head"><div><p class="section-kicker">Thành phần giao diện <span class="section-count">1 màn hình</span></p><h2>Trạng thái &amp; cách hiển thị</h2><p>Các thành phần hiển thị dùng chung trong hệ thống.</p></div></header>
+<div class="case-grid"><article class="case case--desktop" data-case="0" data-role="DS" id="case-0">
+<header class="case-head"><div class="case-identity"><span class="case-index">00</span><div><h3>Trạng thái trong hệ thống</h3><p>Các trạng thái và ký hiệu thống nhất</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Thư viện trạng thái" class="open-case" data-select-frame="0" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[1440px] p-8 flex flex-col gap-6" data-frame="ARTBOARD-00-DESIGN-SYSTEM" data-frame-type="desktop" id="ARTBOARD-00-DESIGN-SYSTEM">
+<div class="flex items-center justify-between border-b border-slate-200 pb-4">
+<div>
+<h3 class="text-xl font-bold text-slate-900">Hướng dẫn trạng thái</h3>
+<p class="text-xs text-slate-500 mt-1">Trạng thái vị trí, tình trạng xe, mức độ sử dụng và quyền đặt chỗ được hiển thị riêng để tránh nhầm lẫn.</p>
+</div>
+<span class="font-mono-code text-xs bg-slate-100 px-3 py-1.5 rounded-md border border-slate-200">Kiểu chữ và khoảng cách được thống nhất trên các màn hình.</span>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2.5">
+<span class="text-xs font-bold text-slate-700 uppercase">1. Lượt giữ xe và chuyến đi</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">Đang giữ xe · còn 10 phút</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300">Đang xác nhận bàn giao</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 border border-teal-300"> Đã nhận xe / Đang di chuyển</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-300"> Đang yêu cầu hỗ trợ</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">Đã hoàn tất / Đã hủy / Hết hạn</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2.5">
+<span class="text-xs font-bold text-slate-700 uppercase">2. Trạng thái phương tiện</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">Có thể sử dụng</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-300">Chờ điều chuyển</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800">Đang đỗ / Đang dùng / Đang vận chuyển</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"> Hoạt động tốt</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"> Cần kiểm tra</span>
+<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-300"> Tạm ngừng sử dụng</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2.5">
+<span class="text-xs font-bold text-slate-700 uppercase">3. Phiên sạc và cổng sạc</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-teal-100 text-teal-800">Đã đặt lịch sạc</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">Chờ xác nhận bắt đầu / dừng</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800">Đang sạc / Đã hoàn tất</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">Sạc bị gián đoạn</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-slate-800 text-white">Đã cắm cáp · Có nguồn</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-orange-100 text-orange-900 border border-orange-300">Cổng còn bị chiếm dụng</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2.5">
+<span class="text-xs font-bold text-slate-700 uppercase">4. Dữ liệu cảm biến và mức sử dụng</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"> Cảm biến cập nhật 2 giây trước</span>
+<span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-200 text-slate-800 border border-amber-500"> Chưa xác minh · quá 90 giây chưa cập nhật</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800">≥80% Cảnh báo sớm</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-orange-100 text-orange-800">≥90% Ngừng nhận mới</span>
+<span class="px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">≥95% Nguy cơ quá tải</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-6 pt-2">
+<div class="p-4 rounded-xl border border-slate-200 flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-slate-800">Mức sử dụng chỗ đỗ (đang đỗ + chưa xác minh + đã giữ)</span>
+<span class="font-mono-code text-xs font-bold text-orange-700">92.0% (23/25 ô) — Ngưỡng ≥90%</span>
+</div>
+<div class="w-full h-4 bg-slate-100 rounded-lg overflow-hidden flex border border-slate-300">
+<div class="bg-teal-600 h-full" style="width: 72%" title="Đang chiếm dụng (O = 18)"></div>
+<div class="striped-unknown h-full" style="width: 8%" title="Chưa xác định (X = 2)"></div>
+<div class="bg-amber-400 h-full" style="width: 12%" title="Đã cam kết giữ chỗ (H = 3)"></div>
+<div class="bg-orange-100 h-full" style="width: 8%" title="Nguồn dự phòng 90%-100% "></div>
+</div>
+<div class="flex justify-between text-[11px] text-slate-600 pt-1">
+<span> <strong>Đang có xe:</strong> 18 ô</span>
+<span> <strong>Chưa xác minh:</strong> 2 ô</span>
+<span> <strong>Đã giữ chỗ:</strong> 3 ô</span>
+<span> <strong>Vị trí dự phòng:</strong> 2 chỗ · cần điều hành phê duyệt</span>
+</div>
+</div>
+<div class="p-4 rounded-xl border border-slate-200 flex items-center justify-between bg-stone-50/50 border-stone-200">
+<div class="flex flex-col gap-1">
+<span class="text-xs font-bold text-stone-900 uppercase">Mô phỏng và đề xuất vận hành</span>
+<p class="text-xs text-stone-800">Kết quả mô phỏng không làm thay đổi dữ liệu vận hành. Hệ thống chỉ tạo <strong>bản nháp đề xuất điều chuyển</strong> để nhân viên điều hành xem xét và phê duyệt.</p>
+</div>
+<span class="px-3 py-1.5 rounded-lg text-xs font-bold bg-stone-700 text-white shrink-0"> MÔ PHỎNG — KHÔNG TÁC ĐỘNG THỰC TẾ</span>
+</div>
+</div>
+</div></div></article></div>
+</section><section class="workspace-section" data-role-group="SV" id="group-SV">
+<header class="section-head"><div><p class="section-kicker">Sinh viên <span class="section-count">5 màn hình</span></p><h2>Giao diện sinh viên</h2><p>Hành trình thực tế từ tìm xe đến trả xe, đỗ và sạc.</p></div></header>
+<div class="case-grid case-grid--mobile"><article class="case case--mobile" data-case="1" data-role="SV" id="case-1">
+<header class="case-head"><div class="case-identity"><span class="case-index">01</span><div><h3>Tìm và đặt dịch vụ</h3><p>Tra cứu phương tiện, bãi đỗ và cổng sạc</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Tìm và đặt dịch vụ" class="open-case" data-select-frame="1" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-01-SV-01" data-frame-type="mobile" id="ARTBOARD-01-SV-01">
+<div class="bg-teal-700 text-white p-4 rounded-t-2xl flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-lg bg-white text-teal-700 font-bold text-xs flex items-center justify-center">BK</span>
+<div>
+<h3 class="text-sm font-bold leading-tight">E-Mobility</h3>
+<p class="text-[11px] text-teal-200">Phan Ngọc Xuân Lợi · Sinh viên</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30"> IoT: 2s trước</span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3.5">
+<div class="flex items-center justify-between">
+<h4 class="text-sm font-bold text-slate-900">Tìm và đặt dịch vụ</h4>
+
+</div>
+<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2.5 text-xs">
+<div>
+<label class="text-[11px] font-semibold text-slate-600"> Khu vực muốn tìm</label>
+<div class="mt-1 px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg font-medium flex justify-between items-center"><select aria-label="Chọn hub bắt đầu" class="native-select"><option>H01 - Ga Metro ĐHQG</option><option>H02 - KTX Khu A</option><option>H03 - KTX Khu B</option><option>H04 - ĐH Bách Khoa</option><option>H05 - Khu Dịch vụ Trung tâm</option></select></div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div>
+<label class="text-[11px] font-semibold text-slate-600"> Điểm trả xe dự kiến</label>
+<div class="mt-1 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-[11px] font-medium">H04 - ĐH Bách Khoa</div>
+</div>
+<div>
+<label class="text-[11px] font-semibold text-slate-600"> Thời gian dự kiến</label>
+<div class="mt-1 px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-[11px] font-medium">Hôm nay, 09:40</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-1 bg-slate-200 p-1 rounded-lg text-[11px] font-semibold text-center">
+<div class="bg-teal-600 text-white py-1 rounded"> Thuê xe</div>
+<div class="text-slate-700 py-1"> Đặt chỗ đỗ</div>
+<div class="text-slate-700 py-1"> Đỗ kèm Sạc</div>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-teal-50 border border-teal-200 text-[11px] text-teal-900 leading-relaxed"> ℹ <strong>Trước khi đặt:</strong> Danh sách hiển thị chỉ để tham khảo. Chỗ và xe chỉ được giữ sau khi bạn xác nhận thành công. </div>
+<div class="flex flex-col gap-2.5">
+<span class="text-[11px] font-bold uppercase text-slate-500">Các điểm dịch vụ gần bạn</span>
+<div class="p-3 rounded-xl border-2 border-teal-600 bg-teal-50/20 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-xs font-bold text-slate-900">H01 - Ga Metro ĐHQG</span>
+<p class="text-[10px] text-emerald-700 font-medium"> Cập nhật 3 giây trước (Dữ liệu hợp lệ)</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Đang hoạt động · 75% sức chứa</span>
+</div>
+<div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex">
+<div class="bg-emerald-600 h-full" style="width: 60%"></div>
+<div class="bg-amber-400 h-full" style="width: 15%"></div>
+</div>
+<div class="flex justify-between text-[11px] text-slate-600">
+<span> Xe khả dụng: <strong>08 xe</strong></span>
+<span> Chỗ đỗ: <strong>30/40</strong></span>
+<span> Cổng sạc: <strong>04 trống</strong></span>
+</div>
+</div>
+<div class="p-2.5 rounded-xl border border-orange-300 bg-orange-50/60 flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-slate-900">H04 - ĐH Bách Khoa (Hub đích)</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-200 text-orange-900"> Hạn chế: 92%</span>
+</div>
+<p class="text-[11px] text-orange-900"><strong>Bãi sắp đầy:</strong> Điểm này đang tạm ngừng nhận thêm xe. Bạn có thể chọn vị trí trả xe khác tại <strong>H02 - KTX Khu A (68%)</strong>.</p>
+</div>
+<div class="p-2.5 rounded-xl border border-slate-300 bg-slate-100 flex flex-col gap-1 opacity-80">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-slate-700">H05 - Khu Dịch vụ Trung tâm</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-300 text-slate-800"> Cũ &gt;90s (Chưa xác minh)</span>
+</div>
+<p class="text-[10px] text-slate-600"><strong>Chưa có dữ liệu đủ mới:</strong> Vị trí này chưa được cảm biến xác nhận gần đây. Hãy chọn một điểm khác hoặc thử lại sau.</p>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-white border border-slate-300 shadow-sm flex flex-col gap-2.5">
+<div class="flex justify-between items-center border-b border-slate-100 pb-2">
+<div>
+<span class="text-xs font-bold text-slate-900"> Xe máy điện #EV-104</span>
+<p class="text-[11px] text-slate-500">Tại H01 - Ô đỗ P-04 (Đã ngắt sạc)</p>
+</div>
+<div class="text-right">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Có thể thuê · Xe hoạt động tốt</span>
+<p class="text-xs font-bold text-emerald-700 mt-0.5"> Pin: 84% · đủ điều kiện nhận xe</p>
+</div>
+</div>
+<div class="p-2 rounded-lg bg-slate-50 border border-slate-200 flex flex-col gap-1.5 text-[11px]">
+<div class="flex items-center gap-2 font-semibold text-slate-800">
+<span> Đặt trước chỗ trả xe (tùy chọn):</span>
+</div>
+<div class="px-2 py-1 bg-white border border-slate-300 rounded text-slate-700 flex justify-between">
+<span>H02 - KTX Khu A · Dự kiến đến 10:15 · có thêm 15 phút linh hoạt</span>
+<span>▼</span>
+</div>
+</div>
+<div class="p-2 rounded-lg bg-amber-50 border border-amber-300 text-[10px] text-amber-900">
+<strong> Khi đặt chỗ đỗ kèm sạc:</strong> Nếu cổng sạc không còn chỗ, hệ thống sẽ <strong>không xác nhận gói dở dang</strong> mà cho phép bạn chủ động chọn <em>"Chỉ đặt chỗ đỗ độc lập"</em>. </div>
+<button class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg shadow" data-demo-action="true" type="button"> Giữ xe #EV-104 trong 10 phút </button>
+</div>
+</div>
+<div class="mt-auto border-t border-slate-200 bg-slate-50 p-2.5 rounded-b-2xl grid grid-cols-4 text-center text-[10px] font-semibold">
+<div class="text-teal-600"> Tìm xe</div>
+<div class="text-slate-500"> Hoạt động</div>
+<div class="text-slate-500"> Bàn giao</div>
+<div class="text-slate-500"> Sạc pin</div>
+</div>
+</div></div></article><article class="case case--mobile" data-case="2" data-role="SV" id="case-2">
+<header class="case-head"><div class="case-identity"><span class="case-index">02</span><div><h3>Hoạt động của tôi</h3><p>Lượt giữ, hành trình và quyền đỗ</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Hoạt động của tôi" class="open-case" data-select-frame="2" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-02-SV-02" data-frame-type="mobile" id="ARTBOARD-02-SV-02">
+<div class="bg-teal-700 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Hoạt động của tôi</h3>
+<p class="text-[11px] text-teal-200">Theo dõi các lượt giữ, chuyến đi và lịch sử sử dụng</p>
+</div>
+
+</div>
+<div class="p-4 flex flex-col gap-3.5">
+<div class="flex gap-1.5">
+<input aria-label="Nhập mã hồ sơ hoặc chuyến đi" class="flex-1 px-2.5 py-1.5 text-[11px] bg-slate-50 border border-slate-300 rounded-lg font-mono-code text-slate-700" readonly="" type="text" value="INT-2026-0935 (Đã đối soát thành công)"/>
+<button class="px-3 py-1.5 bg-slate-800 text-white text-[11px] font-semibold rounded-lg" data-demo-action="true" type="button">Tra mã</button>
+</div>
+<div class="p-3 rounded-xl bg-amber-50 border-2 border-amber-400 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold text-amber-900 uppercase"> Đề xuất thay đổi điểm trả xe</span>
+<span class="text-[10px] font-mono-code bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded">#SUP-112</span>
+</div>
+<p class="text-[11px] text-amber-900 leading-snug"> Hub đích <strong>H04</strong> hiện đã đầy (96%). Nhân viên điều hành đề xuất chuyển điểm trả xe về <strong>H02 - KTX Khu A (Ô P-12)</strong>. Không tự động ép buộc khi bạn chưa đồng ý. </p>
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="py-1.5 bg-emerald-600 text-white text-[11px] font-bold rounded-lg" data-demo-action="true" type="button"> Chấp thuận đổi Hub</button>
+<button class="py-1.5 bg-white border border-amber-400 text-amber-900 text-[11px] font-semibold rounded-lg" data-demo-action="true" type="button"> Từ chối</button>
+</div>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-300 bg-white flex flex-col gap-2.5 shadow-sm">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-mono-code text-xs font-bold text-teal-700">#RES-8821 • Xe #EV-104</span>
+<p class="text-[11px] text-slate-600"> Hub nhận: H01 - Ga Metro (Ô P-04)</p>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Đang giữ xe</span>
+</div>
+<div class="p-2 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-between">
+<span class="text-[11px] font-medium text-teal-900">Thời gian còn lại để nhận xe:</span>
+<span class="font-mono-code text-xs font-bold text-teal-700">07: 42</span>
+</div>
+<div class="p-2 rounded-lg bg-slate-50 border border-slate-200 text-[11px] text-slate-700">
+<strong>Chỗ trả xe đi kèm:</strong> <span class="font-mono-code">#PRK-309</span> tại H02 (Đã xác nhận). <p class="text-[10px] text-slate-500 mt-0.5">Nếu hủy lượt giữ, chỗ trả xe chưa sử dụng đi kèm cũng sẽ được hủy.</p>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 bg-teal-600 text-white text-[11px] font-bold rounded-lg" data-demo-action="true" type="button"> Nhận xe</button>
+<button class="py-2 bg-red-50 border border-red-200 text-red-700 text-[11px] font-bold rounded-lg" data-demo-action="true" type="button"> Hủy giữ xe</button>
+</div>
+</div>
+<div class="p-3 rounded-xl border border-orange-300 bg-orange-50/40 flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="font-mono-code text-xs font-bold text-slate-900">Chuyến đi #TRP-5502</span>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-800 border border-orange-300">Đang chờ hỗ trợ</span>
+</div>
+<p class="text-[11px] text-slate-700">
+<strong>Với chuyến đi đã bắt đầu:</strong> Khi xe đã được bàn giao, <strong>bạn không thể hủy lượt giữ ban đầu</strong>; hãy trả xe hoặc liên hệ hỗ trợ nếu gặp sự cố. </p>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-1.5 bg-slate-900 text-white text-[11px] font-semibold rounded-lg" data-demo-action="true" type="button"> Trả xe</button>
+<button class="py-1.5 bg-orange-600 text-white text-[11px] font-semibold rounded-lg" data-demo-action="true" type="button"> Yêu cầu hỗ trợ</button>
+</div>
+</div>
+<div class="p-3 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-slate-800"> Quyền đỗ #PRK-410 (Xe cá nhân 59-X1)</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800">Đã xác nhận</span>
+</div>
+<p class="text-[11px] text-slate-600">H01 · Ô P-08 · 10:00–12:00 · cộng thêm 15 phút linh hoạt · có phiên sạc <span class="font-mono-code">#CHG-901</span></p>
+<div class="flex justify-between items-center pt-1">
+<span class="text-[10px] text-slate-500">Nếu đến muộn hơn 10 phút, chỗ giữ có thể hết hạn.</span>
+<button class="px-2.5 py-1 bg-white border border-red-300 text-red-700 text-[10px] font-bold rounded" data-demo-action="true" type="button">Hủy chỗ đỗ</button>
+</div>
+</div>
+</div>
+<div class="mt-auto border-t border-slate-200 bg-slate-50 p-2.5 rounded-b-2xl grid grid-cols-4 text-center text-[10px] font-semibold">
+<div class="text-slate-500"> Tìm xe</div>
+<div class="text-teal-600"> Hoạt động</div>
+<div class="text-slate-500"> Bàn giao</div>
+<div class="text-slate-500"> Sạc pin</div>
+</div>
+</div></div></article><article class="case case--mobile" data-case="3" data-role="SV" id="case-3">
+<header class="case-head"><div class="case-identity"><span class="case-index">03</span><div><h3>Bàn giao phương tiện</h3><p>Xác thực QR và tín hiệu vật lý</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Bàn giao phương tiện" class="open-case" data-select-frame="3" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-03-SV-03" data-frame-type="mobile" id="ARTBOARD-03-SV-03">
+<div class="bg-teal-700 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Bàn giao phương tiện</h3>
+<p class="text-[11px] text-teal-200">Quét mã QR và xác nhận vị trí xe bằng cảm biến</p>
+</div>
+
+</div>
+<div class="p-4 flex flex-col gap-3.5">
+<div class="grid grid-cols-3 gap-1 bg-slate-200 p-1 rounded-lg text-[11px] font-semibold text-center">
+<div class="text-slate-700 py-1">Nhận xe</div>
+<div class="bg-teal-600 text-white py-1 rounded">Trả xe</div>
+<div class="text-slate-700 py-1">Vào / Rời bãi</div>
+</div>
+<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-1.5 text-xs">
+<div class="flex justify-between">
+<span class="text-slate-500">Chuyến đang mở:</span>
+<span class="font-mono-code font-bold text-slate-900">#TRP-5502 (Xe #EV-104)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Mức pin hiện tại (SOC):</span>
+<span class="font-bold text-amber-700"> 18% · pin yếu, cần sạc sau khi trả</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Hub &amp; Vị trí tiếp nhận:</span>
+<span class="font-bold text-teal-700">H02 - KTX Khu A • Ô đỗ P-12</span>
+</div>
+</div>
+<div class="p-4 rounded-xl border-2 border-dashed border-teal-400 bg-teal-50/30 flex flex-col items-center text-center gap-2">
+<span class="text-[10px] font-bold uppercase tracking-wider text-teal-800">Mã QR bàn giao xe</span>
+<div class="w-28 h-28 bg-white p-2 rounded-lg border border-slate-300 grid grid-cols-5 grid-rows-5 gap-1">
+<div class="col-span-2 row-span-2 bg-slate-900 rounded-sm"></div>
+<div class="bg-slate-900"></div>
+<div class="col-span-2 row-span-2 bg-slate-900 rounded-sm"></div>
+<div class="bg-slate-900"></div>
+<div class="bg-teal-600"></div>
+<div class="bg-slate-900"></div>
+<div class="col-span-2 row-span-2 bg-slate-900 rounded-sm"></div>
+<div class="bg-slate-900"></div>
+<div class="bg-slate-900"></div>
+<div class="bg-slate-900"></div>
+</div>
+<span class="font-mono-code text-[11px] font-bold text-slate-800">Mã sự kiện: EVT-RTN-20261020-09</span>
+<p class="text-[10px] text-slate-600">Hệ thống chỉ hoàn tất bàn giao khi ghi nhận được xác nhận tại vị trí thực tế. Gửi lại cùng một mã sự kiện sẽ không tính trùng.</p>
+</div>
+<div class="p-3 rounded-xl bg-white border border-slate-200 flex flex-col gap-2 text-[11px]">
+<span class="font-bold text-slate-800 uppercase text-[10px]">Tiến trình trả xe</span>
+<div class="flex items-start gap-2 text-emerald-700">
+<span></span>
+<span><strong>Bước 1:</strong> Đã kiểm tra quyền đỗ #PRK-309 và giữ vị trí tiếp nhận Ô P-12 tại H02.</span>
+</div>
+<div class="flex items-start gap-2 text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+<span>⏳</span>
+<div>
+<strong>Bước 2 · Đang xác minh:</strong> Đang đợi cảm biến tại ô P-12 xác nhận xe đã vào đúng vị trí... <p class="text-[10px] text-amber-800 mt-0.5">⏱ Đã chờ: <strong>22 giây / tối đa 60 giây</strong> Nếu quá 60 giây chưa xác nhận, nhân viên điều hành sẽ tiếp nhận kiểm tra. Xe và chỗ đỗ tiếp tục được giữ an toàn.</p>
+</div>
+</div>
+<div class="flex items-start gap-2 text-slate-400">
+<span></span>
+<span><strong>Bước 3:</strong> Hoàn tất bàn giao, cập nhật chỗ trống và đưa xe vào danh sách cần sạc.</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-slate-100 border border-slate-300 text-[10px] text-slate-700">
+<strong> Trường hợp xe pin yếu hoặc gặp lỗi:</strong> Xe #EV-104 có pin 18% (&lt;20%) hoặc báo lỗi vẫn được tiếp nhận để <strong>đóng chuyến hợp lệ</strong>; xe vẫn được nhận trả nhưng chưa cho người khác thuê đến khi đã kiểm tra. </div>
+</div>
+<div class="mt-auto border-t border-slate-200 bg-slate-50 p-2.5 rounded-b-2xl grid grid-cols-4 text-center text-[10px] font-semibold">
+<div class="text-slate-500"> Tìm xe</div>
+<div class="text-slate-500"> Hoạt động</div>
+<div class="text-teal-600"> Bàn giao</div>
+<div class="text-slate-500"> Sạc pin</div>
+</div>
+</div></div></article><article class="case case--mobile" data-case="4" data-role="SV" id="case-4">
+<header class="case-head"><div class="case-identity"><span class="case-index">04</span><div><h3>Phiên sạc</h3><p>Theo dõi phiên sạc và kết nối vật lý</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Phiên sạc" class="open-case" data-select-frame="4" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-04-SV-04" data-frame-type="mobile" id="ARTBOARD-04-SV-04">
+<div class="bg-teal-700 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Phiên sạc</h3>
+<p class="text-[11px] text-teal-200">Theo dõi trạng thái sạc và tình trạng kết nối thực tế</p>
+</div>
+
+</div>
+<div class="p-4 flex flex-col gap-3.5">
+<div class="p-3.5 rounded-xl border-2 border-orange-400 bg-orange-50/30 flex flex-col gap-2.5">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-mono-code text-xs font-bold text-slate-900">Phiên #CHG-901 • Xe 59-X1 123.45</span>
+<p class="text-[11px] text-slate-600"> H01 - Ga Metro • Cổng C-08 (Ô P-08)</p>
+</div>
+<span class="text-[10px] font-semibold text-emerald-700"> IoT: 4s trước</span>
+</div>
+<div class="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-white border border-slate-200 text-[11px]">
+<div class="border-r border-slate-200 pr-2">
+<span class="text-[10px] text-slate-500 uppercase font-bold">1. Tiến độ sạc</span>
+<div class="mt-1">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Đã hoàn tất</span>
+</div>
+<p class="text-[10px] text-slate-500 mt-1">Đạt SOC mục tiêu 85% lúc 11:10</p>
+</div>
+<div class="pl-1">
+<span class="text-[10px] text-slate-500 uppercase font-bold">2. Tình trạng cổng sạc</span>
+<div class="mt-1 flex flex-wrap gap-1">
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-white">Cáp còn cắm</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-700">Đã ngắt nguồn</span>
+</div>
+<p class="text-[10px] font-bold text-orange-700 mt-1">Cổng chưa được giải phóng</p>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-red-50 border border-red-200 text-[11px] text-red-900 leading-snug">
+<strong>Cổng sạc chưa được giải phóng:</strong> Phiên sạc đã <code>hoàn tất</code> trên phần mềm nhưng chưa rút cáp (<code>còn cắm cáp</code>) và xe chưa rời Ô P-08. Cổng sạc vẫn bị tính là đang chiếm dụng! </div>
+<button class="w-full py-2 bg-orange-600 text-white text-xs font-bold rounded-lg" data-demo-action="true" type="button"> Xác nhận đã rút cáp và rời chỗ </button>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-300 bg-white flex flex-col gap-2.5">
+<div class="flex justify-between items-center">
+<div>
+<span class="font-mono-code text-xs font-bold text-teal-700">Phiên #CHG-945 (Sắp tới)</span>
+<p class="text-[11px] text-slate-600"> H03 - KTX Khu B • Cổng C-02 • 14:00–15:30</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800">Đã đặt lịch</span>
+</div>
+<div class="p-2 rounded-lg bg-slate-50 border border-slate-200 text-[11px] text-slate-700"> • <strong>Thời gian giữ cổng trước giờ hẹn:</strong> Tối đa 10 phút.<br/> • <strong>Khi bắt đầu sạc:</strong> Bấm <em>"Bắt đầu sạc"</em> sẽ chuyển sang <code>đang chờ xác nhận</code>; chỉ chuyển sang <code>đang sạc</code> khi có sự kiện vật lý IoT hợp lệ. </div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 bg-teal-600 text-white text-[11px] font-bold rounded-lg" data-demo-action="true" type="button"> Bắt đầu sạc</button>
+<button class="py-2 bg-white border border-red-300 text-red-700 text-[11px] font-bold rounded-lg" data-demo-action="true" type="button"> Hủy lịch sạc</button>
+</div>
+</div>
+</div>
+<div class="mt-auto border-t border-slate-200 bg-slate-50 p-2.5 rounded-b-2xl grid grid-cols-4 text-center text-[10px] font-semibold">
+<div class="text-slate-500"> Tìm xe</div>
+<div class="text-slate-500"> Hoạt động</div>
+<div class="text-slate-500"> Bàn giao</div>
+<div class="text-teal-600"> Sạc pin</div>
+</div>
+</div></div></article><article class="case case--mobile" data-case="5" data-role="SV" id="case-5">
+<header class="case-head"><div class="case-identity"><span class="case-index">05</span><div><h3>Gửi yêu cầu hỗ trợ</h3><p>Xử lý chuyến đi gặp sự cố</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Gửi yêu cầu hỗ trợ" class="open-case" data-select-frame="5" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-05-SV-M1" data-frame-type="mobile" id="ARTBOARD-05-SV-M1">
+<div class="bg-orange-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Gửi yêu cầu hỗ trợ</h3>
+<p class="text-[11px] text-orange-100">Báo sự cố khi trả xe, khi xe hết pin hoặc điểm đỗ bị đầy</p>
+</div>
+
+</div>
+<div class="p-4 flex flex-col gap-3 text-xs">
+<div class="p-2.5 rounded-lg bg-slate-100 border border-slate-200 flex justify-between items-center">
+<span class="text-slate-600">Hồ sơ &amp; Xe liên kết:</span>
+<span class="font-mono-code font-bold text-slate-900">#TRP-5502 • Xe #EV-104</span>
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-700">1. Bạn đang gặp vấn đề gì?</label>
+<div class="mt-1.5 flex flex-col gap-1.5 text-[11px]">
+<div class="p-2 rounded-lg border-2 border-orange-500 bg-orange-50/40 font-semibold text-slate-900"> Điểm trả xe H04 đã đầy hoặc tạm đóng </div>
+<div class="p-2 rounded-lg border border-slate-200 text-slate-700"> Xe hỏng hoặc hết pin, không thể di chuyển tiếp </div>
+<div class="p-2 rounded-lg border border-slate-200 text-slate-700"> Đã bàn giao xe nhưng quá 60 giây chưa được xác nhận </div>
+</div>
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-700">2. Khả năng di chuyển của phương tiện:</label>
+<div class="mt-1 grid grid-cols-2 gap-2 text-[11px]">
+<div class="p-2 rounded-lg border border-slate-300 bg-white font-medium text-center"> Còn di chuyển được</div>
+<div class="p-2 rounded-lg border-2 border-red-500 bg-red-50 font-bold text-red-800 text-center"> Không thể đi tiếp</div>
+</div>
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-700">3. Vị trí &amp; Mô tả quan sát thực tế:</label>
+<div class="mt-1 p-2.5 rounded-lg bg-slate-50 border border-slate-300 text-[11px] text-slate-700"> Đang đứng trước cổng Hub H04 (ĐH Bách Khoa), bảng điện tử báo đầy 96%, pin xe #EV-104 còn 18% không đủ chạy sang khu vực xa. </div>
+</div>
+<div class="p-2.5 rounded-lg bg-amber-50 border border-amber-300 text-[10px] text-amber-900 leading-relaxed">
+<strong> Điều gì xảy ra sau khi gửi?</strong><br/> • Gửi yêu cầu <strong>không tự động đóng chuyến đi</strong> (chuyến chuyển sang <code>Đang chờ hỗ trợ</code> đang được hỗ trợ<br/> • Nếu bấm gửi lại cho cùng vụ việc, hệ thống bổ sung thông tin vào mã cũ (<code>#SUP-112</code>), không tạo thêm yêu cầu trùng lặp.<br/> • Nếu sau 5 phút chưa có nhân viên tiếp nhận, hệ thống sẽ tự nhắc bộ phận phụ trách. </div>
+<button class="w-full py-2.5 bg-orange-600 text-white font-bold text-xs rounded-lg shadow" data-demo-action="true" type="button"> Gửi yêu cầu hỗ trợ </button>
+</div>
+</div></div></article></div>
+</section><section class="workspace-section" data-role-group="OP" id="group-OP">
+<header class="section-head"><div><p class="section-kicker">Điều hành <span class="section-count">5 màn hình</span></p><h2>Giao diện điều hành</h2><p>Các công cụ theo dõi mạng lưới và xử lý phát sinh theo thời gian thực.</p></div></header>
+<div class="case-grid"><article class="case case--desktop" data-case="6" data-role="OP" id="case-6">
+<header class="case-head"><div class="case-identity"><span class="case-index">06</span><div><h3>Tổng quan mạng lưới</h3><p>Giám sát hub, công suất và độ mới dữ liệu</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Tổng quan mạng lưới" class="open-case" data-select-frame="6" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[1280px]" data-frame="ARTBOARD-06-OP-01" data-frame-type="desktop" id="ARTBOARD-06-OP-01">
+<div class="bg-slate-900 text-white px-6 py-3.5 rounded-t-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-teal-600 font-bold text-xs flex items-center justify-center">BK</span>
+<div>
+<h3 class="text-sm font-bold">Tổng quan mạng lưới</h3>
+<p class="text-[11px] text-slate-400">Nhân viên điều hành: Phạm Gia Khang · Thông tin làm mới liên tục</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+
+</div>
+</div>
+<div class="p-6 flex flex-col gap-5">
+<div class="grid grid-cols-5 gap-4">
+<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+<span class="text-[11px] text-slate-500 font-semibold">Tổng Mobility Hub</span>
+<p class="text-xl font-bold text-slate-900 mt-0.5">06 Hub <span class="text-xs font-normal text-emerald-600">(5 Mở, 1 Cũ)</span></p>
+</div>
+<div class="p-3.5 rounded-xl bg-red-50 border border-red-200">
+<span class="text-[11px] text-red-700 font-semibold">Điểm đỗ có nguy cơ quá tải</span>
+<p class="text-xl font-bold text-red-800 mt-0.5">01 Hub <span class="text-xs font-semibold">(H04: 96.0%)</span></p>
+</div>
+<div class="p-3.5 rounded-xl bg-orange-50 border border-orange-200">
+<span class="text-[11px] text-orange-800 font-semibold">Điểm đỗ tạm ngừng nhận mới</span>
+<p class="text-xl font-bold text-orange-900 mt-0.5">01 Hub <span class="text-xs font-semibold">(H01: 90.0%)</span></p>
+</div>
+<div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200">
+<span class="text-[11px] text-amber-800 font-semibold">Yêu cầu cần xử lý</span>
+<p class="text-xl font-bold text-amber-900 mt-0.5">03 Vụ việc <span class="text-xs">(1 Kỹ thuật, 2 Hỗ trợ)</span></p>
+</div>
+<div class="p-3.5 rounded-xl bg-slate-100 border border-slate-300">
+<span class="text-[11px] text-slate-700 font-semibold">Điểm có dữ liệu chưa xác minh</span>
+<p class="text-xl font-bold text-slate-800 mt-0.5">01 Hub <span class="text-xs text-amber-700">(H05: 112s trước)</span></p>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-5">
+<div class="col-span-7 border border-slate-200 rounded-xl overflow-hidden flex flex-col">
+<div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
+<span class="text-xs font-bold text-slate-800">SỨC CHỨA CÁC ĐIỂM ĐỖ</span>
+<span class="text-[11px] text-slate-500">Bao gồm xe đang đỗ, chỗ đã giữ và vị trí chưa xác minh</span>
+</div>
+<table class="w-full text-left border-collapse text-xs" role="table">
+<thead>
+<tr class="border-b border-slate-200 bg-slate-50 text-[11px] text-slate-600">
+<th class="p-3">Mã &amp; Tên Hub</th>
+<th class="p-3">Đang đỗ / Chưa xác minh / Đã giữ / Tổng</th>
+<th class="p-3">Chiếm dụng</th>
+<th class="p-3">Trạng thái tiếp nhận</th>
+<th class="p-3">Xe sẵn sàng / Cổng sạc</th>
+<th class="p-3">Độ mới IoT</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200">
+<tr class="bg-red-50/40 font-medium">
+<td class="p-3 font-bold text-slate-900">H04 - ĐH Bách Khoa</td>
+<td class="p-3 font-mono-code">21 / 1 / 2 / 25</td>
+<td class="p-3 font-mono-code font-bold text-red-700">96.0%</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800"> Quá tải ≥95%</span></td>
+<td class="p-3">12 xe • 4/6 cổng</td>
+<td class="p-3 text-emerald-700 font-semibold"> 2s trước</td>
+</tr>
+<tr class="bg-orange-50/30">
+<td class="p-3 font-bold text-slate-900">H01 - Ga Metro ĐHQG</td>
+<td class="p-3 font-mono-code">28 / 0 / 8 / 40</td>
+<td class="p-3 font-mono-code font-bold text-orange-700">90.0%</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800"> Hạn chế ≥90%</span></td>
+<td class="p-3">08 xe • 4/10 cổng</td>
+<td class="p-3 text-emerald-700 font-semibold"> 3s trước</td>
+</tr>
+<tr>
+<td class="p-3 font-bold text-slate-900">H02 - KTX Khu A</td>
+<td class="p-3 font-mono-code">20 / 0 / 5 / 30</td>
+<td class="p-3 font-mono-code font-bold text-amber-700">83.3%</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800"> Cảnh báo ≥80%</span></td>
+<td class="p-3">06 xe • 5/8 cổng</td>
+<td class="p-3 text-emerald-700 font-semibold"> 1s trước</td>
+</tr>
+<tr>
+<td class="p-3 font-bold text-slate-900">H03 - KTX Khu B</td>
+<td class="p-3 font-mono-code">12 / 0 / 3 / 30</td>
+<td class="p-3 font-mono-code font-bold text-emerald-700">50.0%</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"> Bình thường</span></td>
+<td class="p-3">09 xe • 6/8 cổng</td>
+<td class="p-3 text-emerald-700 font-semibold"> 4s trước</td>
+</tr>
+<tr class="bg-slate-100 text-slate-600">
+<td class="p-3 font-bold">H05 - Khu Dịch vụ</td>
+<td class="p-3 font-mono-code">10 / 4 / 2 / 20</td>
+<td class="p-3 font-mono-code font-bold">80.0%</td>
+<td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-300 text-slate-800"> Tạm khóa cấp</span></td>
+<td class="p-3">-- (Chưa xác minh)</td>
+<td class="p-3 text-amber-800 font-bold"> 112s (&gt;90s)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="col-span-5 flex flex-col gap-4">
+<div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-2.5">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold text-slate-900">TRẠNG THÁI CHI TIẾT · H04 — ĐH BÁCH KHOA</span>
+<span class="text-[10px] font-semibold text-teal-700">Đang chọn</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-[11px]">
+<div class="p-2 rounded bg-white border border-emerald-300">
+<span class="font-mono-code font-bold">Ô P-01 (C-01)</span>
+<p class="text-[10px] text-emerald-700">Đang có xe · #EV-101 (Pin 90%)</p>
+</div>
+<div class="p-2 rounded bg-red-50 border border-red-300">
+<span class="font-mono-code font-bold text-red-900">Ô P-03 (C-03)</span>
+<p class="text-[10px] text-red-700">Ngừng sử dụng · Cổng quá nhiệt</p>
+</div>
+<div class="p-2 rounded bg-slate-200 border border-slate-300">
+<span class="font-mono-code font-bold">Ô P-04</span>
+<p class="text-[10px] text-slate-700">Không rõ trạng thái · Cảm biến chưa xác minh</p>
+</div>
+<div class="p-2 rounded bg-amber-50 border border-amber-300">
+<span class="font-mono-code font-bold">Ô P-09</span>
+<p class="text-[10px] text-amber-800">Đang có xe · Quá giờ 25 phút</p>
+</div>
+<div class="p-2 rounded bg-orange-50 border border-orange-300">
+<span class="font-mono-code font-bold">Ô P-24</span>
+<p class="text-[10px] text-orange-800">Chỗ dự phòng</p>
+</div>
+<div class="p-2 rounded bg-slate-800 text-white">
+<span class="font-mono-code font-bold">Ô P-25</span>
+<p class="text-[10px] text-slate-300">Đóng để bảo trì</p>
+</div>
+</div>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-200 bg-slate-900 text-slate-200 flex flex-col gap-1.5 text-[11px] font-mono-code">
+<div class="flex justify-between items-center text-[10px] text-slate-400 border-b border-slate-800 pb-1">
+<span>SỰ KIỆN CẢM BIẾN GẦN ĐÂY</span>
+<span>Chu kỳ: 30s • p95 &lt; 1s</span>
+</div>
+<div class="text-red-400">• 09:38:02 · Cổng C-03 tại H04 phát hiện quá nhiệt. Đã gửi cảnh báo sự cố.</div>
+<div class="text-amber-300">• 09:37:55 · Bỏ qua dữ liệu cũ của xe #EV-104 để không ghi đè cập nhật mới hơn.</div>
+<div class="text-slate-400">• 09:37:40 · Không nhận được mã tài nguyên hợp lệ từ gói #PKT-991; trạng thái hiện tại được giữ nguyên.</div>
+</div>
+</div>
+</div>
+</div>
+</div></div></article><article class="case case--desktop" data-case="7" data-role="OP" id="case-7">
+<header class="case-head"><div class="case-identity"><span class="case-index">07</span><div><h3>Điều phối chỗ đỗ</h3><p>Xử lý hub đầy và quyền tiếp nhận</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Điều phối chỗ đỗ" class="open-case" data-select-frame="7" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[1280px]" data-frame="ARTBOARD-07-OP-02" data-frame-type="desktop" id="ARTBOARD-07-OP-02">
+<div class="bg-slate-900 text-white px-6 py-3.5 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Điều phối chỗ đỗ</h3>
+<p class="text-[11px] text-slate-400">Ưu tiên người đã đặt chỗ và xe cần hỗ trợ trả; sử dụng vị trí dự phòng có kiểm soát.</p>
+</div>
+
+</div>
+<div class="p-6 grid grid-cols-12 gap-6">
+<div class="col-span-5 flex flex-col gap-3">
+<h4 class="text-xs font-bold uppercase text-slate-700">1. Các yêu cầu đang bị ảnh hưởng tại H04 · 96% sức chứa</h4>
+<div class="p-3.5 rounded-xl border-2 border-teal-600 bg-teal-50/30 flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800">Xe thuê cần hỗ trợ trả</span>
+<span class="font-mono-code text-xs font-bold text-slate-900">#TRP-5502</span>
+</div>
+<p class="text-xs font-bold text-slate-900">SV: Phan Ngọc Xuân Lợi • Xe dùng chung #EV-104 (SOC 18%)</p>
+<p class="text-[11px] text-slate-600">Chuyến đang <code>Đang chờ hỗ trợ</code>. Cần có phương án tiếp nhận phù hợp vì xe đang gặp sự cố.</p>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800">Người đã giữ chỗ</span>
+<span class="font-mono-code text-xs font-bold text-slate-900">#PRK-812</span>
+</div>
+<p class="text-xs font-bold text-slate-900">SV: Trần Minh Quân • Xe cá nhân 59-Y2 888.99</p>
+<p class="text-[11px] text-slate-600">Đã đặt ô P-09 lúc 10:00, nhưng xe trước chưa rời và đang quá giờ 25 phút. Không giải phóng chỗ khi xe còn ở đó.</p>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-1">
+<span class="text-[10px] font-bold text-slate-600 uppercase"> Nguyên tắc xử lý:</span>
+<p class="text-[11px] text-slate-600">Hệ thống <strong>không tự động điều chuyển xe cá nhân</strong>; không cấp vượt sức chứa 25 chỗ và chỉ thay đổi điểm đến nếu người dùng đồng ý.</p>
+</div>
+</div>
+<div class="col-span-7 p-5 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-4">
+<div class="flex justify-between items-center border-b border-slate-200 pb-3">
+<div>
+<h4 class="text-sm font-bold text-slate-900">2. Chọn phương án cho chuyến #TRP-5502</h4>
+<p class="text-xs text-slate-500">Kiểm tra lại sức chứa và trạng thái thực tế trước khi xác nhận</p>
+</div>
+<span class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-100 text-emerald-800">Dữ liệu H04 mới: 2s trước</span>
+</div>
+<div class="grid grid-cols-2 gap-3 text-xs">
+<div class="p-3.5 rounded-xl border-2 border-teal-600 bg-white flex flex-col gap-2">
+<span class="font-bold text-teal-800"> Phương án A · Cấp chỗ dự phòng tại H04</span>
+<p class="text-[11px] text-slate-600">Sử dụng vị trí dự phòng duy nhất còn lại để khôi phục lịch gián đoạn hoặc hỗ trợ xe thuê pin yếu.</p>
+<div class="p-2 bg-slate-50 rounded border border-slate-200 text-[11px]">
+<strong>Vị trí cấp:</strong> Ô P-24 (H04) • <strong>Lý do lưu vết:</strong> Hỗ trợ xe thuê #EV-104 pin 18% không đi xa được. </div>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-300 bg-white flex flex-col gap-2">
+<span class="font-bold text-slate-800"> Phương án B: Đề nghị chuyển sang Hub thay thế (H02)</span>
+<p class="text-[11px] text-slate-600">Gửi đề xuất đến sinh viên. Chỉ thay đổi chỗ đỗ sau khi sinh viên đồng ý.</p>
+<div class="p-2 bg-slate-50 rounded border border-slate-200 text-[11px]">
+<strong>Hub đích đề xuất:</strong> H02 - KTX Khu A (Còn 5 chỗ trống - 83.3%) </div>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-300 bg-white flex flex-col gap-2">
+<span class="font-bold text-slate-800"> Phương án C · Xử lý xe đỗ quá giờ hoặc điều chuyển xe</span>
+<p class="text-[11px] text-slate-600">Liên hệ chủ xe ở ô P-09 hoặc điều chuyển bớt xe dùng chung để giải phóng sức chứa.</p>
+</div>
+<div class="p-3.5 rounded-xl border border-slate-300 bg-white flex flex-col gap-2">
+<span class="font-bold text-slate-800"> Phương án D · Ghi nhận chưa thể bố trí chỗ</span>
+<p class="text-[11px] text-slate-600">Nếu chưa có chỗ phù hợp, ghi nhận tình trạng và giao nhân viên theo dõi.</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="text-[11px] text-slate-500">Nếu dữ liệu đã quá 90 giây, hãy kiểm tra trực tiếp trước khi quyết định.</span>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-slate-200 text-slate-800 text-xs font-bold rounded-lg" data-demo-action="true" type="button">Mở điều chuyển / Xử lý sự cố</button>
+<button class="px-5 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow" data-demo-action="true" type="button"> Xác nhận và gửi đề xuất</button>
+</div>
+</div>
+</div>
+</div>
+</div></div></article><article class="case case--desktop" data-case="8" data-role="OP" id="case-8">
+<header class="case-head"><div class="case-identity"><span class="case-index">08</span><div><h3>Quản lý lịch sạc</h3><p>Ưu tiên công suất và giữ cam kết</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Quản lý lịch sạc" class="open-case" data-select-frame="8" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[1280px]" data-frame="ARTBOARD-08-OP-03" data-frame-type="desktop" id="ARTBOARD-08-OP-03">
+<div class="bg-slate-900 text-white px-6 py-3.5 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Quản lý lịch sạc</h3>
+<p class="text-[11px] text-slate-400">Giữ nguyên lịch đã xác nhận · Ưu tiên xe pin yếu · Chỉ thay đổi lịch sau khi phê duyệt</p>
+</div>
+
+</div>
+<div class="p-6 flex flex-col gap-4">
+<div class="p-3.5 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-between text-xs">
+<div>
+<span class="font-bold text-teal-950"> Cần lập lại lịch vì có thay đổi thiết bị hoặc nhu cầu:</span>
+<span class="text-teal-900">Cổng C-03 tại H04 chuyển sang <code>Tạm ngừng sử dụng</code> (giảm công suất Hub còn 36 kW) + phát hiện 02 xe dùng chung có SOC &lt; 20%. Thời gian tính toán phương án: <strong>1.1 giây</strong>.</span>
+</div>
+<span class="px-2.5 py-1 rounded font-bold bg-amber-200 text-amber-900 shrink-0">Phương án #SCH-202 · Chờ phê duyệt</span>
+</div>
+<div class="grid grid-cols-3 gap-4 text-xs">
+<div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/30 flex flex-col gap-2.5">
+<div class="flex justify-between items-center">
+<span class="font-bold text-emerald-900 uppercase">1. Lịch giữ nguyên</span>
+<span class="px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 font-bold text-[10px]">04 Phiên</span>
+</div>
+<div class="p-2.5 rounded-lg bg-white border border-emerald-200 flex flex-col gap-1">
+<span class="font-mono-code font-bold text-slate-900">#CHG-901 • Xe 59-X1 123.45</span>
+<span class="text-[11px] text-slate-600">Cổng C-01 • 10:00–11:30 • SOC 40% → 85%</span>
+<span class="text-[10px] font-semibold text-emerald-700"> Đủ công suất &amp; cổng hợp lệ — Không tự ý xáo trộn</span>
+</div>
+<div class="p-2.5 rounded-lg bg-white border border-emerald-200 flex flex-col gap-1">
+<span class="font-mono-code font-bold text-slate-900">#CHG-904 • Xe 59-Z9 456.78</span>
+<span class="text-[11px] text-slate-600">Cổng C-02 • 10:00–11:00 • SOC 55% → 90%</span>
+<span class="text-[10px] font-semibold text-emerald-700"> Bảo toàn cam kết đã xác nhận</span>
+</div>
+</div>
+<div class="p-4 rounded-xl border-2 border-teal-500 bg-teal-50/20 flex flex-col gap-2.5">
+<div class="flex justify-between items-center">
+<span class="font-bold text-teal-900 uppercase">2. Phiên Điều chỉnh &amp; Ưu tiên cao</span>
+<span class="px-2 py-0.5 rounded bg-teal-200 text-teal-900 font-bold text-[10px]">02 Phiên</span>
+</div>
+<div class="p-2.5 rounded-lg bg-white border border-teal-300 flex flex-col gap-1">
+<span class="font-mono-code font-bold text-slate-900">#CHG-910 · Cổng C-03 hỏng</span>
+<span class="text-[11px] text-slate-700">Đề xuất chuyển: <strong>Cổng C-03 (Lỗi) Cổng C-04 (10:15–11:45)</strong></span>
+</div>
+<div class="p-2.5 rounded-lg bg-white border border-amber-300 flex flex-col gap-1">
+<span class="font-mono-code font-bold text-amber-900">#AUTO-EV104 · Xe dùng chung #EV-104 · Pin 18%</span>
+<span class="text-[11px] text-slate-700">Ưu tiên cấp cổng C-05 · 10:00–11:15</span>
+<span class="text-[10px] font-bold text-amber-800"> Trạng thái vật lý: [Chờ nhân viên cắm cáp chuẩn bị]</span>
+</div>
+</div>
+<div class="p-4 rounded-xl border border-orange-300 bg-orange-50/30 flex flex-col gap-2.5">
+<div class="flex justify-between items-center">
+<span class="font-bold text-orange-900 uppercase">3. Chưa Đáp ứng / Đưa vào Hàng đợi</span>
+<span class="px-2 py-0.5 rounded bg-orange-200 text-orange-900 font-bold text-[10px]">01 Phiên</span>
+</div>
+<div class="p-2.5 rounded-lg bg-white border border-orange-200 flex flex-col gap-1">
+<span class="font-mono-code font-bold text-slate-900">#AUTO-EV115 · Xe dùng chung · Pin 24%</span>
+<span class="text-[11px] text-slate-600">Lịch 10:00 đã hết công suất 36 kW tại điểm sạc.</span>
+<span class="text-[10px] font-bold text-orange-800"> Đề xuất chuyển sang 11:30–12:30, không vượt quá công suất tối đa.</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-200">
+<p class="text-xs text-slate-600">
+<strong> Trước khi áp dụng:</strong> Đây mới là phương án tính toán. Chỉ thay đổi lịch đang sử dụng khi nhân viên điều hành xác nhận. </p>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-slate-200 text-slate-800 text-xs font-bold rounded-lg" data-demo-action="true" type="button"> Không áp dụng · Giữ lịch hiện tại</button>
+<button class="px-5 py-2 bg-teal-600 text-white text-xs font-bold rounded-lg shadow" data-demo-action="true" type="button"> Xác nhận Áp dụng Phương án Lịch #SCH-202</button>
+</div>
+</div>
+</div>
+</div></div></article><article class="case case--desktop" data-case="9" data-role="OP" id="case-9">
+<header class="case-head"><div class="case-identity"><span class="case-index">09</span><div><h3>Điều chuyển &amp; sự cố</h3><p>Phát hành lệnh và cô lập tài nguyên</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Điều chuyển &amp; sự cố" class="open-case" data-select-frame="9" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[1280px]" data-frame="ARTBOARD-09-OP-04" data-frame-type="desktop" id="ARTBOARD-09-OP-04">
+<div class="bg-slate-900 text-white px-6 py-3.5 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Điều chuyển &amp; sự cố</h3>
+<p class="text-[11px] text-slate-400">Xe đã đưa vào lệnh sẽ tạm khóa nhận khách; thiết bị lỗi phải ngừng sử dụng ngay.</p>
+</div>
+
+</div>
+<div class="p-6 grid grid-cols-12 gap-6">
+<div class="col-span-6 p-5 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-3.5">
+<div class="flex justify-between items-center border-b border-slate-200 pb-2.5">
+<div>
+<h4 class="text-sm font-bold text-slate-900">1. Tạo lệnh điều chuyển xe</h4>
+<p class="text-[11px] text-slate-500">Có thể bắt đầu từ đề xuất của hệ thống mô phỏng</p>
+</div>
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-stone-100 text-stone-800 border border-stone-300"> Đã nạp Bản thảo #DRF-09</span>
+</div>
+<div class="grid grid-cols-2 gap-3 text-xs">
+<div>
+<label class="text-[11px] font-bold text-slate-700">Điểm lấy xe (còn xe sẵn sàng):</label>
+<div class="mt-1 p-2 bg-white border border-slate-300 rounded-lg font-semibold">H04 - ĐH Bách Khoa (12 xe)</div>
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-700">Điểm nhận xe (còn đủ sức chứa):</label>
+<div class="mt-1 p-2 bg-white border border-slate-300 rounded-lg font-semibold">H01 - Ga Metro (Trống 6 chỗ)</div>
+</div>
+</div>
+<div class="text-xs">
+<label class="text-[11px] font-bold text-slate-700">Nhân viên, phương tiện vận chuyển:</label>
+<div class="mt-1 p-2 bg-white border border-slate-300 rounded-lg font-semibold flex justify-between">
+<span>DC: Phạm Anh Tuấn (2413800) • Xe tải #TRK-01 (Đang ở H04)</span>
+<span class="text-emerald-700">● Sẵn sàng</span>
+</div>
+</div>
+<div class="p-3 rounded-lg bg-white border border-slate-200 flex flex-col gap-1.5 text-xs">
+<span class="text-[11px] font-bold text-slate-700">Chọn xe chưa được đặt hoặc điều chuyển:</span>
+<div class="grid grid-cols-2 gap-1.5 text-[11px]">
+<div class="p-1.5 rounded bg-teal-50 border border-teal-300 font-medium"> #EV-101 (Sẵn sàng • Pin 90%)</div>
+<div class="p-1.5 rounded bg-teal-50 border border-teal-300 font-medium"> #EV-102 (Sẵn sàng • Pin 85%)</div>
+<div class="p-1.5 rounded bg-teal-50 border border-teal-300 font-medium"> #EV-105 (Sẵn sàng • Pin 78%)</div>
+<div class="p-1.5 rounded bg-teal-50 border border-teal-300 font-medium"> #EV-108 (Sẵn sàng • Pin 64%)</div>
+</div>
+<p class="text-[10px] text-slate-500 pt-1"> Xe #EV-205 đang <code>Tạm ngừng sử dụng</code> không thể chọn để điều chuyển.</p>
+</div>
+<div class="p-2.5 rounded-lg bg-teal-50 border border-teal-200 text-[11px] text-teal-900">
+<strong>Khi xác nhận lệnh:</strong> Lệnh chỉ được phát hành khi việc ghi nhận lệnh <code>Đã phát hành</code> và cập nhật trạng thái của cả bốn xe <code>Chờ điều chuyển</code> đều thành công. </div>
+<button class="w-full py-2.5 bg-teal-600 text-white font-bold text-xs rounded-lg shadow" data-demo-action="true" type="button"> Phát hành lệnh #ORD-2026-08 </button>
+</div>
+<div class="col-span-6 p-5 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-3.5">
+<div class="flex justify-between items-center border-b border-slate-200 pb-2.5">
+<div>
+<h4 class="text-sm font-bold text-slate-900">2. Tiếp nhận và xử lý sự cố</h4>
+<p class="text-[11px] text-slate-500">Sự cố kỹ thuật được giao cho nhân viên bảo trì; sự cố vận hành do điều hành tiếp nhận.</p>
+</div>
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-red-100 text-red-800 border border-red-300">Khởi tạo từ Cảnh báo </span>
+</div>
+<div class="grid grid-cols-2 gap-3 text-xs">
+<div>
+<label class="text-[11px] font-bold text-slate-700">Nguồn cảnh báo: Cảm biến quá nhiệt</label>
+<div class="mt-1 p-2 bg-white border border-slate-300 rounded-lg font-semibold">Cổng sạc C-03 (Tại Hub H04)</div>
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-700">Chọn loại sự cố và người phụ trách:</label>
+<div class="mt-1 p-2 bg-white border border-slate-300 rounded-lg font-semibold text-red-700">Sự cố Kỹ thuật Giao Bảo trì (BT)</div>
+</div>
+</div>
+<div class="text-xs">
+<label class="text-[11px] font-bold text-slate-700">Kỹ thuật viên có thể tiếp nhận:</label>
+<div class="mt-1 p-2 bg-white border border-slate-300 rounded-lg font-semibold flex justify-between">
+<span>BT: Phan Kỳ Nhân (2412432) • Khu vực ĐH Bách Khoa</span>
+<span class="text-emerald-700">● Khả dụng</span>
+</div>
+</div>
+<div class="text-xs">
+<label class="text-[11px] font-bold text-slate-700">Sự cố được ghi nhận:</label>
+<div class="mt-1 p-2.5 bg-white border border-slate-300 rounded-lg text-[11px] text-slate-700"> Cổng C-03 tại H04 báo quá nhiệt lúc 09:38. Phiên sạc #CHG-910 bị gián đoạn và đã được đưa vào danh sách cần sắp xếp lại. </div>
+</div>
+<div class="p-2.5 rounded-lg bg-red-50 border border-red-200 text-[11px] text-red-900">
+<strong> Khi tiếp nhận sự cố:</strong> Ngay khi lập phiếu <code>Đang mở</code>, Cổng C-03 chuyển sang <code>Tạm ngừng sử dụng</code> trong vòng 10 giây để không nhận yêu cầu mới. Nếu gửi thông báo thất bại, phiếu và cổng vẫn giữ trạng thái hạn chế. <code>Đang mở</code> và tài nguyên giữ <code>Tạm ngừng sử dụng</code>. </div>
+<button class="w-full py-2.5 bg-red-600 text-white font-bold text-xs rounded-lg shadow" data-demo-action="true" type="button"> Lập phiếu #INC-2026-44 và tạm khóa cổng C-03 </button>
+</div>
+</div>
+</div></div></article><article class="case case--desktop" data-case="10" data-role="OP" id="case-10">
+<header class="case-head"><div class="case-identity"><span class="case-index">10</span><div><h3>Phân tích kịch bản</h3><p>So sánh phương án trong môi trường mô phỏng</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Phân tích kịch bản" class="open-case" data-select-frame="10" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[1280px]" data-frame="ARTBOARD-10-OP-05" data-frame-type="desktop" id="ARTBOARD-10-OP-05">
+<div class="bg-stone-900 text-white px-6 py-3.5 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Phân tích kịch bản</h3>
+<p class="text-[11px] text-stone-200">Mô phỏng không làm thay đổi dữ liệu thực tế · Dự báo trong 60 phút</p>
+</div>
+<span class="font-mono-code text-xs bg-stone-700 text-white px-3 py-1 rounded border border-stone-400"> ĐANG Ở CHẾ ĐỘ MÔ PHỎNG</span>
+</div>
+<div class="p-6 flex flex-col gap-5">
+<div class="flex flex-col gap-2">
+<span class="text-xs font-bold uppercase text-slate-700">1. Chọn tình huống muốn kiểm tra:</span>
+<div class="grid grid-cols-5 gap-2.5 text-xs font-semibold">
+<div class="p-2.5 rounded-xl border-2 border-stone-600 bg-stone-50 text-stone-900"> ● Lượng khách ở Ga Metro (H01) tăng đột biến </div>
+<div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700"> ○ Một phần chỗ đỗ phải đóng </div>
+<div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700"> ○ Nhu cầu sạc tăng cao </div>
+<div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700"> ○ Một số cổng sạc bị hỏng </div>
+<div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700"> ○ Xe tập trung về một điểm </div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-8 border border-slate-200 rounded-xl overflow-hidden">
+<div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
+<span class="text-xs font-bold text-slate-800">2. KẾT QUẢ DỰ BÁO CHO 60 PHÚT TỚI</span>
+<span class="text-[11px] font-semibold text-stone-700">Bao gồm cả nhu cầu chưa thể đáp ứng</span>
+</div>
+<table class="w-full text-left border-collapse text-xs" role="table">
+<thead>
+<tr class="bg-slate-50 border-b border-slate-200 text-[11px] text-slate-600">
+<th class="p-3">Các chỉ số hoạt động</th>
+<th class="p-3">Không thực hiện điều chuyển</th>
+<th class="p-3 bg-stone-50/60 text-stone-900">Áp dụng đề xuất điều chuyển</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200">
+<tr>
+<td class="p-3 font-semibold">Số lượt được phục vụ</td>
+<td class="p-3 font-mono-code">82 / 120 lượt (68.3%)</td>
+<td class="p-3 font-mono-code font-bold text-emerald-700 bg-stone-50/30">110 / 120 lượt (91.7%)</td>
+</tr>
+<tr class="bg-red-50/20">
+<td class="p-3 font-bold text-red-900">Số lượt chưa được phục vụ</td>
+<td class="p-3 font-mono-code font-bold text-red-700">38 lượt (Thiếu xe tại H01)</td>
+<td class="p-3 font-mono-code font-bold text-amber-700 bg-stone-50/30">10 lượt (Do trễ 12p xe tải di chuyển)</td>
+</tr>
+<tr>
+<td class="p-3 font-semibold">Thời gian chờ Trung bình &amp; p95 (Nhóm đã phục vụ)</td>
+<td class="p-3 font-mono-code">TB: 6.4 phút • p95: 14.2 phút</td>
+<td class="p-3 font-mono-code font-bold text-stone-900 bg-stone-50/30">TB: 2.8 phút • p95: 7.1 phút</td>
+</tr>
+<tr>
+<td class="p-3 font-semibold">Mức chiếm dụng theo thời gian &amp; Công suất sạc</td>
+<td class="p-3">H01 cạn xe (15%) • H04 quá tải (96%)</td>
+<td class="p-3 font-medium bg-stone-50/30">H01 ổn định (48%) • H04 giảm về 80%</td>
+</tr>
+<tr>
+<td class="p-3 font-semibold">Số lượt đặt chỗ bị ảnh hưởng</td>
+<td class="p-3 font-mono-code text-red-700">04 cam kết bị gián đoạn</td>
+<td class="p-3 font-mono-code font-bold text-emerald-700 bg-stone-50/30">00 cam kết (Bảo vệ 100% quyền đã cấp)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="col-span-4 p-4 rounded-xl border-2 border-stone-300 bg-stone-50/40 flex flex-col justify-between">
+<div class="flex flex-col gap-2.5">
+<span class="text-xs font-bold uppercase text-stone-950">3. Đề xuất điều phối</span>
+<div class="p-3 rounded-lg bg-white border border-stone-200 text-xs flex flex-col gap-1">
+<span class="font-bold text-slate-900"> Khuyến nghị #REC-01 (Xét giới hạn 4 xe/tải):</span>
+<p class="text-[11px] text-slate-600">Điều chuyển <strong>04 xe Sẵn sàng</strong> từ H04 về H01 bằng Xe tải #TRK-01 (Thời gian vận chuyển: 12 phút).</p>
+</div>
+<div class="p-3 rounded-lg bg-white border border-stone-200 text-xs flex flex-col gap-1">
+<span class="font-bold text-slate-900"> Giới hạn của phương án:</span>
+<p class="text-[11px] text-slate-600">Còn 10 yêu cầu trong 12 phút đầu chưa thể đáp ứng ngay do giới hạn tốc độ vận chuyển vật lý của xe tải.</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-3 border-t border-stone-200">
+<p class="text-[10px] text-stone-900"><strong>Lưu ý:</strong> Hệ thống chỉ chuẩn bị bản nháp; chưa có lệnh điều chuyển thực tế. <strong>Bản thảo lệnh (#DRF-09)</strong> để nhân viên điều hành kiểm tra.</p>
+<button class="w-full py-2.5 bg-stone-700 text-white font-bold text-xs rounded-lg shadow" data-demo-action="true" type="button"> Tạo bản nháp điều chuyển </button>
+<button class="w-full py-2 bg-white border border-stone-300 text-stone-900 font-semibold text-xs rounded-lg" data-demo-action="true" type="button"> Xem lịch sạc </button>
+</div>
+</div>
+</div>
+</div>
+</div></div></article></div>
+</section><section class="workspace-section" data-role-group="FIELD" id="group-FIELD">
+<header class="section-head"><div><p class="section-kicker">Hiện trường <span class="section-count">3 màn hình</span></p><h2>Giao diện hiện trường</h2><p>Tác nghiệp ngoài hiện trường và công cụ thử nghiệm cảm biến.</p></div></header>
+<div class="case-grid case-grid--mixed"><article class="case case--mobile" data-case="11" data-role="FIELD" id="case-11">
+<header class="case-head"><div class="case-identity"><span class="case-index">11</span><div><h3>Lệnh điều chuyển</h3><p>Bàn giao xe theo sức chứa thực tế</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Lệnh điều chuyển" class="open-case" data-select-frame="11" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-11-DC-01" data-frame-type="mobile" id="ARTBOARD-11-DC-01">
+<div class="bg-amber-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Lệnh điều chuyển</h3>
+<p class="text-[11px] text-amber-100">Phạm Anh Tuấn · Xe tải #TRK-01 · Chở tối đa 4 xe</p>
+</div>
+
+</div>
+<div class="p-4 flex flex-col gap-3.5 text-xs">
+<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="font-mono-code font-bold text-slate-900">Lệnh #ORD-2026-08</span>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Đang thực hiện</span>
+</div>
+<p class="text-[11px] text-slate-600">Lộ trình: <strong>H04 (ĐH Bách Khoa) H01 (Ga Metro)</strong></p>
+<p class="text-[10px] text-emerald-700 font-medium"> Đã nhận lệnh và đưa 4 xe ra khỏi H04 để vận chuyển.</p>
+</div>
+<div class="p-3 rounded-xl bg-orange-50 border-2 border-orange-400 flex flex-col gap-1 text-[11px] text-orange-950">
+<span class="font-bold uppercase text-[10px] text-orange-800"> Điểm nhận xe gần đầy:</span>
+<p>Hub đích <strong>H01</strong> hiện chỉ còn khả năng tiếp nhận tối đa <strong>03 phương tiện</strong>. Vui lòng chọn tối đa 03 xe để <strong>chỉ được xác nhận số xe đã thực sự bàn giao.</strong>.</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-[11px] font-bold text-slate-700">Danh sách xe cần bàn giao:</span>
+<div class="p-2.5 rounded-lg border-2 border-teal-600 bg-teal-50/30 flex justify-between items-center">
+<div>
+<span class="font-bold text-slate-900"> 1. Xe #EV-101 (Pin 90%)</span>
+<p class="text-[10px] text-slate-600">Đưa vào ô P-10 tại H01</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"> Sẵn sàng</span>
+</div>
+<div class="p-2.5 rounded-lg border-2 border-teal-600 bg-teal-50/30 flex justify-between items-center">
+<div>
+<span class="font-bold text-slate-900"> 2. Xe #EV-102 (Pin 85%)</span>
+<p class="text-[10px] text-slate-600">Đưa vào ô P-11 tại H01</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"> Sẵn sàng</span>
+</div>
+<div class="p-2.5 rounded-lg border-2 border-teal-600 bg-teal-50/30 flex justify-between items-center">
+<div>
+<span class="font-bold text-slate-900"> 3. Xe #EV-105 (Pin 78%)</span>
+<p class="text-[10px] text-slate-600">Đưa vào ô P-12 tại H01</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"> Sẵn sàng</span>
+</div>
+<div class="p-2.5 rounded-lg border border-slate-300 bg-slate-100 flex justify-between items-center">
+<div>
+<span class="font-bold text-slate-700">⬜ 4. Xe #EV-108 (Giữ trên xe tải #TRK-01)</span>
+<p class="text-[10px] text-slate-500">Chưa bàn giao đợt này do giới hạn chỗ tại H01</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-800">Chưa bàn giao</span>
+</div>
+</div>
+<div class="p-2.5 rounded-lg bg-slate-100 border border-slate-300 text-[10px] text-slate-700 leading-relaxed">
+<strong> Khi bàn giao một phần:</strong> Ba xe đã xác nhận được đưa vào danh sách sẵn sàng sử dụng. <code>Sẵn sàng</code> và cập nhật sức chứa thực nhận tại H01. Lệnh <strong>giữ nguyên <code>vẫn ở trạng thái đang thực hiện</code></strong> (chưa chuyển sang <code>hoàn tất</code>) và xe #EV-108 giữ <code>đang chờ bàn giao</code>. </div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-amber-600 text-white font-bold text-[11px] rounded-lg shadow" data-demo-action="true" type="button"> Xác nhận đã giao 3/4 xe</button>
+<button class="py-2.5 bg-white border border-slate-300 text-slate-700 font-semibold text-[11px] rounded-lg" data-demo-action="true" type="button"> Bỏ qua lượt xác nhận</button>
+</div>
+</div>
+</div></div></article><article class="case case--mobile" data-case="12" data-role="FIELD" id="case-12">
+<header class="case-head"><div class="case-identity"><span class="case-index">12</span><div><h3>Khắc phục sự cố</h3><p>Biên bản kỹ thuật và kết quả xử lý</p></div></div><div class="case-actions"><span class="case-kind">Mobile · 390</span><button aria-label="Xem riêng màn hình Khắc phục sự cố" class="open-case" data-select-frame="12" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-12-BT-01" data-frame-type="mobile" id="ARTBOARD-12-BT-01">
+<div class="bg-slate-800 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Khắc phục sự cố</h3>
+<p class="text-[11px] text-slate-300">Kỹ thuật viên: Phan Kỳ Nhân · Chỉ xem phiếu được giao</p>
+</div>
+
+</div>
+<div class="p-4 flex flex-col gap-3.5 text-xs">
+<div class="p-3 rounded-xl bg-red-50/50 border border-red-200 flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="font-mono-code font-bold text-slate-900">Phiếu #INC-2026-44</span>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800 border border-red-300">Đang xử lý</span>
+</div>
+<p class="text-[11px] text-slate-800">Tài nguyên: <strong>Cổng sạc C-03 (Hub H04 - ĐH Bách Khoa)</strong></p>
+<p class="text-[10px] font-bold text-red-700">Ngừng hoạt động · Không nhận yêu cầu mới</p>
+</div>
+<div class="p-3 rounded-xl bg-white border border-slate-200 flex flex-col gap-2">
+<span class="text-[11px] font-bold text-slate-800">1. Kiểm tra an toàn trước khi khôi phục thiết bị:</span>
+<div class="flex flex-col gap-1.5 text-[11px] text-slate-700">
+<div> Đã đo kiểm an toàn điện áp và rơ-le nhiệt tại Cổng C-03.</div>
+<div> Thiết bị phản hồi tín hiệu Telemetry IoT ổn định.</div>
+<div> Đã hoàn tất kiểm tra thử tải thực tế ngoài phần mềm.</div>
+</div>
+<p class="text-[10px] text-amber-800 bg-amber-50 p-1.5 rounded border border-amber-200">
+<strong>Khi chưa đáp ứng an toàn:</strong> Không buộc xác nhận hoàn tất nếu tài nguyên chưa đạt điều kiện an toàn kỹ thuật (phiếu sẽ giữ nguyên <code>đang xử lý</code>). </p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-[11px] font-bold text-slate-800">2. Chọn kết quả sửa chữa:</span>
+<div class="p-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50/30 flex flex-col gap-1">
+<span class="font-bold text-emerald-950"> Đã khắc phục tại chỗ</span>
+<p class="text-[10px] text-emerald-800">Khôi phục Cổng C-03 về <code>hoạt động tốt</code> và kích hoạt hệ thống đánh giá lại khả năng đáp ứng / lịch sạc.</p>
+</div>
+<div class="p-2.5 rounded-xl border border-slate-300 bg-slate-50 flex flex-col gap-1">
+<span class="font-bold text-slate-800"> Cần đưa về xưởng sửa chữa</span>
+<p class="text-[10px] text-slate-600"><strong>Khi cần sửa tại xưởng:</strong> Tiếp tục theo dõi trên cùng phiếu #INC-2026-44 và <strong>duy trì Cổng C-03 ở trạng thái <code>tạm ngừng sử dụng</code></strong>.</p>
+</div>
+</div>
+<div>
+<label class="text-[11px] font-bold text-slate-700">3. Nội dung kết quả kiểm tra / sửa chữa:</label>
+<div class="mt-1 p-2.5 rounded-lg bg-slate-50 border border-slate-300 text-[11px] text-slate-800"> Đã thay cụm cảm biến nhiệt và rơ-le đóng ngắt tại Cổng C-03. Đo kiểm dòng sạc ổn định 7.2kW, đủ điều kiện an toàn vận hành lại. </div>
+</div>
+<div class="p-2 rounded-lg bg-slate-100 border border-slate-300 text-[10px] text-slate-600">
+<strong>Chỉ xác nhận sau khi lưu thành công cả kết quả sửa chữa và trạng thái thiết bị:</strong> Cập nhật chỉ thành công khi cả phiếu (<code>đã khắc phục</code>) và tài nguyên (<code>hoạt động tốt</code>) cùng lưu thành công. </div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-emerald-600 text-white font-bold text-[11px] rounded-lg shadow" data-demo-action="true" type="button"> Hoàn tất cập nhật</button>
+<button class="py-2.5 bg-white border border-slate-300 text-slate-700 font-semibold text-[11px] rounded-lg" data-demo-action="true" type="button"> Hủy thao tác</button>
+</div>
+</div>
+</div></div></article><article class="case case--desktop" data-case="13" data-role="FIELD" id="case-13">
+<header class="case-head"><div class="case-identity"><span class="case-index">13</span><div><h3>Bộ giả lập IoT</h3><p>Kiểm thử sự kiện từ thiết bị và cảm biến</p></div></div><div class="case-actions"><span class="case-kind">Desktop · dashboard</span><button aria-label="Xem riêng màn hình Bộ giả lập IoT" class="open-case" data-select-frame="13" type="button">Xem riêng <svg aria-hidden="true" viewbox="0 0 20 20"><path d="M4 10h12m-5-5 5 5-5 5"></path></svg></button></div></header>
+<div class="board-viewport"><div class="figma-artboard w-[390px]" data-frame="ARTBOARD-13-SIM-IOT" data-frame-type="desktop" id="ARTBOARD-13-SIM-IOT">
+<div class="bg-slate-900 text-white p-4 rounded-t-2xl flex items-center justify-between">
+<div>
+<h3 class="text-sm font-bold">Bộ giả lập IoT</h3>
+<p class="text-[11px] text-emerald-400">Nguồn dữ liệu: Thiết bị và cảm biến thử nghiệm</p>
+</div>
+<span class="font-mono-code text-[10px] bg-slate-800 text-emerald-300 px-2 py-1 rounded border border-slate-700">CHẾ ĐỘ KIỂM THỬ</span>
+</div>
+<div class="p-4 flex flex-col gap-3 text-xs">
+<p class="text-[11px] text-slate-600 leading-relaxed"> Màn hình giả lập để thử tín hiệu cảm biến và thao tác xác nhận vật lý. Không tác động đến thiết bị hoặc dữ liệu thật. </p>
+<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2">
+<span class="text-[11px] font-bold text-slate-800 uppercase">1. Xác nhận xe vào và ra chỗ đỗ:</span>
+<button class="w-full py-2 px-3 bg-white border border-slate-300 hover:border-teal-500 rounded-lg text-left text-[11px] font-medium flex justify-between items-center" data-demo-action="true" type="button">
+<span> Xác nhận xe #EV-104 đã rời ô P-04</span>
+<span class="text-teal-600 font-bold">Gửi </span>
+</button>
+<button class="w-full py-2 px-3 bg-white border border-slate-300 hover:border-teal-500 rounded-lg text-left text-[11px] font-medium flex justify-between items-center" data-demo-action="true" type="button">
+<span> Xác nhận xe #EV-104 đã vào đúng ô P-12</span>
+<span class="text-teal-600 font-bold">Gửi </span>
+</button>
+<button class="w-full py-2 px-3 bg-amber-50 border border-amber-300 rounded-lg text-left text-[11px] font-medium text-amber-900 flex justify-between items-center" data-demo-action="true" type="button">
+<span> Giả lập xe vào sai ô P-14</span>
+<span class="font-bold">Gây lỗi </span>
+</button>
+</div>
+<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2">
+<span class="text-[11px] font-bold text-slate-800 uppercase">2. Trạng thái kết nối cổng sạc:</span>
+<button class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-left text-[11px] font-medium flex justify-between items-center" data-demo-action="true" type="button">
+<span> Cắm cáp vào cổng C-02</span>
+<span class="text-emerald-700 font-bold">Cắm </span>
+</button>
+<button class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-left text-[11px] font-medium flex justify-between items-center" data-demo-action="true" type="button">
+<span> Đã sạc đến 85% nhưng chưa rút cáp sau 15 phút</span>
+<span class="text-orange-700 font-bold">Kích hoạt </span>
+</button>
+</div>
+<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2">
+<span class="text-[11px] font-bold text-slate-800 uppercase">3. Tình huống lỗi cảm biến:</span>
+<button class="w-full py-2 px-3 bg-slate-200 border border-slate-300 rounded-lg text-left text-[11px] font-medium flex justify-between items-center" data-demo-action="true" type="button">
+<span> Mất kết nối cảm biến H05 trên 90 giây</span>
+<span class="font-bold">Ngắt </span>
+</button>
+<button class="w-full py-2 px-3 bg-red-50 border border-red-200 rounded-lg text-left text-[11px] font-medium text-red-900 flex justify-between items-center" data-demo-action="true" type="button">
+<span> Gửi dữ liệu trùng hoặc dữ liệu quá cũ</span>
+<span class="font-bold">Test </span>
+</button>
+</div>
+</div>
+</div></div></article></div>
+</section>
+<footer class="footer-note"><span>Smart E-Mobility Hub · Giao diện quản lý phương tiện điện · ĐHQG-HCM</span><span>14 màn hình · HTML độc lập · Có thể chỉnh sửa trên Figma</span></footer>
+</div></main></div><div aria-live="polite" class="demo-status" id="demo-status" role="status"><button aria-label="Đóng thông báo" class="toast-close" id="toast-close" type="button">×</button><strong id="toast-title">Thao tác thử nghiệm</strong><p id="toast-msg"></p></div>
+<script>
+(()=>{
+ 'use strict';
+ const body=document.body;
+ const frameCount=14;
+ const cases=Array.from(document.querySelectorAll('[data-case]'));
+ const sections=Array.from(document.querySelectorAll('.workspace-section'));
+ const filter=document.getElementById('role-filter');
+ const navButtons=Array.from(document.querySelectorAll('.nav-frame'));
+ const toggleButtons=Array.from(document.querySelectorAll('.mode-btn'));
+ const toast=document.getElementById('demo-status');
+ const toastMsg=document.getElementById('toast-msg');
+ let currentFrame=1;
+ let currentMode='gallery';
+ function reflectSelection(){
+  cases.forEach(el=>el.classList.toggle('is-selected', Number(el.dataset.case)===currentFrame));
+  sections.forEach(sec=>sec.classList.toggle('has-selected',!!sec.querySelector('.case.is-selected')));
+  navButtons.forEach(el=>el.setAttribute('aria-current',String(Number(el.dataset.selectFrame)===currentFrame)));
+ }
+ function setMode(mode){
+  currentMode=(mode==='focus'?'focus':'gallery');
+  body.dataset.mode=currentMode;
+  toggleButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===currentMode)));
+  filter.setAttribute('aria-label',currentMode==='focus'?'Chọn màn hình':'Lọc theo phân hệ');
+  filter.innerHTML=currentMode==='focus'?cases.map((c,i)=>`<option value="${i}">${String(i).padStart(2,'0')} · ${c.querySelector('.case-head h3').textContent}</option>`).join(''):
+   '<option value="ALL">Tất cả phân hệ</option><option value="SV">Sinh viên</option><option value="OP">Điều hành</option><option value="FIELD">Hiện trường & IoT</option><option value="DS">Hệ thống thiết kế</option>';
+  filter.value=currentMode==='focus'?String(currentFrame):'ALL';
+  sections.forEach(sec=>sec.hidden=false);
+  reflectSelection();
+ }
+ function selectFrame(i){
+  if(!Number.isInteger(i)||i<0||i>=frameCount)return;
+  currentFrame=i;
+  setMode('focus');
+  filter.value=String(i);
+  window.scrollTo({top:0,behavior:'instant'});
+ }
+ document.addEventListener('click',ev=>{
+  const mode=ev.target.closest('[data-mode].mode-btn');if(mode){setMode(mode.dataset.mode);return;}
+  const selector=ev.target.closest('[data-select-frame]');if(selector){selectFrame(Number(selector.dataset.selectFrame));return;}
+  if(ev.target.closest('#toast-close')){toast.classList.remove('is-visible');return;}
+  const sampleButton=ev.target.closest('.figma-artboard button[data-demo-action]');
+  if(sampleButton){
+   const label=sampleButton.textContent.replace(/\s+/g,' ').trim();
+   showToast('Thao tác trong nguyên mẫu',`“${label}” chỉ được minh họa trong bản xem trước. Chưa có API hoặc cảm biến kết nối; không có dữ liệu thật nào được thay đổi.`);
+  }
+ });
+ function showToast(title,msg){document.getElementById('toast-title').textContent=title;toastMsg.textContent=msg;toast.classList.add('is-visible');}
+ document.addEventListener('keydown',ev=>{if(ev.key==='Escape')toast.classList.remove('is-visible');});
+ filter.addEventListener('change',()=>{
+  if(currentMode==='focus'){selectFrame(Number(filter.value));return;}
+  sections.forEach(sec=>sec.hidden=(filter.value!=='ALL' && sec.dataset.roleGroup!==filter.value));
+  let first=sections.find(sec=>!sec.hidden);if(first)first.scrollIntoView({block:'start',behavior:'smooth'});
+ });
+ // Do not fabricate transactional results. Search/filter is strictly local to the specimen data.
+ const lookup= document.querySelector('#ARTBOARD-02-SV-02 input[type="text"]');
+ if(lookup){
+   const lookupBtn=Array.from(lookup.closest('.figma-artboard').querySelectorAll('button')).find(b=>b.textContent.includes('Tra mã'));
+   if(lookupBtn)lookupBtn.addEventListener('click',()=>{
+     const value=lookup.value.trim();
+     showToast('Tra cứu mẫu',value?`Đã nhập mã “${value}”. Bản demo không có dịch vụ truy vấn hồ sơ. Các hồ sơ hiển thị là dữ liệu minh hoạ.`:'Vui lòng nhập mã hồ sơ hoặc chuyến đi trước khi tra cứu.');
+   });
+ }
+ const serviceOptions=document.querySelector('#ARTBOARD-01-SV-01 .grid-cols-3');
+ if(serviceOptions){
+  const options=Array.from(serviceOptions.children);
+  serviceOptions.setAttribute('role','tablist');serviceOptions.setAttribute('aria-label','Loại dịch vụ');
+  options.forEach((opt,i)=>{
+   opt.setAttribute('role','tab');opt.setAttribute('tabindex','0');opt.setAttribute('aria-selected',String(i===0));
+   opt.style.cursor='pointer';
+   const activate=()=>{options.forEach((o,j)=>{o.setAttribute('aria-selected',String(i===j));o.style.background=(i===j?'#17695f':'transparent');o.style.color=(i===j?'white':'#415c52');});showToast('Đã đổi bộ lọc dịch vụ',`Đang xem nhóm “${opt.textContent.trim()}”. Danh sách hub trong bản mẫu là minh hoạ cố định, chưa truy vấn dữ liệu theo bộ lọc.`);};
+   opt.addEventListener('click',activate);
+   opt.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate();}});
+  });
+ }
+ setMode('gallery');
+})();
+</script></body></html>

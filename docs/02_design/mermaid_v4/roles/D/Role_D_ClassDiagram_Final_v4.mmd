@@ -1,0 +1,421 @@
+classDiagram
+    direction TB
+
+    %% Role D - D01..D07 / Integrated architecture
+    %% No colored styles. Owner B/C tables are not writable by D.
+
+    %% Presentation / Controller - UC-D01
+    class NetworkMonitoringController {
+        +getNetworkStatus(operatorId: String) NetworkStatusDTO
+        +getHubDetail(operatorId: String, hubId: String) HubDetailDTO
+        +requestResourceConfigChange(operatorId: String, resourceId: String, change: ConfigChangeDTO, intentId: String) OperationResultDTO
+    }
+
+    %% Presentation / Controller - UC-D02/D03
+    class RedistributionController {
+        +getRedistributionInitData(operatorId: String) RedistributionInitDTO
+        +validateAndPreviewOrder(operatorId: String, request: TransferRequestDTO) TransferPreviewDTO
+        +processIssueOrder(operatorId: String, request: TransferRequestDTO, intentId: String) OrderOutcomeDTO
+        +getOrderDetails(actorId: String, orderId: String) OrderDetailsDTO
+        +startOrder(staffId: String, orderId: String) OrderOutcomeDTO
+        +confirmHandover(staffId: String, orderId: String, evidence: HandoverEvidenceDTO) HandoverOutcomeDTO
+    }
+
+    %% Presentation / Controller - UC-D04/D05
+    class IncidentController {
+        +createOrLinkIncident(actorId: String, report: IncidentReportDTO, intentId: String) IncidentReceiptDTO
+        +getIncidentDetail(actorId: String, ticketId: String) IncidentDetailDTO
+        +assignTechnician(operatorId: String, ticketId: String, technicianId: String) IncidentReceiptDTO
+        +escalateWorkshop(technicianId: String, ticketId: String, reason: String) IncidentReceiptDTO
+        +submitRepairResult(technicianId: String, ticketId: String, evidence: RepairEvidenceDTO) IncidentReceiptDTO
+        +getIncidentStatus(actorId: String, ticketId: String) IncidentStatusDTO
+    }
+
+    %% Presentation / Controller - UC-D06
+    class SimulationController {
+        +getSimulationParameters(operatorId: String) SimulationParametersDTO
+        +runSimulation(operatorId: String, input: ScenarioInputDTO) SimulationResultDTO
+        +createDraftOrderFromPlan(operatorId: String, planId: String, choiceId: String) DraftOrderDTO
+    }
+
+    %% Presentation / Controller - UC-D07
+    class TelemetryController {
+        +processTelemetryPayload(payload: TelemetryPayloadDTO) VerificationReceiptDTO
+        +getEventReceipt(actorId: String, sourceId: String, eventId: String) VerificationReceiptDTO
+    }
+
+    %% Business Logic / Service - UC-D01
+    class NetworkMonitoringService {
+        +getNetworkStatus(asOf: DateTime) NetworkStatusDTO
+        +getHubDetail(hubId: String, asOf: DateTime) HubDetailDTO
+        +proposeConfigChange(resourceId: String, change: ConfigChangeDTO, context: OperationContext) OperationResultDTO
+    }
+
+    %% Business Logic / Service - UC-D02
+    class RedistributionService {
+        +preparePreview(request: TransferRequestDTO, actorId: String) TransferPreviewDTO
+        +issueOrder(request: TransferRequestDTO, context: OperationContext) OrderOutcomeDTO
+        +reconcileOrder(intentId: String, actorId: String) OrderOutcomeDTO
+        +startAssignedOrder(staffId: String, orderId: String) OrderOutcomeDTO
+        +getOrderDetails(actorId: String, orderId: String) OrderDetailsDTO
+    }
+
+    %% Business Logic / Service - UC-D03
+    class RedistributionHandoverService {
+        +validateVehicleBatch(orderId: String, staffId: String, evidence: HandoverEvidenceDTO) ValidationResultDTO
+        +completeVehicleHandover(orderId: String, event: VerifiedEventDTO, context: OperationContext) HandoverOutcomeDTO
+        +reconcileHandover(orderId: String, sourceId: String, eventId: String) HandoverOutcomeDTO
+        +finalizeWhenAllDelivered(orderId: String) OrderOutcomeDTO
+    }
+
+    %% Business Logic / Service - UC-D04
+    class IncidentService {
+        +openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO
+        +assign(ticketId: String, technicianId: String, context: OperationContext) IncidentReceiptDTO
+        +escalate(ticketId: String, reason: String, context: OperationContext) IncidentReceiptDTO
+        +getStatus(actorId: String, ticketId: String) IncidentStatusDTO
+    }
+
+    %% Business Logic / Service - UC-D05
+    class MaintenanceService {
+        +submitRepair(ticketId: String, actorId: String, evidence: RepairEvidenceDTO) IncidentReceiptDTO
+        +validateSafety(ticketId: String, evidence: RepairEvidenceDTO) ValidationResultDTO
+        +resolveWithOwnerAck(ticketId: String, context: OperationContext) IncidentReceiptDTO
+    }
+
+    %% Business Logic / Service - UC-D06
+    class SimulationService {
+        +run(input: ScenarioInputDTO, operatorId: String) SimulationResultDTO
+        +getResult(resultId: String, operatorId: String) SimulationResultDTO
+        +createDraftOrder(resultId: String, choiceId: String, operatorId: String) DraftOrderDTO
+    }
+
+    %% Business Logic / Service - UC-D06
+    class SimulationEngine {
+        +validateScenario(input: ScenarioInputDTO) ValidationResultDTO
+        +simulate(snapshot: ResourceSnapshotDTO, input: ScenarioInputDTO) SimulationResultDTO
+        +generateRecommendations(result: SimulationResultDTO) List_RecommendationDTO
+    }
+
+    %% Business Logic / Service - UC-D07
+    class TelemetryIngestionService {
+        +ingest(payload: TelemetryPayloadDTO) VerificationReceiptDTO
+        +getReceipt(sourceId: String, eventId: String) VerificationReceiptDTO
+        +routeVerifiedEvent(event: VerifiedEventDTO) OperationResultDTO
+        +markSourcesStale(now: DateTime) Integer
+    }
+
+    %% Business Logic / Service - UC-D07
+    class EventVerificationService {
+        +getVerifiedEvent(sourceId: String, eventId: String) VerifiedEventDTO
+        +validateOrder(event: TelemetryPayloadDTO, previous: TelemetryRecord) ValidationResultDTO
+        +reconcileEvent(sourceId: String, eventId: String) VerificationReceiptDTO
+        +verifyOrGetReceipt(payload: TelemetryPayloadDTO) VerificationReceiptDTO
+    }
+
+    %% Business Logic / Service - UC-D01/D07
+    class VehicleObservationService {
+        +getVerifiedVehicleSnapshot(vehicleId: String) VehicleObservationDTO
+        +applyVerifiedVehicleLocation(event: VerifiedEventDTO) OperationResultDTO
+    }
+
+    %% Persistence - D01/D02/D06 read-only
+    class IHubReadRepository {
+        <<interface>>
+        +getHubProjection(hubId: String) HubReadDTO
+        +listHubProjections() List_HubReadDTO
+    }
+
+    %% Persistence - UC-D02/D03
+    class IRedistributionOrderRepository {
+        <<interface>>
+        +saveIssuedOnce(order: RedistributionOrder, intentId: String) RedistributionOrder
+        +findById(orderId: String) RedistributionOrder
+        +findOutcomeByIntent(intentId: String) OrderOutcomeDTO
+        +recordVehicleEffectOnce(orderId: String, event: VerifiedEventDTO, stage: String) Boolean
+        +markCompletedIfAllDelivered(orderId: String) Boolean
+    }
+
+    %% Persistence - UC-D04/D05
+    class IIncidentRepository {
+        <<interface>>
+        +openOrFindLinked(recordId: String, intentId: String) IncidentTicket
+        +findById(ticketId: String) IncidentTicket
+        +updateTicketWithRevision(ticket: IncidentTicket, expectedRevision: Integer) Boolean
+        +listAffectedOpen(resourceId: String) List_IncidentTicket
+    }
+
+    %% Persistence - UC-D07
+    class ITelemetryRepository {
+        <<interface>>
+        +appendInboxOnce(payload: TelemetryPayloadDTO) TelemetryRecord
+        +findBySourceEvent(sourceId: String, eventId: String) TelemetryRecord
+        +markVerified(sourceId: String, eventId: String, receipt: VerificationReceiptDTO) Boolean
+        +markOwnerEffect(sourceId: String, eventId: String, owner: String, status: String) Boolean
+    }
+
+    %% Persistence - UC-D01/D03/D07
+    class IVehicleObservationRepository {
+        <<interface>>
+        +findLatest(vehicleId: String) VehicleObservationDTO
+        +applyIfNewer(event: VerifiedEventDTO) Boolean
+    }
+
+    %% Persistence - UC-D02/D04
+    class IStaffRepository {
+        <<interface>>
+        +findAvailableCarriers() List_StaffDTO
+        +findAvailableTechnicians() List_StaffDTO
+    }
+
+    %% Domain - UC-D02/D03
+    class RedistributionOrder {
+        -orderId: String
+        -sourceHubId: String
+        -destinationHubId: String
+        -assignedStaffId: String
+        -status: RedistributionStatus
+        -intentId: String
+        -revision: Integer
+        +issue() void
+        +start(staffId: String) void
+        +markVehicleDelivered(vehicleId: String, eventId: String) void
+        +completeIfReady() Boolean
+    }
+
+    %% Domain - UC-D04/D05
+    class IncidentTicket {
+        -ticketId: String
+        -resourceId: String
+        -ownerActorId: String
+        -technicianId: String
+        -status: IncidentState
+        -revision: Integer
+        +assign(technicianId: String) void
+        +escalate(reason: String) void
+        +recordRepairEvidence(evidence: RepairEvidenceDTO) void
+        +resolveAfterSafetyCheck() void
+    }
+
+    %% Domain - UC-D07
+    class TelemetryRecord {
+        -sourceId: String
+        -eventId: String
+        -resourceId: String
+        -observedAt: DateTime
+        -receivedAt: DateTime
+        -status: VerificationStatus
+        -payloadFingerprint: String
+        +markVerification(status: VerificationStatus) void
+    }
+
+    %% Domain - UC-D06
+    class SimulationPlan {
+        -planId: String
+        -snapshotRevision: Integer
+        -createdBy: String
+        -createdAt: DateTime
+        +toDraftOrder(choiceId: String) DraftOrderDTO
+    }
+
+    %% Integration / Contract - Shared A/D
+    class IVehicleClaimPort {
+        <<interface>>
+        +reserve(vehicleId: String, kind: String, refId: String, context: OperationContext) OperationResultDTO
+        +transition(vehicleId: String, fromRef: String, toKind: String, toRef: String, context: OperationContext) OperationResultDTO
+        +release(vehicleId: String, expectedRef: String, context: OperationContext) OperationResultDTO
+    }
+
+    %% Integration / Contract - Role B
+    class IParkingOperations {
+        <<interface>>
+        +checkReception(tripId: String, hubId: String, rightId: String, asOf: DateTime) ReceptionDecisionDTO
+        +recordDeparture(event: VerifiedEventDTO, context: OperationContext) ParkingEffectDTO
+        +recordArrival(event: VerifiedEventDTO, rightId: String, context: OperationContext) ParkingEffectDTO
+        +cancelUnusedRight(rightId: String, context: OperationContext) ParkingOutcomeDTO
+        +reserveTransferCapacity(orderId: String, vehicleIds: List_String, hubId: String, context: OperationContext) ParkingEffectDTO
+        +cancelDependentByHold(holdId: String, context: OperationContext) ParkingOutcomeDTO
+    }
+
+    %% Integration / Contract - Role C
+    class IChargingOperations {
+        <<interface>>
+        +estimateBundle(vehicleId: String, hubId: String, range: TimeRangeDTO) ChargingEstimateDTO
+        +reserveBundlePort(bundleId: String, rightId: String, portId: String, range: TimeRangeDTO, context: OperationContext) OperationResultDTO
+        +processDependentCancellation(rightId: String, context: OperationContext) OperationResultDTO
+        +readPlugAndCharge(vehicleId: String) ChargingConstraintDTO
+    }
+
+    %% Integration / Contract - D07 -> A/B/C/D
+    class IVerifiedEventReader {
+        <<interface>>
+        +getVerifiedEvent(sourceId: String, eventId: String) VerifiedEventDTO
+    }
+
+    %% Integration / Contract - D -> A/C
+    class IVehicleObservationReader {
+        <<interface>>
+        +getVerifiedVehicleSnapshot(vehicleId: String) VehicleObservationDTO
+    }
+
+    %% Integration / Contract - D -> B
+    class IRedistributionOperations {
+        <<interface>>
+        +previewTransfer(sourceHubId: String, destHubId: String, vehicleIds: List_String) TransferPreviewDTO
+        +issueOrder(previewId: String, expectedRevision: Integer, context: OperationContext) OperationResultDTO
+        +confirmVehicleHandover(orderId: String, event: VerifiedEventDTO, context: OperationContext) HandoverOutcomeDTO
+    }
+
+    %% Integration / Contract - D -> A/B/C
+    class IIncidentOperations {
+        <<interface>>
+        +openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO
+        +getIncidentStatus(ticketId: String) IncidentStatusDTO
+        +recordPlanResponse(ticketId: String, response: PlanResponseDTO, context: OperationContext) IncidentReceiptDTO
+    }
+
+    %% Integration / Contract - Shared infrastructure
+    class IUnitOfWork {
+        <<interface>>
+        +executeAtomic(command: CompositeCommandDTO) OperationResultDTO
+    }
+
+    %% Integration / Contract - D01 -> B/C
+    class IOwnerConfigCommandPort {
+        <<interface>>
+        +requestOwnerChange(resourceId: String, change: ConfigChangeDTO, context: OperationContext) OperationResultDTO
+    }
+
+    %% Integration / Contract - Shared read model
+    class IResourceSnapshotReader {
+        <<interface>>
+        +loadSnapshot(criteria: SearchCriteriaDTO) ResourceSnapshotDTO
+    }
+
+    %% Integration / Contract - Shared infrastructure
+    class INotificationPort {
+        <<interface>>
+        +enqueueOrderNotice(orderId: String, staffId: String, context: OperationContext) OperationResultDTO
+        +enqueueIncidentNotice(ticketId: String, recipientId: String, context: OperationContext) OperationResultDTO
+    }
+
+    class TransferVehicle {
+        -vehicleId: String
+        -pickupEventId: String
+        -deliveryEventId: String
+        -delivered: Boolean
+    }
+
+    class RedistributionStatus {
+        <<enumeration>>
+        ISSUED
+        IN_PROGRESS
+        COMPLETED
+        CANCELLED
+    }
+
+    class IncidentState {
+        <<enumeration>>
+        OPEN
+        IN_PROGRESS
+        ESCALATED_WORKSHOP
+        RESOLVED
+        CLOSED_UNFULFILLED
+    }
+
+    class VerificationStatus {
+        <<enumeration>>
+        RECEIVED
+        VERIFIED
+        PENDING
+        REJECTED
+        DUPLICATE
+    }
+
+    class VehicleLocationKind {
+        <<enumeration>>
+        HUB_SPOT
+        IN_TRIP
+        ON_TRUCK
+        WORKSHOP
+        UNKNOWN
+    }
+
+    %% Controller delegation
+    NetworkMonitoringController ..> NetworkMonitoringService : D01
+    RedistributionController ..> RedistributionService : D02
+    RedistributionController ..> RedistributionHandoverService : D03
+    IncidentController ..> IncidentService : D04
+    IncidentController ..> MaintenanceService : D05
+    SimulationController ..> SimulationService : D06
+    TelemetryController ..> TelemetryIngestionService : D07
+
+    %% Internal services
+    SimulationService ..> SimulationEngine : isolated simulation
+    TelemetryIngestionService ..> EventVerificationService : validate
+    TelemetryIngestionService ..> VehicleObservationService : verified D-owned state
+    RedistributionHandoverService ..> EventVerificationService : verified event
+    IncidentService ..> MaintenanceService : technical review
+    NetworkMonitoringService ..> IHubReadRepository : read-only
+    NetworkMonitoringService ..> IResourceSnapshotReader : snapshot
+    NetworkMonitoringService ..> IOwnerConfigCommandPort : route owner change
+
+    %% Repository dependencies
+    RedistributionService ..> IRedistributionOrderRepository : orders
+    RedistributionService ..> IStaffRepository : assigned staff
+    RedistributionHandoverService ..> IRedistributionOrderRepository : each vehicle
+    IncidentService ..> IIncidentRepository : incidents
+    MaintenanceService ..> IIncidentRepository : repair state
+    EventVerificationService ..> ITelemetryRepository : inbox
+    TelemetryIngestionService ..> ITelemetryRepository : raw receipt
+    VehicleObservationService ..> IVehicleObservationRepository : D observation
+
+    %% Ports and boundary
+    RedistributionService ..> IVehicleClaimPort : shared claim
+    RedistributionService ..> IParkingOperations : B destination capacity
+    RedistributionService ..> IChargingOperations : C plug and charge
+    RedistributionService ..> IUnitOfWork : atomic issue
+    RedistributionService ..> INotificationPort : outbox
+    RedistributionHandoverService ..> IParkingOperations : B arrival and departure
+    RedistributionHandoverService ..> IVehicleClaimPort : release on evidence
+    RedistributionHandoverService ..> IUnitOfWork : atomic per vehicle
+    MaintenanceService ..> IOwnerConfigCommandPort : owner reevaluation
+    IncidentService ..> INotificationPort : incident notice
+    SimulationService ..> IResourceSnapshotReader : frozen snapshot
+
+    %% D-provided public contracts
+    IRedistributionOperations ..> RedistributionService : D02
+    IRedistributionOperations ..> RedistributionHandoverService : D03
+    IIncidentOperations ..> IncidentService : D04
+    IIncidentOperations ..> MaintenanceService : D05
+    IVerifiedEventReader ..> EventVerificationService : D07
+    IVehicleObservationReader ..> VehicleObservationService : D07
+
+    %% Domain persistence and relations
+    IRedistributionOrderRepository ..> RedistributionOrder : persists
+    IIncidentRepository ..> IncidentTicket : persists
+    ITelemetryRepository ..> TelemetryRecord : stores raw
+    RedistributionOrder "1" *-- "1..*" TransferVehicle : vehicle progress
+    IncidentTicket ..> TelemetryRecord : evidence reference
+    RedistributionOrder ..> RedistributionStatus : state
+    IncidentTicket ..> IncidentState : state
+    TelemetryRecord ..> VerificationStatus : state
+
+    class IEventVerificationIngress {
+        <<interface>>
+        +verifyOrGetReceipt(payload: TelemetryPayloadDTO) VerificationReceiptDTO
+    }
+
+
+    class IDeviceCommandPort {
+        <<interface>>
+        +requestStart(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+        +requestStop(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+    }
+
+
+    class DeviceCommandAdapter {
+    }
+    DeviceCommandAdapter ..|> IDeviceCommandPort : implements
+    DeviceCommandAdapter ..> INotificationPort : enqueue commands
+    TelemetryIngestionService ..> IEventVerificationIngress : process incoming event

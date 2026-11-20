@@ -1,0 +1,31 @@
+flowchart LR
+    subgraph CLIENTS[Client Nodes]
+        S[Student Browser]
+        O[Operator Browser]
+        T[Carrier or Technician Browser]
+    end
+    subgraph SERVER[Application Server Node]
+        W[HTTP Application and Auth]
+        A[A Rental]
+        B[B Parking]
+        C[C Charging]
+        D[D Operations and D07]
+        X[Short SQLite Unit of Work and Outbox Dispatcher]
+        W --> A
+        W --> B
+        W --> C
+        W --> D
+        A --> X
+        B --> X
+        C --> X
+        D --> X
+    end
+    subgraph DATA[Persistent Storage Node]
+        SQL[(One durable SQLite file with WAL)]
+    end
+    I[External IoT Simulator Node] -->|Telemetry and ACK events| D
+    X -->|Queued device commands| I
+    S -->|HTTPS or local demo HTTP| W
+    O -->|HTTPS or local demo HTTP| W
+    T -->|HTTPS or local demo HTTP| W
+    X -->|Local ACID transaction| SQL

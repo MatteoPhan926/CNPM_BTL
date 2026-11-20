@@ -1,0 +1,118 @@
+classDiagram
+    direction TB
+    %% Role C - Data contracts and independent state dimensions
+
+    class ChargingSessionStatus {
+        <<enumeration>>
+        BOOKED
+        START_PENDING
+        CHARGING
+        STOP_PENDING
+        COMPLETED
+        CANCELLED
+        EXPIRED
+        INTERRUPTED
+    }
+
+    class PlugState {
+        <<enumeration>>
+        UNPLUGGED
+        CONNECTED
+        UNKNOWN
+    }
+
+    class PowerState {
+        <<enumeration>>
+        OFF
+        ON
+        UNKNOWN
+    }
+
+    class PortHealth {
+        <<enumeration>>
+        OPERABLE
+        OUT_OF_SERVICE
+        INSPECTION_PENDING
+    }
+
+    class SchedulePlanStatus {
+        <<enumeration>>
+        DRAFT
+        CONFIRMED
+        APPLIED
+        REJECTED
+    }
+
+    class RegistrationRequest {
+        +vehicleId: String
+        +hubId: String
+        +startTime: DateTime
+        +endTime: DateTime
+        +currentSOC: Decimal
+        +targetSOC: Decimal
+        +parkingRightId: String
+    }
+
+    class ChargingSessionDTO {
+        +sessionId: String
+        +status: ChargingSessionStatus
+        +plugState: PlugState
+        +powerState: PowerState
+        +observedAt: DateTime
+    }
+    class VerifiedEventDTO {
+        +sourceId: String
+        +eventId: String
+        +kind: String
+        +resourceId: String
+        +vehicleId: String
+        +hubId: String
+        +spotId: String
+        +portId: String
+        +sessionId: String
+        +observedAt: DateTime
+        +receivedAt: DateTime
+        +revision: Integer
+        +verificationId: String
+        +payloadFingerprint: String
+    }
+    class OperationContext {
+        +actorId: String
+        +actorRole: String
+        +intentId: String
+        +correlationId: String
+        +expectedRevision: Integer
+        +requestedAtUTC: DateTime
+        +payloadFingerprint: String
+    }
+
+    class ChargingConstraintDTO {
+        +vehicleId: String
+        +sessionStatus: ChargingSessionStatus
+        +plugState: PlugState
+        +powerState: PowerState
+        +observedAt: DateTime
+    }
+
+    class SchedulingInputDTO {
+        +snapshotRevision: Integer
+        +observedAt: DateTime
+        +availablePowerKW: Decimal
+        +unmetDemand: Decimal
+    }
+
+    class PortObservationDTO {
+        +portId: String
+        +plugState: PlugState
+        +powerState: PowerState
+        +health: PortHealth
+        +observedAt: DateTime
+    }
+
+    ChargingSessionDTO --> ChargingSessionStatus
+    ChargingSessionDTO --> PlugState
+    ChargingSessionDTO --> PowerState
+    PortObservationDTO --> PlugState
+    PortObservationDTO --> PowerState
+    PortObservationDTO --> PortHealth
+    ChargingConstraintDTO --> ChargingSessionStatus

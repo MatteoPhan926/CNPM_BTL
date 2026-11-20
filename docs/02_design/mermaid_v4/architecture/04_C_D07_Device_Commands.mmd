@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    actor Student
+    participant C as C Session Owner
+    participant Outbox as Device Command Adapter
+    participant IOT as External IoT Simulator
+    participant D as D07 Verified Event
+    Student->>C: requestStart(sessionId)
+    C->>C: START_PENDING; persist intent and command
+    C->>Outbox: enqueue requestStart
+    Outbox->>IOT: send device command after commit
+    IOT-->>D: status and ACK (sourceId,eventId)
+    D->>D: validate and save inbox receipt
+    D-->>C: getVerifiedEvent(sourceId,eventId)
+    C->>C: applyVerifiedEvent once
+    alt matching verified start
+        C->>C: CHARGING
+    else missing or conflicting evidence
+        C->>C: keep pending or mark exception
+    end
+    Note over C,IOT: STOP_PENDING and physical UNPLUGGED are distinct states

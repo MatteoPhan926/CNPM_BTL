@@ -1,0 +1,1930 @@
+ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH
+  TRƯỜNG ĐẠI HỌC BÁCH KHOA
+
+
+
+
+BÁO CÁO BÀI TẬP LỚN
+   CÔNG NGHỆ PHẦN MỀM
+   Thiết kế hệ thống Smart E-Mobility Hub
+
+
+
+             Sinh viên thực hiện
+
+          Họ và tên            MSSV
+          Phan Ngọc Xuân Lợi   2411969
+          Phan Kỳ Nhân         2412432
+          Phạm Gia Khang       2411471
+          Phạm Anh Tuấn        2413800
+LỜI MỞ ĐẦU
+Trong xu hướng dịch chuyển xanh và phát triển các mô hình giao thông thông minh tại các đô thị hiện đại, việc tối ưu hóa
+hạ tầng vận hành phương tiện điện dùng chung đóng vai trò then chốt. Nhằm giải quyết bài toán quản lý tài nguyên đồng bộ,
+chính xác và đảm bảo tính nhất quán dữ liệu trong môi trường bất đồng bộ, dự án Smart E-Mobility Hub đã được nghiên
+cứu và triển khai thiết kế.
+Báo cáo này trình bày toàn diện quy trình phân tích và đặc tả hệ thống Smart E-Mobility Hub — giải pháp công nghệ hỗ trợ
+người dùng và đơn vị vận hành quản lý tối ưu các nguồn tài nguyên gồm xe điện, vị trí đỗ, cổng sạc và mạng lưới điều phối.
+Nội dung báo cáo bao quát từ việc khảo sát bối cảnh, phân tích vai trò các bên liên quan (Stakeholders/Actors), xây dựng hệ
+thống quy tắc nghiệp vụ (Business Rules), mô tả các chức năng tự động hóa, định nghĩa tập yêu cầu phi chức năng (NFR),
+cho đến đặc tả chi tiết toàn bộ các Use Case và xây dựng mô hình kịch bản kiểm thử/mô phỏng What-if.
+Nhóm em xin chân thành gửi lời cảm ơn sâu sắc đến thầy/cô đã tận tình giảng dạy và định hướng kiến thức, giúp em hoàn
+thành báo cáo bài tập lớn này.
+
+
+
+
+                                                            1
+Mục lục
+
+Lời mở đầu                                                                                                                         1
+
+1 Context                                                                                                                          3
+   1.1   Mục tiêu dự án . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     3
+   1.2   Scope . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    3
+
+2 Stakeholder và actors                                                                                                            3
+   2.1   Stakeholders và kỳ vọng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    3
+   2.2   Actors của hệ thống . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    4
+
+3 Thuật ngữ trạng thái và chính sách mô hình                                                                                       4
+   3.1   Thuật ngữ dùng chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       4
+   3.2   Thông tin trạng thái cần phân biệt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     4
+
+4 Business rules chung và theo nghiệp vụ                                                                                           5
+   4.1   Quy tắc chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    5
+   4.2   Quy tắc thuê xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    6
+   4.3   Quy tắc chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     6
+   4.4   Quy tắc sạc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+   4.5   Quy tắc điều chuyển . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
+   4.6   Quy tắc sự cố và mô phỏng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      8
+
+5 Yêu cầu chức năng tự động                                                                                                        8
+
+6 Yêu cầu phi chức năng                                                                                                            9
+
+7 Sơ đồ UML toàn hệ thống                                                                                                          10
+   7.1   Giải thích quan hệ trong sơ đồ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+8 Đặc tả use case                                                                                                                  11
+   8.1   Danh mục và quy ước . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+   8.2   Phần A Hành trình thuê xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+   8.3   Phần B Chỗ đỗ và sức chứa . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+   8.4   Phần C Sạc và tài nguyên sạc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+   8.5   Phần D Vận hành điều chuyển và mô phỏng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+
+9 Tình huống kiểm tra yêu cầu và mô phỏng                                                                                          31
+   9.1   Tình huống phối hợp giữa các nghiệp vụ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+   9.2   Các kịch bản của chức năng What if . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+
+
+
+
+                                                                 2
+1 Context
+Theo bối cảnh giả định của đề, sinh viên có thể đến khu đô thị bằng Metro và tiếp tục di chuyển giữa trường học, ký túc xá,
+thư viện và khu dịch vụ bằng phương tiện điện dùng chung. Mỗi Hub có chỗ đỗ, cổng sạc và xe; xe cá nhân cũng có nhu cầu
+đỗ và sạc. Năng lực phục vụ vì vậy phụ thuộc đồng thời vào vị trí, mức pin, khả năng sạc và các cam kết đã xác nhận.
+Vấn đề cần giải quyết là giữ trạng thái và quyền sử dụng nhất quán trong khi nhiều người cùng yêu cầu tài nguyên và dữ liệu
+vật lý được cập nhật bất đồng bộ. Hệ thống phải phân biệt việc dự kiến, việc được giữ quyền và việc thực sự đã xảy ra; khi
+không thể đáp ứng cần giữ hồ sơ và người chịu trách nhiệm xử lý.
+
+1.1 Mục tiêu dự án
+
+Mã                  Mục tiêu và kết quả cần đạt                                                                  Phụ trách
+G01                 Hoàn tất hành trình thuê. Sinh viên tra cứu, giữ, nhận và trả xe; luôn phân biệt kết quả     A
+                    đã xác nhận với kết quả còn chờ.
+G02                 Phân bổ tài nguyên nhất quán. Không xác nhận quyền sử dụng xung đột; sức chứa đỗ,            ABCD
+                    cổng và công suất sạc được xét cùng các cam kết.
+G03                 Phục vụ xe cá nhân. Sinh viên có xe cá nhân đặt chỗ đỗ, đăng ký và quản lý sạc tại Hub.      BC
+G04                 Điều hành và hỗ trợ. Người vận hành phát hiện thiếu năng lực, phân công vận chuyển,          D cùng A B C
+                    tiếp nhận sự cố và xác minh kết quả.
+G05                 Lập lịch sạc có ưu tiên. Ưu tiên nhu cầu hợp lệ theo chính sách, bảo vệ cam kết và hiển      C
+                    thị phần chưa đáp ứng.
+G06                 Đánh giá trước khi áp dụng. Mô phỏng tình huống với cùng đầu vào so sánh và khuyến           D cùng A B C
+                    nghị có thể kiểm tra lại trước áp dụng.
+
+
+
+1.2 Scope
+
+Phạm vi                             Nội dung
+Trong phạm vi                       Danh mục Hub và tài nguyên; tra cứu; đặt, hủy, nhận và trả xe; đặt đỗ cho xe cá nhân và xe thuê;
+                                    tiếp nhận và rời vị trí; đăng ký và điều phối sạc; điều chuyển bằng xe tải; sự cố và đối soát; mô phỏng
+                                    What-if.
+Ranh giới phần mềm                  Một ứng dụng quản lý dùng chung cho các vai trò được phân quyền. IoT hoặc nguồn giả lập độc lập
+                                    gửi quan sát và phản hồi lệnh; sửa chữa, chở xe, cắm hoặc rút cáp thực tế nằm ngoài phần mềm.
+Danh tính và quyền                  Tài khoản và vai trò được cấp sẵn cho môi trường mô phỏng. Có kiểm soát chủ sở hữu và phân công;
+                                    không triển khai quy trình đăng ký công khai, SSO hoặc quản lý nhân sự đầy đủ.
+Ngoài phạm vi                       Phần cứng IoT thật; bản đồ 3D; thanh toán, tiền phạt và bồi thường thật; vận hành xe tải hoặc
+                                    xưởng thật; cứu hộ ngoài mạng Hub; dự báo học máy; tối ưu tuyến đường phức tạp; tích hợp Metro
+                                    hoặc dịch vụ ngoài.
+
+
+
+
+2 Stakeholder và actors
+2.1 Stakeholders và kỳ vọng
+
+Stakeholder                      Vai trò                                                        Kỳ vọng
+Sinh viên thuê xe                Sử dụng xe dùng chung cho hành trình giữa các Hub.             Thông tin đủ mới, đúng quyền
+                                                                                                nhận xe, trả xe có xác nhận và có
+                                                                                                đường yêu cầu hỗ trợ.
+Sinh viên có xe cá nhân          Sử dụng chỗ đỗ và dịch vụ sạc.                                 Biết rõ đỗ và sạc được xác nhận
+                                                                                                phần nào; được thông báo và lựa
+                                                                                                chọn khi điều kiện phục vụ thay
+                                                                                                đổi.
+Đơn vị quản lý ĐHQG HCM          Chủ thể quản lý dịch vụ giả định trong khu đô thị; chưa gán tư Đặt chính sách, kiểm soát khả
+                                 cách pháp lý cho đơn vị ngoài đời.                             năng phục vụ và tra được các
+                                                                                                quyết định, sự cố.
+
+
+
+
+                                                                    3
+Stakeholder                 Vai trò                                                                  Kỳ vọng
+Đơn vị quản lý mặt bằng Hub Quản lý sức chứa và phần vị trí được khai thác.                          Không vượt năng lực đã cấu hình;
+                                                                                                     vị trí đóng và phần tiếp nhận dự
+                                                                                                     phòng được thể hiện đúng.
+Nhân viên điều hành              Giám sát, phân công, quyết định phương án và ngoại lệ.              Thấy cảnh báo có căn cứ, các cam
+                                                                                                     kết bị ảnh hưởng và trách nhiệm
+                                                                                                     xử lý tiếp theo.
+Nhân viên điều chuyển            Thực hiện vận chuyển xe dùng chung bằng xe tải.                     Lệnh rõ xe, nguồn, đích, sức chứa
+                                                                                                     được giữ; ghi nhận từng mốc và
+                                                                                                     giao một phần.
+Kỹ thuật viên bảo trì            Kiểm tra và khắc phục lỗi ngoài phần mềm, cập nhật kết quả.         Có phiếu và bằng chứng; không bị
+                                                                                                     buộc xác nhận đã sửa xong khi tài
+                                                                                                     nguyên chưa đạt.
+
+
+
+2.2 Actors của hệ thống
+
+Mã            Actor                     Tương tác và giới hạn
+SV            Sinh viên                 Tra cứu, đặt tài nguyên, nhận và trả xe, sử dụng dịch vụ đỗ và sạc, gửi yêu cầu hỗ trợ. Chỉ thao
+                                        tác với hồ sơ được phép của mình.
+OP            Nhân viên điều hành       Giám sát, quyết định phương án tiếp nhận, phân công điều chuyển, phân công xử lý sự cố; xác
+                                        nhận ngoại lệ có căn cứ.
+DC            Nhân viên điều chuyển     Xem lệnh được phân công, xác nhận lấy xe, bàn giao và báo bất thường; sử dụng xe tải được
+                                        chỉ định.
+BT            Kỹ thuật viên bảo trì     Xem phiếu được giao; ghi kết quả kiểm tra, sửa chữa, chuyển xưởng và xác nhận điều kiện kỹ
+                                        thuật.
+IOT           Hệ thống IoT / Giả lập    Nguồn bên ngoài gửi quan sát xe, vị trí đỗ, pin, cổng sạc và xác nhận lệnh thiết bị. Dữ liệu giả
+                                        lập tuân cùng hợp đồng sự kiện.
+
+
+Nhân viên điều chuyển và kỹ thuật viên có mục tiêu trực tiếp trong UC-D03 và UC-D05, được giữ làm actor với phạm vi tối
+thiểu. Các vai trò dùng cùng ứng dụng; không mở rộng thành hệ thống quản lý nhân sự. Xe tải, dữ liệu, database và timer nội
+bộ không được mô hình hóa thành actor.
+
+
+3 Thuật ngữ trạng thái và chính sách mô hình
+3.1 Thuật ngữ dùng chung
+
+Thuật ngữ                     Ý nghĩa
+Hub                           Địa điểm trong mạng có cấu hình vị trí đỗ, cổng sạc, giới hạn công suất và chính sách tiếp nhận.
+Vãng lai                      Yêu cầu đỗ mới chưa có quyền tiếp nhận phù hợp. Xe thuê đang cần trả được đánh giá theo trách nhiệm
+                              chuyến và BR-A05, không chỉ bị chuyển hướng như một yêu cầu mới thông thường.
+SOC                           State of Charge, phần trăm dung lượng pin. Mô hình dùng dung lượng khai báo, công suất hữu dụng và
+                              hiệu suất giả lập 90% để ước tính thời gian; đây không phải đo đạc pin thật.
+BR, AUTO và NFR               BR - Business Rule: quy định điều hợp lệ trong nghiệp vụ; AUTO mô tả hành vi tự động theo kích hoạt;
+                              NFR - Non-functional Requirement: quy định chất lượng có phạm vi và cách xác nhận. Use case mô tả
+                              tương tác để đạt mục tiêu.
+
+
+
+3.2 Thông tin trạng thái cần phân biệt
+
+Đối tượng                  Trạng thái / Thuộc tính     Ý nghĩa và giới hạn
+Lượt giữ xe                ACTIVE,                     Chỉ CONSUMED khi bàn giao nhận xe đã được xác nhận. Hết hạn không
+                           HANDOVER_PENDING,           tự giải phóng một bàn giao chưa rõ.
+                           CONSUMED,        CANCELLED,
+                           EXPIRED
+
+
+
+                                                                   4
+Đối tượng                  Trạng thái / Thuộc tính             Ý nghĩa và giới hạn
+Chuyến thuê                OPEN, HANDOVER_PENDING,             Chỉ CLOSED theo BR-A05; các trạng thái chờ vẫn là chuyến chưa đóng.
+                           ASSISTANCE_PENDING,
+                           CLOSED
+Quyền đỗ                   CONFIRMED,                          Quyền đỗ có khoảng thời gian. CONSUMED biểu thị đã tiếp nhận và
+                           HANDOVER_PENDING,                   gắn với phiên đỗ, không biểu thị chỗ đã trống.
+                           CONSUMED,         CANCELLED,
+                           EXPIRED
+Vị trí đỗ                  EMPTY,OCCUPIED,                     Lịch quyền giữ được lưu riêng. Một ô EMPTY có thể chưa cấp được vì
+                           UNKNOWN; khai thác OPEN             lịch, đóng khai thác hoặc dữ liệu chưa đủ căn cứ.
+                           hoặc CLOSED
+Xe dùng chung              Vị trí: Hub, vị trí đỗ, xe tải,     Cam kết thuê hoặc điều chuyển và trạng thái kết nối sạc được lưu riêng.
+                           trong   chuyến,   xưởng   hoặc      AVAILABLE (khả dụng) và PENDING_REDISTRIBUTION (đã khóa
+                           chưa xác minh; sử dụng IDLE,        cam kết điều chuyển) là kết quả đánh giá khả dụng/vận hành, không ghi
+                           IN_USE,IN_TRANSFER;                 đè những thông tin này.
+                           kỹ      thuật      OPERABLE,
+                           INSPECTION_PENDING,
+                           OUT_OF_SERVICE
+Phiên sạc                  BOOKED, START_PENDING,              Phiên hoàn thành không đồng nghĩa cổng đã được rút hoặc chỗ đỗ đã
+                           CHARGING, STOP_PENDING,             được giải phóng.
+                           COMPLETED,        CANCELLED,
+                           EXPIRED, INTERRUPTED
+Cổng sạc                   Kết nối UNPLUGGED hoặc              CHARGING và OCCUPIED_IDLE là nhãn quan sát tổng hợp. Quyền
+                           CONNECTED;         cấp    điện      giữ tương lai vẫn được lưu riêng.
+                           OFF, ON hoặc UNKNOWN;
+                           kỹ thuật OPERABLE hoặc
+                           OUT_OF_SERVICE
+Lệnh điều chuyển           ISSUED,         IN_PROGRESS,        Lệnh lưu danh sách xe đã lấy, đã giao và còn lại (xe thuộc lệnh chưa hoàn
+                           COMPLETED, CANCELLED                tất bàn giao được đánh dấu cam kết PENDING_REDISTRIBUTION);
+                                                               việc chuyển giao thông báo có trạng thái riêng. Bản thảo chưa phải lệnh
+                                                               có cam kết.
+Xe tải                     Vị trí, danh sách xe đang chở, giới Hoàn tất giao không tự đặt xe tải về Hub nguồn; vị trí thực tế quyết
+                           hạn bốn xe và lịch phân công        định lệnh tiếp theo.
+Sự cố                      OPEN,             IN_PROGRESS, Chưa phân công vẫn OPEN. CLOSED_UNFULFILLED ghi rõ không
+                           ESCALATED_WORKSHOP,                 đáp ứng; không dùng trạng thái này để xóa trách nhiệm bàn giao hoặc
+                           RESOLVED,                           chuyến còn mở. Chuyển xưởng được tiếp tục trên cùng phiếu.
+                           CLOSED_UNFULFILLED
+
+
+
+
+4 Business rules chung và theo nghiệp vụ
+Quy tắc dùng chung hoặc riêng đều được định nghĩa ở đây; phạm vi áp dụng không phụ thuộc người đã viết quy tắc. Cách
+phát biểu tách chính sách khỏi thứ tự thao tác theo nguyên tắc của Business Rules Group.
+
+4.1 Quy tắc chung
+
+Mã                 Quy tắc và phạm vi
+BR-G01             Quyền và chủ sở hữu: Kiểm soát phân quyền truy cập. Mỗi người dùng chỉ được thực hiện các thao tác trong phạm
+                   vi của mình. Ví dụ: Sinh viên: Chỉ quản lý hồ sơ, lượt đặt, chuyến đi của chính mình; Nhân viên điều chuyển & Kỹ
+                   thuật viên: Chỉ cập nhật các lệnh hoặc phiếu sự cố được phân công
+BR-G02             Ngăn ngừa xung đột tài nguyên. Hệ thống không xác nhận các lịch sử dụng bị trùng thời gian trên cùng một tài
+                   nguyên (xe, ô đỗ, cổng sạc, xe tải). Kể cả khi có nhiều yêu cầu gửi đến cùng lúc, hệ thống phải xử lý để chỉ trả về
+                   một kết quả hợp lệ duy nhất.
+BR-G03             Quản lý tính khả dụng của tài nguyên. Chỉ phân bổ các tài nguyên đang mở khai thác (không bị chiếm dụng). Các
+                   Hub hoặc vị trí đỗ/sạc đang đóng sẽ không cho phép người dùng mới vào chiếm dụng. Không tự ý sửa đổi số liệu để
+                   tránh làm sai lệch tình trạng tài nguyên.
+BR-G04             Đối với các tài nguyên bị lỗi: Phải ngăn chặn việc tiếp tục cung cấp tài nguyên ngay lập tức. Dù chưa có nhân viên
+                   xử lý thì việc chặn cung cấp vẫn phải diễn ra. Sau khi khắc phục được lỗi, hệ thống bắt buộc phải đánh giá lại khả
+                   năng đáp ứng cùng với các yêu cầu đã phát sinh trong khi xảy ra tình trạng lỗi.
+
+
+
+                                                                   5
+Mã            Quy tắc và phạm vi
+BR-G05        Cung cấp minh chứng để đảm bảo minh bạch. Các hành vi nhận/trả xe, vào/rời ô đỗ, cắm/rút sạc đều cần phải cung
+              cấp minh chứng đi kèm (ở đây nhóm cung cấp mã QR cho người dùng). Thời gian đếm ngược hết hạn, việc người
+              dùng bấm nút trên ứng dụng hay kế hoạch di chuyển dự kiến đều không được coi là bằng chứng thay thế. Sự kiện
+              sai chỗ vẫn phải được ghi nhận như một bất thường, không bị bỏ qua để giữ số liệu đẹp.
+BR-G06        Khi người dùng hoặc cảm biến gửi lại cùng một yêu cầu/sự kiện, hệ thống phải trả về kết quả đã ghi nhận trước đó
+              chứ không tạo thêm yêu cầu mới hay cộng/trừ tài nguyên lần nữa; mất phản hồi chưa chứng minh thao tác thất bại,
+              các yêu cầu chưa rõ cần được xác minh cho rõ rồi mới cung cấp tài nguyên
+BR-G07        Quản lý dịch vụ kết hợp (đỗ và sạc): yêu cầu đỗ xe kèm sạc phải được xác nhận trong một gói khi đồng thời giữ
+              được một chỗ đỗ có cổng sạc (tức là chưa có ai đặt trước vị trí sạc). Nếu đã có sẵn quyền đỗ, hệ thống có thể tái
+              sử dụng quyền đó để đăng ký sạc nếu đáp ứng khung thời gian và tính tương thích.
+BR-G08        Đảm bảo các dữ liệu như vị trí vật lý, tình trạng kỹ thuật, tình trạng sử dụng và quyền đặt trước là độc lập với nhau.
+              Mọi thay đổi về dữ liệu phải được lưu vết đầy đủ; cảm biến không được phép tự động xóa hoặc thay đổi dữ liệu nói
+              chung.
+
+
+
+4.2 Quy tắc thuê xe
+
+Mã            Quy tắc và phạm vi
+BR-A01        Quản lý lượt đặt xe: Mỗi sinh viên tại một thời điểm chỉ được phép có tối đa 1 lượt giữ xe hoặc 1 chuyến đi chưa trả
+              (bao gồm cả các trường hợp bàn giao đang chờ xác minh). Lượt giữ xe chỉ có hiệu lực trong 10 phút kể từ khi xác
+              nhận thành công, và không cho phép đặt giữ trước một chiếc xe đang trong hành trình của khách hàng khác dựa
+              trên thời gian trả dự kiến.
+BR-A02        Xe chỉ đủ điều kiện cho thuê khi đáp ứng đồng thời: Xe cho thuê phải ở đúng Hub, hoạt động bình thường, pin từ
+              20% trở lên, dữ liệu đủ mới, chưa có lịch đặt khác và không đang sạc hoặc điều chuyển. Trước bàn giao phải xác
+              nhận ngừng sạc và tháo kết nối nếu có.
+BR-A03        Phân biệt giữa nhận xe và trả xe: nhận xe trong thời gian hiệu lực của lượt giữ như đã đề cập trong BR-A01; chỗ trả
+              tại Hub đích không tự động đi kèm mà phải được đặt riêng thông qua UC-B01. Nếu người dùng không đặt chỗ trả
+              trước, và Hub đích vẫn còn chỗ đỗ thì người dùng có thể đỗ với tư cách là khách vãng lai, còn trường hợp Hub đầy
+              thì xử lý theo UC-B05
+BR-A04        Điều kiện để hủy lượt đặt: Khi lượt giữ còn hiệu lực trước khi bàn giao; nếu đang trong quá trình bàn giao thì phải
+              thực hiện đầy đủ việc xác minh lý do hủy; nếu chuyến đi đã bắt đầu thì bắt buộc người dùng phải tiến hành trả xe
+              chứ không cho phép hủy.
+BR-A05        Kết thúc chuyến đi: sau khi xe được tiếp nhận hợp lệ tại một Hub hoặc vị trí tiếp nhận đã được cấu hình và được
+              phép. Xe hỏng hoặc ít pin vẫn có thể được nhận lại nhưng không sẵn sàng để thuê tiếp. Khi Hub đích không còn khả
+              năng tiếp nhận, chuyến đi sẽ được chuyển sang trạng thái "chờ hỗ trợ/xác minh"
+
+
+
+4.3 Quy tắc chỗ đỗ
+
+Mã            Quy tắc và phạm vi
+BR-P01        Quy định về thời gian đặt chỗ đỗ: cho phép đặt trước tối đa 24 giờ; với xe cá nhân, một lượt đỗ từ 15 phút đến 12
+              giờ và có thêm 15 phút sau giờ kết thúc dự kiến trước lượt khác trên cùng vị trí (đệm thêm 15 phút để tránh xung
+              đột) Nếu người dùng đến sớm hơn lịch đặt thì chỉ được xác nhận khi không gây ra xung đột về thời gian với người
+              dùng khác. Còn nếu quá 10 phút so với thời gian đặt mà người đó chưa tới thì lượt đặt chỗ hết hạn. Xe dùng chung
+              đặt giờ đến và áp dụng thời gian sau khi nhận theo BR-P06.
+BR-P02        Xác định sức chứa. Sức chứa C là tổng số chỗ đỗ. O là số vị trí trong C đang bị chiếm dụng; X là số vị trí trong
+              C chưa xác định được tình trạng; H là phần sức chứa đã được cam kết nhưng chưa chuyển thành chiếm dụng hoặc
+              chưa xác định. Mức chiếm dụng hiệu dụng là 100 × (O + X + H) / C. Không cộng lượt giữ xe đang nằm trên một
+              chỗ như một chỗ giữ thêm. C bằng 0 nghĩa là không có khả năng tiếp nhận. Khi có xe mới vào chỗ đỗ thì O + 1
+              (nếu xe có đặt lịch trước thì H - 1). Ngược lại, khi xe rời chỗ đỗ thì O - 1.
+BR-P03        Khả năng tiếp nhận: Từ BR-P02 tính được mức chiếm hiệu dụng, - từ 80% tạo cảnh báo sớm - từ 90% ngừng nhận
+              yêu cầu đỗ mới (bao gồm cả vãng lai và đã đặt trước nhưng chưa xử lý) - từ 95% tạo cảnh báo mức cao (nguy cơ
+              quá tải) Các lịch đặt đã xác nhận vẫn được thực hiện nếu còn khả năng tiếp nhận đúng quyền.
+BR-P04        Một xe không được đặt cùng một lịch đỗ tại cùng một thời điểm. Chỗ đỗ và chỗ sạc có thể được kết hợp theo
+              BR-G07. Phần không gian trống từ (90% đến 100%) trở thành nguồn dự phòng được nhân viên điều hành cấp để
+              khôi phục các lịch đặt gián đoạn hoặc xe thuê cần hỗ trợ, có lý do và hồ sơ; không được vượt C hoặc chiếm quyền
+              của người khác.
+
+
+
+
+                                                              6
+Mã            Quy tắc và phạm vi
+BR-P05        Giải phóng chỗ đỗ: Quyền giữ chỗ được chuyển sang chiếm chỗ đúng một lần khi tiếp nhận. Khi xe rời chỗ đỗ, hệ
+              thống quyết định trạng thái khả dụng dựa trên tình hình tại chỗ đỗ, lịch đặt Xe đỗ quá giờ là vi phạm, không làm
+              chỗ đỗ tự giải phóng. Xem xét có sự xung đột về thời gian với lịch đỗ ở sau hay không, sau đó mới cung cấp chỗ đỗ
+              hiện tại hoặc một chỗ đỗ khác.
+BR-P06        Áp dụng cho xe dùng chung (khi trả xe hoặc điều chuyển đến), trong thời gian có lịch đặt xe tiếp hoặc được điều
+              chuyển đi tiếp thì chỗ đỗ của xe đó phải được xem là bị chiếm dụng hoàn toàn (không khả dụng và không thể được
+              đặt lịch)
+
+
+
+4.4 Quy tắc sạc
+
+Mã            Quy tắc và phạm vi
+BR-C01        Sinh viên chỉ được tạo phiên sạc khi xe đã đăng ký hợp lệ và cung cấp đủ thông tin. Không được đăng ký các phiên
+              sạc trùng thời gian trên cùng một xe hoặc vượt quá giới hạn lượt sử dụng theo quy định.
+BR-C02        Trạng thái phần mềm của phiên sạc và trạng thái vật lý của cổng sạc phải quản lý tách biệt độc lập. Việc tạo, bấm
+              bắt đầu hay kết thúc phiên sạc trên ứng dụng không đồng nghĩa với việc cổng sạc ngoài đời thực đã thay đổi trạng
+              thái tương ứng.
+BR-C03        Cổng sạc chỉ được giữ trước giờ sạc trong một thời gian giới hạn quy định (khoảng 10 phút). Nếu quá thời hạn này
+              mà phiên sạc chưa bắt đầu, hệ thống sẽ đánh dấu hết hạn và giải phóng tài nguyên chưa sử dụng
+BR-C04        Mức pin mục tiêu phải phù hợp với mức pin hiện tại và giới hạn của phương tiện. Nhu cầu sạc được sử dụng để xác
+              định thời lượng và khả năng đáp ứng của phiên; hệ thống không được lập lịch vượt quá khả năng cung cấp của cổng
+              sạc và Hub.
+BR-C05        Phiên sạc chỉ chuyển sang trạng thái CHARGING khi có bằng chứng vật lý hợp lệ (sự kiện truyền từ IoT hoặc cơ chế
+              xác thực quy chuẩn).
+BR-C06        Khi phiên sạc chuyển sang trạng thái COMPLETED, điều đó chỉ xác nhận quy trình trên phần mềm đã xong. Nó
+              không mặc nhiên chứng minh rằng xe đã rút cáp sạc hay cổng sạc đã sẵn sàng cho xe khác vào dùng.
+BR-C07        Hủy phiên sạc. Khi phiên sạc bị hủy trước khi bắt đầu, hệ thống phải giải phóng các tài nguyên chưa sử dụng được
+              tạo bởi chính phiên đó. Việc giải phóng tài nguyên phải được thực hiện nhất quán với các cam kết liên quan và không
+              làm ảnh hưởng đến tài nguyên đang được sử dụng bởi phiên khác.
+BR-C08        Thay đổi điều kiện sạc. Khi công suất, trạng thái cổng sạc, lịch sử dụng hoặc điều kiện tài nguyên thay đổi làm ảnh
+              hưởng đến khả năng phục vụ, hệ thống phải đánh giá lại các phiên bị ảnh hưởng và lập lại lịch khi cần thiết. Các
+              cam kết đã xác nhận không được tự ý thay đổi nếu chưa đáp ứng điều kiện và quyền xử lý tương ứng.
+BR-C09        Sự cố trong quá trình sạc. Khi cổng sạc hoặc tài nguyên liên quan phát sinh sự cố, tài nguyên đó phải được ngừng
+              phân bổ mới theo quy tắc xử lý sự cố. Các phiên đang sử dụng hoặc bị ảnh hưởng phải được xác định để điều chỉnh
+              lịch hoặc chuyển sang quy trình xử lý sự cố phù hợp.
+BR-C10        Độ mới của dữ liệu sạc. Dữ liệu về trạng thái cổng, phiên sạc, công suất và sự kiện IoT phải được kiểm tra độ mới
+              trước khi sử dụng để xác nhận trạng thái hoặc phân bổ tài nguyên. Dữ liệu quá cũ hoặc chưa được xác minh không
+              được sử dụng làm căn cứ duy nhất cho quyết định vận hành quan trọng.
+BR-C11        Lập và điều chỉnh lịch sạc. Kết quả lập hoặc điều chỉnh lịch sạc là phương án phân bổ dựa trên nhu cầu và khả năng
+              cung cấp của hệ thống. Phương án chỉ trở thành thay đổi vận hành sau khi được actor có thẩm quyền xác nhận; việc
+              tạo ra phương án lịch không đồng nghĩa với việc hệ thống đã thực hiện thao tác vật lý trên phương tiện hoặc cổng
+              sạc.
+
+
+
+4.5 Quy tắc điều chuyển
+
+Mã                    Quy tắc và phạm vi
+BR-D02-01             Phương tiện chỉ được điều chuyển khi ở trạng thái AVAILABLE và không thuộc lệnh điều chuyển khác đang
+                      ISSUED hoặc IN_PROGRESS.
+BR-D02-02             Hub đích phải đủ sức chứa cho toàn bộ phương tiện được điều chuyển, bao gồm sức chứa đã cam kết cho
+                      các lệnh đang hiệu lực.
+BR-D02-03             Lệnh điều chuyển phải xác định Hub nguồn, Hub đích, phương tiện và Nhân viên điều chuyển.
+BR-D02-04             Lệnh điều chuyển phải được phân công cho Nhân viên điều chuyển đang sẵn sàng.
+BR-D03-01             Lệnh ISSUED chỉ chuyển sang IN_PROGRESS khi Nhân viên điều chuyển được phân công xác nhận bắt đầu
+                      thực hiện.
+BR-D03-02             Chỉ phương tiện thuộc lệnh và ở trạng thái PENDING_REDISTRIBUTION mới được xác nhận bàn giao.
+
+
+
+
+                                                             7
+Mã                       Quy tắc và phạm vi
+BR-D03-03                Lệnh chỉ chuyển sang COMPLETED khi toàn bộ phương tiện thuộc lệnh đã được xác nhận bàn giao thành
+                         công.
+BR-D03-04                Khi chỉ bàn giao một phần, lệnh giữ trạng thái IN_PROGRESS và phương tiện chưa bàn giao giữ trạng thái
+                         PENDING_REDISTRIBUTION.
+BR-D03-05                Số phương tiện, sức chứa và sức chứa đã cam kết của Hub đích phải được cập nhật theo số phương tiện thực
+                         tế đã nhận.
+
+
+
+4.6 Quy tắc sự cố và mô phỏng
+
+Mã                       Quy tắc và phạm vi
+BR-D04                   Mọi sự cố kỹ thuật hoặc vận hành phát sinh phải được ghi nhận ngay lập tức vào hệ thống, kể cả khi thời
+                         điểm đó chưa có nhân viên xử lý. Trách nhiệm xử lý được phân công theo loại sự cố: sự cố kỹ thuật (hỏng
+                         xe, hỏng cổng sạc) do Kỹ thuật viên bảo trì (BT) xử lý; sự cố vận hành do Nhân viên điều hành (OP) chịu
+                         trách nhiệm điều phối.
+BR-D04-01                Tài nguyên ở trạng thái OUT_OF_SERVICE không được cung cấp cho phiên thuê hoặc phiên sạc mới.
+BR-D05-01                Tài nguyên chỉ được khôi phục khi sự cố đã được khắc phục hoàn toàn, đáp ứng điều kiện an toàn kỹ thuật
+                         và phiếu ở trạng thái RESOLVED.
+BR-D05-02                Khi phiếu ở trạng thái ESCALATED_WORKSHOP, tài nguyên phải duy trì ở trạng thái OUT_OF_SERVICE.
+BR-D06                   Kết quả mô phỏng chỉ mang tính tham khảo và không được xem là kết quả vận hành thực tế. Mọi thay đổi
+                         vận hành phải được nhân viên điều hành chủ động chọn, kiểm tra lại dữ liệu hiện tại và xác nhận qua UC-C03
+                         hoặc UC-B05. Hệ thống không tự lập lệnh, hủy lịch hay cập nhật dữ liệu vận hành từ kết quả mô phỏng.
+BR-D07-01                Chỉ dữ liệu hợp lệ và xác định được tài nguyên tương ứng mới được dùng để cập nhật trạng thái tài nguyên.
+
+
+
+
+5 Yêu cầu chức năng tự động
+Đây là phần non-interactive functional requirements bổ sung của Submission 1. AUTO mô tả việc phần mềm tự thực hiện theo
+sự kiện hoặc thời gian; việc sửa xe, chở xe và chuyển dây cắm không được coi là đã xảy ra chỉ từ một thao tác phần mềm.
+
+Mã               Kích hoạt và hành vi
+AUTO01           Hết hạn giữ xe. Kích hoạt: Đến hạn 10 phút của lượt giữ. Hết hiệu lực theo BR-A01 nếu chưa bàn giao; đánh giá lại
+                 khả năng cấp xe. Hủy quyền đỗ phụ thuộc chưa sử dụng nếu do lượt giữ này tạo ra theo BR-G07; trường hợp chưa
+                 rõ giữ chặn và tạo đối soát.
+AUTO02           Không đến theo lịch. Kích hoạt: Quá giờ bắt đầu 10 phút của quyền đỗ hoặc lịch sạc. Hết quyền chưa sử dụng, có
+                 kiểm tra dấu hiệu xe đã đến hoặc đang bàn giao. Với gói sạc kèm đỗ chưa dùng, giải phóng cả gói; nếu đã đỗ thì chỉ
+                 xử lý phần sạc chưa dùng và giữ nguyên sự chiếm chỗ. Thông báo kết quả và lưu lịch sử.
+AUTO03           Theo dõi độ mới. Kích hoạt: Mỗi 5 giây kiểm tra tuổi quan sát; quá 90 giây không có xác minh hợp lệ. Đánh dấu dữ
+                 liệu cũ, ngừng cấp mới phần tài nguyên không đủ căn cứ và phát cảnh báo. Giữ cam kết cũ; dữ liệu trở lại phải được
+                 đối soát thứ tự trước khi khôi phục khả dụng. Không cần chờ một gói tin mất kết nối mới phát hiện được im lặng.
+AUTO04           Ngưỡng sức chứa. Kích hoạt: Thay đổi vị trí, lịch giữ, lệnh điều chuyển hoặc cấu hình sức chứa. Tính lại theo BR-P02;
+                 cập nhật mức bình thường, cảnh báo sớm, hạn chế nhận mới hoặc cảnh báo cao theo BR-P03. Mức cao ưu tiên hơn
+                 mức thấp; C bằng 0 là không thể tiếp nhận. Phát một cảnh báo có cập nhật, không tạo vô hạn bản trùng.
+AUTO05           Lập lại lịch sạc. Kích hoạt: Đăng ký, hủy, kết thúc phiên, thay đổi nhu cầu, công suất hoặc tình trạng cổng. Thực
+                 hiện UC-C03 và BR-C03; giữ các cam kết còn khả thi, liệt kê phiên bị ảnh hưởng, tạo phương án chờ chấp thuận nếu
+                 thay đổi điều kiện phục vụ. Không mô tả phân bổ trên phần mềm như đã chuyển dây cắm.
+AUTO06           Dừng và nhắc giải phóng cổng. Kích hoạt: Đạt mục tiêu, hết giờ, yêu cầu dừng, lỗi; hoặc sau 15 phút đã dừng vẫn
+                 chiếm cổng. Gửi yêu cầu ngừng cấp điện và chờ xác nhận; cập nhật phiên theo kết quả. Còn cắm thì cổng vẫn bị
+                 chiếm. Nhắc chủ xe và báo nhân viên điều hành khi quá thời gian; không tự coi xe đã rời.
+AUTO07           Nhu cầu sạc xe dùng chung. Kích hoạt: Chu kỳ 15 phút. Đánh giá xe theo BR-C04 và đưa nhu cầu hợp lệ vào UC-C03.
+                 Thiếu kết nối vật lý được thể hiện là chờ chuẩn bị; không cấp điện cho xe đang được giữ để thuê hoặc điều chuyển.
+AUTO08           Phát hiện và theo dõi sự cố. Kích hoạt: Nhận lỗi hợp lệ, phát hiện cam kết không còn khả thi hoặc hồ sơ hỗ trợ chưa
+                 được tiếp nhận trong 5 phút. Bàn giao hoặc lệnh thiết bị chưa có xác nhận sau 60 giây. Chặn cấp mới tài nguyên lỗi;
+                 lưu hoặc liên kết sự cố, nêu người và cam kết bị ảnh hưởng, thông báo nhân viên điều hành. Chưa phân công vẫn
+                 giữ hồ sơ mở; nhắc lại có kiểm soát khi quá 5 phút.
+
+
+
+
+                                                                 8
+6 Yêu cầu phi chức năng
+Các mục tiêu chất lượng dưới đây là các tiêu chí sẽ được kiểm chứng khi có sản phẩm, đây chưa phải là kết quả kiểm thử. Bộ
+đánh giá tham chiếu sử dụng máy có tối thiểu 4 luồng CPU, 8 GB RAM, ổ SSD và mạng cục bộ ổn định; cấu hình thực tế phải
+được ghi lại khi đo. Tải tối đa của kịch bản chuẩn là 20 Hub, 500 phương tiện, 500 nguồn giả lập và 30 người dùng đồng thời.
+NFR về bảo toàn dữ liệu, quyền và sẵn sàng áp dụng chung. Mỗi UC liệt kê các NFR trọng tâm; việc không lặp một mã trong
+bảng UC không loại bỏ phạm vi chung đã nêu. Các ngưỡng 1, 2, 3 và 5 giây đo những đoạn xử lý khác nhau; thời gian chờ
+hành động của con người hoặc xác nhận thiết bị được tách rõ. Cách xác nhận yêu cầu dựa trên tính đo được và kiểm chứng
+được.
+
+Mã yêu cầu                 Nội dung chi tiết & Cách xác nhận
+NFR-PERF-01 Thời gian phản Phạm vi: Truy vấn và thao tác xác nhận trên ứng dụng, trừ mô phỏng và thời gian chờ.
+hồi                        Yêu cầu: Ít nhất 95% yêu cầu phản hồi trong 2 giây với 30 người dùng đồng thời trên bộ tải chuẩn.
+                           Cách xác nhận: Đo trong 15 phút; báo cáo số mẫu, p95 và tỷ lệ lỗi.
+NFR-DATA-01 Độ mới hiển Phạm vi: Giám sát và tra cứu tài nguyên.
+thị                        Yêu cầu: Sự kiện hợp lệ phản ánh lên màn hình trong tối đa 5 giây. Quá 90 giây không xác minh mới,
+                           nhãn dữ liệu cũ xuất hiện trong vòng 5 giây.
+                           Cách xác nhận: Ngừng nguồn 100 giây, kiểm tra nhãn và việc chặn cấp mới.
+NFR-PERF-02 Tiếp nhận Phạm vi: UC-D07 và sự kiện liên quan.
+telemetry                  Yêu cầu: Tải 500 nguồn gửi sự kiện mỗi 30 giây. Không mất sự kiện hợp lệ; p95 cập nhật trong 1 giây,
+                           mọi sự kiện trong 3 giây.
+                           Cách xác nhận: Chạy 15 phút; so tập mã sự kiện nhận vs đã xử lý.
+NFR-PERF-03 Lập lịch & Mô Phạm vi: UC-C03 và UC-D06.
+phỏng                      Yêu cầu: Lập lại lịch tối đa 3 giây; mô phỏng tối đa 5 giây với 20 Hub, 500 phương tiện, chân trời 60
+                           phút.
+                           Cách xác nhận: Chạy kịch bản tải chuẩn, ghi nhận kích thước và thời gian.
+NFR-REL-01 Bảo toàn & Phạm vi: Đặt tài nguyên, chuyến đi, phiên sạc, lệnh, phiếu sự cố.
+Phục hồi                   Yêu cầu: Không mất dữ liệu đã xác nhận lưu sau dừng tiến trình đột ngột. Khôi phục khả năng phục
+                           vụ trong 60 giây sau khởi động lại.
+                           Cách xác nhận: Dừng tiến trình đột ngột, đối chiếu mã hồ sơ và tài nguyên.
+NFR-REL-02 Độ sẵn sàng     Phạm vi: Chức năng nghiệp vụ phần mềm.
+                           Yêu cầu: Tỷ lệ sẵn sàng ít nhất 99% trong phiên đánh giá liên tục 4 giờ.
+                           Cách xác nhận: Thăm dò mỗi 5 giây; ghi tổng thời gian không phục vụ.
+NFR-REL-03 Cô lập ảnh Phạm vi: Sự cố một cổng sạc hoặc nguồn trạng thái.
+hưởng                      Yêu cầu: Trong vòng 10 giây kể từ xác nhận lỗi, tài nguyên phải bị loại khỏi phân bổ mới.
+                           Cách xác nhận: Gây lỗi 1 cổng, kiểm tra việc phân bổ ở các cổng còn lại.
+NFR-SEC-01 Phân quyền & Phạm vi: Tất cả UC và nguồn sự kiện.
+Lịch sử                    Yêu cầu: Từ chối truy cập sai vai trò/quyền. Mọi thay đổi quan trọng lưu vết đầy đủ.
+                           Cách xác nhận: Thử nghiệm tráo mã hồ sơ và thao tác trái quyền.
+NFR-USE-01 Hoàn thành tác Phạm vi: Tra cứu, đặt xe; tạo lệnh điều chuyển.
+vụ                         Yêu cầu: Ít nhất 4/5 người thử ở mỗi nhóm hoàn thành tác vụ trong 3 phút không cần trợ giúp.
+                           Cách xác nhận: Giao cùng nhiệm vụ; ghi thời gian và tỷ lệ hoàn thành.
+NFR-MTN-01 Thay đổi chính Phạm vi: Các tham số thời hạn, ngưỡng pin, sức chứa, ưu tiên.
+sách                       Yêu cầu: Định nghĩa tại 1 nguồn cấu hình. Đổi tham số không đòi sửa logic phân quyền hay sức chứa.
+                           Cách xác nhận: Đổi tham số và kiểm tra tính toàn vẹn hệ thống.
+
+
+
+
+                                                               9
+7 Sơ đồ UML toàn hệ thống
+
+
+
+
+                                    Hình 1: Use-case diagram của Smart E Mobility Hub
+
+7.1 Giải thích quan hệ trong sơ đồ
+
+Quan hệ                          Căn cứ
+UC-A04 include UC-B04            Luồng nhận xe thành công luôn cần ghi nhận xe rời chỗ; gọi lại trên cùng mã sự kiện trả kết quả
+                                 đã có.
+UC-A05 include UC-B03            Luồng trả xe thành công luôn cần tiếp nhận xe vào vị trí hợp lệ trước khi đóng chuyến.
+Các chuyển tiếp còn lại          UC-A02 sang UC-A04, UC-D02 sang UC-D03, UC-D04 sang UC-D05 hoặc UC-D06 sang tác vụ
+                                 áp dụng là chuyển tiếp theo điều kiện, thời điểm hoặc lựa chọn; không tự biểu diễn bằng include.
+
+
+UC-D07, UC-B03 và UC-B04 là các hành vi hỗ trợ có tương tác bên ngoài. Một sự kiện đi qua nhiều mô tả nghiệp vụ vẫn chỉ
+có một tác động lên tài nguyên theo BR-G06. Nhân viên điều chuyển và kỹ thuật viên có quyền độc lập, không kế thừa toàn
+bộ quyền của nhân viên điều hành.
+
+
+
+                                                             10
+8 Đặc tả use case
+8.1 Danh mục và quy ước
+Mỗi bảng dùng cùng cấu trúc: actor, mục tiêu, kích hoạt, điều kiện trước, kết quả thành công, bảo đảm tối thiểu, luồng chính,
+luồng thay thế, ngoại lệ và các tham chiếu. Nhãn A2a nghĩa là nhánh thay thế tại bước 2; E4a nghĩa là ngoại lệ tại bước 4.
+Các nhánh ghi rõ điểm tiếp tục hoặc kết thúc. Không mặc định mọi lỗi đều có thể hoàn tác việc vật lý đã xảy ra.
+
+Mã              Use case                                                                      Actors                     Phụ trách
+UC-A01          Tra cứu Hub và tài nguyên phù hợp                                             SV                         A
+UC-A02          Đặt xe dùng chung                                                             SV                         A
+UC-A03          Hủy lượt đặt xe                                                               SV                         A
+UC-A04          Nhận xe đã đặt                                                                SV, IOT, OP                A
+UC-A05          Trả xe dùng chung                                                             SV, IOT, OP                A
+UC-A06          Xem lượt đặt và chuyến đi của mình                                            SV                         A
+UC-A07          Gửi và theo dõi yêu cầu hỗ trợ hành trình                                     SV                         A
+UC-B01          Đặt chỗ đỗ xe                                                                 SV                         B
+UC-B02          Hủy quyền đặt chỗ đỗ                                                          SV                         B
+UC-B03          Ghi nhận xe vào chỗ đỗ                                                        SV, IOT, OP, DC            B
+UC-B04          Ghi nhận xe rời chỗ đỗ                                                        IOT, OP, DC                B
+UC-B05          Xử lý Hub thiếu khả năng tiếp nhận                                            OP, SV                     B
+UC-C01          Đăng ký phiên sạc xe cá nhân                                                  SV                         C
+UC-C02          Quản lý phiên sạc xe cá nhân                                                  SV, IOT, OP                C
+UC-C03          Lập và điều chỉnh lịch sạc                                                    OP                         C
+UC-D01          Giám sát trạng thái mạng lưới                                                 OP                         D
+UC-D02          Điều phối phương tiện giữa các Hub                                            OP, DC                     D
+UC-D03          Xác nhận hoàn tất điều chuyển phương tiện                                     DC                         D
+UC-D04          Điều phối xử lý sự cố vận hành                                                OP, BT                     D
+UC-D05          Cập nhật kết quả khắc phục sự cố                                              BT                         D
+UC-D06          Chạy mô phỏng kịch bản What-if                                                OP                         D
+UC-D07          Tiếp nhận dữ liệu và cảnh báo từ IoT                                          IOT                        D
+
+
+Các sự kiện có thể được nhìn thấy qua cả UC-D07 và UC bàn giao. Tác động nghiệp vụ được ghi theo cùng mã sự kiện; UC
+gọi lại nhận kết quả đã có. Nhờ vậy, việc tham chiếu UC-B04 hoặc UC-B05 không tạo lần cộng trừ tài nguyên thứ hai.
+
+
+8.2 Phần A Hành trình thuê xe
+
+UC-A01 Tra cứu Hub và tài nguyên phù hợp
+
+Trường đặc tả                  UC-A01 Tra cứu Hub và tài nguyên phù hợp
+Actors                         Sinh viên
+Description                    Sinh viên xác định Hub, xe, khả năng đỗ và sạc phù hợp từ dữ liệu có độ mới rõ ràng. Phạm vi: Smart
+                               E Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: A.
+Trigger                        Sinh viên yêu cầu tra cứu cho hành trình hoặc nhu cầu đỗ và sạc.
+Preconditions                  Danh mục Hub và cấu hình các tài nguyên đã tồn tại. Không yêu cầu sinh viên phải có lượt đặt trước.
+Success Guarantee              Hệ thống hiển thị các kết quả phù hợp, mức pin, khả năng phục vụ và thời điểm dữ liệu được cập nhật;
+                               việc tra cứu chưa tạo quyền giữ tài nguyên.
+Minimal Guarantee              Không làm thay đổi chuyến đi, lịch hoặc sức chứa của Hub; Không hiển thị dữ liệu cũ như thể đó là kết
+                               quả hiện tại đã được bảo đảm.
+
+
+
+
+                                                                11
+Trường đặc tả        UC-A01 Tra cứu Hub và tài nguyên phù hợp
+Normal Flow          1. Sinh viên nhập Hub hoặc khu vực cần tra cứu, loại dịch vụ và thời gian dự kiến. Đối với nhu cầu
+                     thuê xe, sinh viên có thể nhập thêm Hub đích.
+                     2. Hệ thống xác định các danh mục liên quan và độ mới của dữ liệu; đồng thời đánh giá xe theo BR-A02,
+                     chỗ đỗ theo BR-P02 và dịch vụ sạc theo BR-C01.
+                     3. Hệ thống hiển thị các Hub, xe, mức SOC, chỗ đỗ và khung thời gian sạc phù hợp; đồng thời nêu rõ
+                     ngưỡng hạn chế tiếp nhận và thời điểm cập nhật dữ liệu.
+                     4. Sinh viên chọn một Hub hoặc tài nguyên để xem thông tin chi tiết, điều kiện sử dụng và phạm vi
+                     dịch vụ.
+                     5. Hệ thống thông báo rõ rằng thao tác tra cứu chưa giữ tài nguyên và cung cấp lựa chọn chuyển sang
+                     UC-A02, UC-B01 hoặc UC-C01. UC-A01 kết thúc; tác vụ được chọn sẽ kiểm tra lại các điều kiện khi
+                     sinh viên xác nhận.
+Alternative Flows    A2a tại bước 2: Nếu không có lựa chọn nào phù hợp với tiêu chí tra cứu, hệ thống hiển thị kết quả
+                     rỗng, nêu lý do và cung cấp Hub hoặc khung giờ thay thế nếu có. Sinh viên có thể thay đổi tiêu chí và
+                     quay lại bước 1.
+                     A3a tại bước 3: Nếu một phần dữ liệu đã cũ, hệ thống gắn nhãn chưa xác minh cho phần dữ liệu đó và
+                     không công bố dữ liệu này như một tài nguyên có thể được cấp. Hệ thống vẫn cho phép sinh viên xem
+                     các Hub có đầy đủ dữ liệu.
+                     A4a tại bước 4: Nếu sinh viên muốn xem hồ sơ đã đặt thay vì tạo yêu cầu mới, sinh viên chọn UC-A06.
+                     Đây là một tác vụ riêng.
+Exception Flows      E2a: Nếu hệ thống không thể truy vấn danh mục, hệ thống thông báo rằng hiện chưa có kết quả, cho
+                     phép sinh viên thử lại và không tạo bất kỳ cam kết nào.
+                     E4a: Nếu Hub vừa đóng hoặc tài nguyên vừa có sự thay đổi, hệ thống làm mới kết quả. Quyết định đặt
+                     sau đó được thực hiện theo Use Case tương ứng.
+Business Rules       BR-G03; BR-G08; BR-A02; BR-P02; BR-P03; BR-C01
+AUTO & UC l.quan     AUTO áp dụng: AUTO03; AUTO04. Đầu ra tra cứu là mã Hub, mã tài nguyên và khoảng dự kiến cho
+                     UC-A02, UC-B01, UC-C01; chưa phải mã đặt thành công.
+NFR                  NFR-PERF-01; NFR-DATA-01; NFR-USE-01
+Notes/Assumptions    Tần suất theo nhu cầu. Tra cứu là hành vi dùng chung cho thuê xe, đỗ và sạc; chỉ được đặc tả một lần
+                     tại đây.
+
+
+
+UC-A02 Đặt xe dùng chung
+
+Trường đặc tả        UC-A02 Đặt xe dùng chung
+Actors               Sinh viên
+Description          Tạo một quyền nhận xe xác định trong thời hạn 10 phút. Phạm vi: Smart E Mobility Hub. Mức: Mục
+                     tiêu người dùng. Phụ trách: A.
+Trigger              Sinh viên xác nhận đặt chiếc xe đã chọn.
+Preconditions        Sinh viên có danh tính hợp lệ và xác định được mã xe; tình trạng khả dụng của xe sẽ được kiểm tra
+                     trong luồng thực hiện Use Case.
+Success Guarantee    Một lượt giữ có trạng thái ACTIVE thuộc đúng sinh viên được lưu. Xe không được cấp cho một cam
+                     kết xung đột. Số chỗ đang bị chiếm tại Hub không thay đổi.
+Minimal Guarantee    Không xác nhận trùng quyền trên cùng một xe. Nếu kết quả xử lý chưa rõ, hệ thống bảo lưu mã yêu
+                     cầu để đối soát và không tự động giải phóng một cam kết có thể đã được tạo.
+Normal Flow          1. Sinh viên gửi yêu cầu đặt xe với mã xe và mã nhận diện ý định đặt.
+                     2. Hệ thống kiểm tra quyền của sinh viên, các giới hạn theo BR-A01, tình trạng hiện tại của xe theo
+                     BR-A02 và các xung đột theo BR-G02.
+                     3. Hệ thống trình bày thông tin xe, Hub nhận, thời hạn nhận trong 10 phút và thông báo rằng chỗ trả
+                     xe phải được đặt riêng theo BR-A03.
+                     4. Sinh viên xác nhận đặt xe. Hệ thống kiểm tra lại điều kiện và xác lập duy nhất một lượt giữ có trạng
+                     thái ACTIVE, đồng thời xác định thời điểm hết hạn.
+                     5. Hệ thống trả về mã lượt giữ, thông tin xe, Hub nhận và thời hạn nhận; đồng thời đăng ký xử lý
+                     AUTO01.
+                     6. Sinh viên có thể xem thông tin qua UC-A06, hủy bằng UC-A03, nhận xe tại Hub bằng UC-A04 hoặc
+                     đặt chỗ trả riêng bằng UC-B01. UC-A02 kết thúc.
+
+
+
+
+                                                       12
+Trường đặc tả            UC-A02 Đặt xe dùng chung
+Alternative Flows        A2a tại bước 2: Nếu xe không đạt yêu cầu về pin, đang ở trạng thái lỗi, đang được giữ, đang sạc hoặc
+                         đang được điều chuyển, hệ thống nêu rõ lý do và cho phép sinh viên quay trở lại UC-A01 để tra cứu
+                         lựa chọn khác.
+                         A3a tại bước 3: Nếu sinh viên không đồng ý với thông tin hoặc điều kiện được trình bày, Use Case kết
+                         thúc và hệ thống không giữ tài nguyên.
+                         A4a tại bước 4: Nếu một yêu cầu khác đã xác lập quyền giữ xe trước, hệ thống từ chối yêu cầu hiện tại
+                         một cách rõ ràng và cung cấp lựa chọn để sinh viên tra cứu lại.
+Exception Flows          E1a: Nếu cùng một ý định đặt được gửi lại, hệ thống trả về cùng lượt giữ hoặc trạng thái đang được
+                         đối soát theo BR-G06.
+                         E4a: Nếu xảy ra gián đoạn khiến hệ thống không xác định rõ yêu cầu đã thành công hay chưa, hệ thống
+                         trả về mã theo dõi và hướng sinh viên đến UC-A06. Hệ thống không khẳng định yêu cầu thất bại và
+                         không tạo thêm một lượt giữ thứ hai.
+                         E2a: Nếu sinh viên không có quyền phù hợp, đã có lượt giữ xe hoặc có chuyến chưa đóng, hệ thống từ
+                         chối yêu cầu và không thay đổi hồ sơ hiện có.
+Business Rules           BR-G01; BR-G02; BR-G06; BR-A01; BR-A02; BR-A03
+AUTO & UC l.quan         AUTO áp dụng: AUTO01. UC-A01 cung cấp lựa chọn; UC-A03, UC-A04, UC-A06 sử dụng mã lượt giữ.
+                         UC-B01 nhận mã xe và liên kết lượt giữ nếu sinh viên đặt chỗ trả.
+NFR                      NFR-PERF-01; NFR-REL-01; NFR-SEC-01; NFR-USE-01
+Notes/Assumptions        Tần suất theo nhu cầu. Không đặt trước xe còn đang trong chuyến của khách khác; không tạo cam kết
+                         mới dựa trên giờ trả dự đoán.
+
+
+
+UC-A03 Hủy lượt đặt xe
+
+Trường đặc tả            UC-A03 Hủy lượt đặt xe
+Actors                   Sinh viên
+Description              Chấm dứt quyền giữ xe trước khi bàn giao và giải phóng đúng phần cam kết liên quan. Phạm vi: Smart
+                         E Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: A.
+Trigger                  Sinh viên yêu cầu hủy lượt giữ của mình.
+Preconditions            Có mã lượt giữ; người yêu cầu đã được nhận diện.
+Success Guarantee        Nếu lượt giữ vẫn còn được phép hủy, lượt giữ được chuyển sang trạng thái CANCELLED. Các quyền
+                         phụ thuộc chưa được sử dụng do lượt giữ này tạo ra được hủy theo BR-G07. Xe được đánh giá lại khả
+                         năng cấp.
+Minimal Guarantee        Không hủy hồ sơ thuộc về người khác. Không giải phóng xe đang trong quá trình bàn giao. Không làm
+                         mất lịch sử. Nếu kết quả chưa rõ, hồ sơ tiếp tục được đối soát.
+Normal Flow              1. Sinh viên mở lượt giữ từ UC-A06 và chọn chức năng hủy.
+                         2. Hệ thống kiểm tra quyền và các điều kiện theo BR-A04, đồng thời liệt kê các quyền đỗ phụ thuộc
+                         chưa được sử dụng nếu có.
+                         3. Hệ thống yêu cầu sinh viên xác nhận phạm vi hủy. Sinh viên đồng ý.
+                         4. Hệ thống ghi nhận yêu cầu hủy, chấm dứt quyền giữ và xử lý các quyền đỗ phụ thuộc theo UC-B02
+                         với cùng hồ sơ liên kết.
+                         5. Hệ thống đánh giá lại khả năng cấp xe theo BR-A02, giữ nguyên trạng thái chiếm chỗ vật lý và trả
+                         kết quả.
+                         6. Sinh viên có thể quay lại UC-A01 hoặc UC-A06. UC-A03 kết thúc.
+Alternative Flows        A2a tại bước 2: Nếu lượt giữ đã ở trạng thái hủy hoặc đã hết hạn, hệ thống trả về trạng thái hiện tại
+                         và không thực hiện giải phóng tài nguyên thêm lần nữa.
+                         A2b tại bước 2: Nếu xe đã được nhận, hệ thống từ chối yêu cầu hủy lượt giữ và hướng sinh viên sang
+                         UC-A05.
+                         A3a tại bước 3: Nếu sinh viên không xác nhận, hệ thống giữ nguyên quyền hiện tại và kết thúc UC.
+Exception Flows          E2a: Nếu lượt giữ đang trong quá trình bàn giao hoặc xảy ra tranh chấp giữa thao tác hủy và nhận xe,
+                         hệ thống bảo đảm chỉ có một kết quả được xác lập theo BR-G06. Sinh viên được hướng đến UC-A06
+                         hoặc UC-A07 để xác minh.
+                         E4a: Nếu hệ thống mất phản hồi sau khi yêu cầu hủy được gửi, hệ thống tra cứu lại bằng cùng mã lượt
+                         giữ. Không được suy diễn rằng tài nguyên đã trở nên sẵn sàng khi chưa có kết quả xác nhận.
+                         E2b: Nếu người yêu cầu không phải chủ sở hữu của lượt giữ, hệ thống từ chối yêu cầu và không tiết lộ
+                         nội dung của hồ sơ.
+Business Rules           BR-G01; BR-G06; BR-G07; BR-A02; BR-A04
+AUTO & UC l.quan         AUTO áp dụng: Không có kích hoạt tự động riêng. UC-A06 cung cấp hồ sơ; UC-B02 xử lý quyền đỗ
+                         phụ thuộc chưa dùng nếu có. Chưa rõ bàn giao chuyển yêu cầu hỗ trợ UC-A07.
+NFR                      NFR-PERF-01; NFR-REL-01; NFR-SEC-01
+
+
+                                                          13
+Trường đặc tả           UC-A03 Hủy lượt đặt xe
+Notes/Assumptions       Tần suất theo nhu cầu. Xe đang ở trạng thái lỗi vẫn không được xem là sẵn sàng để cấp sau khi lượt
+                        giữ được hủy.
+
+
+
+UC-A04 Nhận xe đã đặt
+
+Trường đặc tả           UC-A04 Nhận xe đã đặt
+Actors                  Sinh viên, Hệ thống IoT hoặc giả lập, Nhân viên điều hành
+Description             Bàn giao đúng xe cho sinh viên có quyền và mở đúng một chuyến đi. Phạm vi: Smart E Mobility Hub.
+                        Mức: Mục tiêu người dùng. Phụ trách: A.
+Trigger                 Sinh viên đến Hub và yêu cầu nhận xe bằng mã lượt giữ hoặc QR.
+Preconditions           Có mã lượt giữ và danh tính hợp lệ; Hub hỗ trợ nguồn xác nhận bàn giao giả lập hoặc nhân viên được
+                        quyền xác minh.
+Success Guarantee       Việc bàn giao được xác nhận. Lượt giữ chuyển sang trạng thái CONSUMED. Một chuyến OPEN thuộc
+                        đúng sinh viên được mở. Sự kiện xe rời khỏi vị trí được UC-B04 ghi nhận đúng một lần.
+Minimal Guarantee       Không cấp xe cho người khác trong khi việc bàn giao đang diễn ra hoặc khi kết quả bàn giao chưa rõ.
+                        Không mở chuyến chỉ vì sinh viên nhấn nút nhận.
+Normal Flow             1. Sinh viên gửi mã nhận, mã xe và thông tin Hub.
+                        2. Hệ thống kiểm tra đúng người, đúng xe, đúng Hub, thời hạn của lượt giữ và các điều kiện theo
+                        BR-A02; đồng thời chặn các yêu cầu xung đột.
+                        3. Hệ thống đánh dấu quá trình bàn giao đang được thực hiện và giữ nguyên quyền tài nguyên trong
+                        suốt quá trình này.
+                        4. Nguồn IoT hoặc hệ thống giả lập gửi xác nhận hợp lệ, gắn với lượt giữ, xe và vị trí. Dữ liệu được
+                        kiểm tra thông qua UC-D07.
+                        5. Hệ thống thực hiện UC-B04 để ghi nhận xe rời khỏi vị trí với cùng mã sự kiện. Nếu sự kiện được gửi
+                        lại, hệ thống không trừ chỗ thêm một lần nữa.
+                        6. Hệ thống tiêu thụ lượt giữ, mở một chuyến OPEN và trả về xác nhận. UC-A04 kết thúc. UC-A06
+                        cung cấp trạng thái và UC-A05 được sử dụng khi trả xe.
+Alternative Flows       A2a tại bước 2: Hệ thống nêu rõ lý do, xử lý lượt giữ theo trạng thái phù hợp và cho phép sinh viên
+                        chọn lại thông qua UC-A01. Hệ thống không tự động đổi sang xe khác.
+                        A4a tại bước 4: Nếu chưa có sự kiện xác nhận, hệ thống giữ trạng thái HANDOVER_PENDING và
+                        cho phép sinh viên gửi yêu cầu qua UC-A07. Nhân viên điều hành xác minh thực tế thông qua UC-D04
+                        và cung cấp xác nhận có dấu vết để hệ thống tiếp tục bước 5.
+Exception Flows         E1a: Mã sai hoặc không đúng người thì từ chối bàn giao.
+                        E5a: Sự kiện lặp hoặc phản hồi mất thì hệ thống tra cứu kết quả theo BR-G06 và không mở thêm
+                        chuyến mới.
+                        E4a: Nếu dữ liệu quan sát có mâu thuẫn, hệ thống giữ trạng thái chờ xác minh và không kết luận rằng
+                        xe đang trống hoặc đã được bàn giao thành công.
+Business Rules          BR-G01; BR-G02; BR-G05; BR-G06; BR-A01; BR-A02; BR-A04; BR-P05
+AUTO & UC l.quan        AUTO áp dụng: AUTO01; AUTO03; AUTO08. UC-A04 bao gồm hành vi UC-B04 trên luồng nhận
+                        thành công. UC-D07 cung cấp sự kiện hợp lệ; UC-D04 xử lý xác minh sau UC-A07.
+NFR                     NFR-PERF-01; NFR-DATA-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions       Tần suất mỗi lượt nhận. IoT và nhân viên điều hành tham gia xác nhận; thời gian chờ bàn giao thực tế
+                        không được tính như thời gian phản hồi truy vấn.
+
+
+
+UC-A05 Trả xe dùng chung
+
+Trường đặc tả           UC-A05 Trả xe dùng chung
+Actors                  Sinh viên, Hệ thống IoT hoặc giả lập, Nhân viên điều hành
+Description             Tiếp nhận xe tại địa điểm được phép và đóng chuyến có bằng chứng. Phạm vi: Smart E Mobility Hub.
+                        Mức: Mục tiêu người dùng. Phụ trách: A.
+Trigger                 Sinh viên gửi yêu cầu trả xe tại một Hub.
+Preconditions           Có một chuyến chưa đóng thuộc về sinh viên. Xác định được xe cần trả.
+Success Guarantee       Xe được tiếp nhận hợp lệ. Chuyến chuyển sang trạng thái CLOSED. Quyền giữ chỗ được chuyển thành
+                        trạng thái chiếm chỗ đúng một lần. Tình trạng xe và nhu cầu sạc hoặc xử lý lỗi được ghi nhận.
+Minimal Guarantee       Không đóng chuyến khi chưa có xác nhận xe được tiếp nhận. Không bỏ qua xe đã thực sự đỗ. Không
+                        tăng sức chứa để che giấu sự cố.
+
+
+
+                                                         14
+Trường đặc tả         UC-A05 Trả xe dùng chung
+Normal Flow           1. Sinh viên chọn Hub trả xe, mã chuyến và quyền đỗ đã đặt nếu có.
+                      2. Hệ thống kiểm tra chuyến, khả năng tiếp nhận và quyền đối với chỗ hiện tại theo BR-A03 và BR-P02
+                      đến BR-P04.
+                      3. Hệ thống giữ vị trí tiếp nhận cho lần bàn giao hiện tại. Nếu sinh viên chưa có quyền đỗ, hệ thống
+                      xác lập quyền tiếp nhận hiện tại theo chính sách B.
+                      4. Sinh viên đưa xe vào vị trí. Nguồn IoT hoặc hệ thống giả lập gửi bằng chứng, và bằng chứng được
+                      kiểm tra thông qua UC-D07.
+                      5. Hệ thống thực hiện UC-B03 với mã sự kiện, mã chuyến và quyền tiếp nhận. Sau khi xác nhận hợp
+                      lệ, hệ thống đóng chuyến và lưu SOC cùng tình trạng xe.
+                      6. Hệ thống trả xác nhận; áp dụng BR-G04 và BR-A02 để đánh giá khả năng cho thuê tiếp. Nhu cầu
+                      sạc hoặc sự cố được xử lý thông qua AUTO07 hoặc AUTO08. UC-A05 kết thúc.
+Alternative Flows     A2a tại bước 2: Hub đầy, đóng hoặc quyền không còn thực hiện được thì hệ thống mở phương án xử lý
+                      thông qua UC-B05. Sinh viên có thể chọn một Hub khác và thực hiện kiểm tra lại.
+                      A2b tại bước 2: Xe không thể đi tiếp thì UC-A07 tạo yêu cầu hỗ trợ và UC-D04 điều phối việc tiếp
+                      nhận dựa trên thông tin có căn cứ. Chuyến chuyển sang trạng thái ASSISTANCE_PENDING cho đến
+                      khi có phương án có thể thực hiện.
+                      A5a tại bước 5: Xe vẫn được tiếp nhận nếu vị trí tiếp nhận hợp lệ. Hệ thống đóng chuyến nhưng chặn
+                      việc cấp xe mới theo BR-G04.
+Exception Flows       E4a: Hệ thống giữ trạng thái HANDOVER_PENDING và ghi nhận các bằng chứng hiện có. UC-D04
+                      thực hiện đối soát. Sinh viên không phải thực hiện lại một chuyến trả xe mới.
+                      E5a: Hệ thống trả về cùng một kết quả và không tăng số xe hoặc số chỗ đang chiếm thêm lần thứ hai.
+                      E1a: Hệ thống từ chối đóng chuyến. Nếu xe đã thực tế vào Hub, tình huống bất thường được chuyển
+                      cho UC-D04 xử lý.
+Business Rules        BR-G03; BR-G04; BR-G05; BR-G06; BR-A03; BR-A05; BR-P02; BR-P03; BR-P04; BR-P05; BR-P06
+AUTO & UC l.quan      AUTO áp dụng: AUTO03; AUTO07; AUTO08. UC-A05 bao gồm UC-B03 trên luồng trả thành công.
+                      UC-B05 điều phối thiếu chỗ; UC-A07 tiếp nhận hỗ trợ; UC-D04 quyết định ngoại lệ, không dùng UC-D03
+                      thay chức năng hỗ trợ.
+NFR                   NFR-PERF-01; NFR-DATA-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions     Tần suất mỗi lượt trả. Không giả định luôn có Hub thay thế hoặc vị trí dự phòng; khi không có đủ năng
+                      lực vật lý để tiếp nhận, trạng thái phải được thể hiện là chưa đáp ứng.
+
+
+
+UC-A06 Xem lượt đặt và chuyến đi của mình
+
+Trường đặc tả         UC-A06 Xem lượt đặt và chuyến đi của mình
+Actors                Sinh viên
+Description           Xác định trạng thái chính thức và bước tiếp theo của hồ sơ thuê xe, kể cả sau gián đoạn. Phạm vi:
+                      Smart E Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: A.
+Trigger               Sinh viên mở mục lượt đặt và chuyến đi.
+Preconditions         Sinh viên đã được xác định; có thể chưa có hồ sơ.
+Success Guarantee     Hệ thống hiển thị các hồ sơ thuộc quyền của sinh viên. Hiển thị thời điểm cập nhật, kết quả đã được
+                      xác nhận và các hành động mà sinh viên được phép thực hiện. Việc xem thông tin không làm thay đổi
+                      nghiệp vụ.
+Minimal Guarantee     Không lộ hồ sơ người khác; không thay trạng thái chưa rõ bằng kết luận thành công hoặc thất bại dựa
+                      trên suy đoán.
+Normal Flow           1. Sinh viên yêu cầu xem danh sách hoặc nhập mã theo dõi của mình.
+                      2. Hệ thống kiểm tra quyền và truy vấn các lượt giữ, chuyến đi cùng những yêu cầu hỗ trợ có liên quan.
+                      3. Hệ thống hiển thị mã hồ sơ, xe, Hub, thời hạn giữ, trạng thái và những nội dung đang chờ xác minh.
+                      4. Hệ thống cung cấp các hành động phù hợp gồm UC-A03, UC-A04, UC-A05 hoặc UC-A07. Sinh viên
+                      xem kết quả và UC kết thúc.
+Alternative Flows     A2a tại bước 2: Nếu sinh viên chưa có hồ sơ, hệ thống hiển thị trạng thái rỗng và cung cấp lựa chọn
+                      chuyển sang UC-A01.
+                      A3a tại bước 3: Nếu hồ sơ đang được đối soát, hệ thống hiển thị mã theo dõi và trạng thái hỗ trợ;
+                      không khuyến khích sinh viên tạo lại lượt đặt.
+Exception Flows       E2a: Không lấy được trạng thái mới thì hệ thống thông báo rằng chưa thể xác minh trạng thái mới
+                      nhất và giữ rõ thời điểm của dữ liệu đã biết.
+                      E2b: Mã thuộc người khác thì hệ thống từ chối truy cập và không trả về bất kỳ nội dung nào của hồ
+                      sơ đó.
+Business Rules        BR-G01; BR-G06; BR-G08
+
+
+
+                                                       15
+Trường đặc tả           UC-A06 Xem lượt đặt và chuyến đi của mình
+AUTO & UC l.quan        AUTO áp dụng: Không có kích hoạt tự động riêng. Đọc kết quả UC-A02 đến UC-A05 và UC-A07; hành
+                        động tiếp theo khởi tạo UC riêng với cùng mã hồ sơ.
+NFR                     NFR-PERF-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions       Tần suất theo nhu cầu. Phạm vi là trạng thái thuê và hỗ trợ liên quan, không mở rộng thành hệ thống
+                        phân tích lịch sử di chuyển.
+
+
+
+UC-A07 Gửi và theo dõi yêu cầu hỗ trợ hành trình
+
+Trường đặc tả           UC-A07 Gửi và theo dõi yêu cầu hỗ trợ hành trình
+Actors                  Sinh viên
+Description             Ghi nhận việc không thể nhận hoặc trả xe, xe gặp lỗi hoặc bàn giao chưa rõ để có người chịu trách
+                        nhiệm xử lý. Phạm vi: Smart E Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: A.
+Trigger                 Sinh viên chọn yêu cầu hỗ trợ từ hồ sơ thuê hoặc tình huống đang gặp.
+Preconditions           Sinh viên được nhận diện; có mã xe, lượt giữ hoặc chuyến liên quan.
+Success Guarantee       Một yêu cầu hỗ trợ hoặc liên kết đến sự cố đã mở được lưu; sinh viên nhận mã, trạng thái và hướng
+                        dẫn hiện có; nhân viên điều hành được thông báo.
+Minimal Guarantee       Không tự đóng chuyến, hủy cam kết hoặc tuyên bố đã giải quyết chỉ vì gửi thông báo. Không tạo nhiều
+                        vụ việc trùng nhau do sinh viên gửi lại yêu cầu.
+Normal Flow             1. Sinh viên chọn hồ sơ và mô tả sự cố, vị trí, khả năng di chuyển cùng các thông tin mà mình quan
+                        sát được.
+                        2. Hệ thống kiểm tra quyền, liên kết với hồ sơ và tìm kiếm sự cố tương ứng đang được mở.
+                        3. Hệ thống tạo mới hoặc bổ sung thông tin vào vụ việc theo BR-D04. Nếu quá trình bàn giao chưa
+                        rõ, hệ thống giữ trạng thái chặn tài nguyên theo BR-G06.
+                        4. Hệ thống ghi nhận trạng thái chờ xử lý, cấp mã yêu cầu và thông báo cho nhân viên điều hành để
+                        tiếp tục xử lý thông qua UC-D04.
+                        5. Sinh viên nhận hướng dẫn hiện có và có thể theo dõi yêu cầu bằng cùng mã thông qua UC-A06 hoặc
+                        mở lại yêu cầu. UC-A07 kết thúc; quá trình xử lý tiếp tục độc lập.
+Alternative Flows       A2a tại bước 2: Nếu vụ việc tương ứng đã tồn tại, hệ thống bổ sung thông tin vào cùng hồ sơ và trả
+                        lại mã của vụ việc cũ.
+                        A5a khi mở lại yêu cầu: Nếu UC-D04 đã gửi một phương án xử lý, sinh viên xác nhận hoặc từ chối
+                        phương án đó. Lựa chọn của sinh viên được gắn với cùng vụ việc để nhân viên điều hành tiếp tục xử lý.
+Exception Flows         E2a: Nếu người gửi yêu cầu không phải chủ sở hữu của hồ sơ liên quan, hệ thống từ chối thay đổi hồ
+                        sơ.
+                        E3a: Nếu chưa xác định được yêu cầu đã được ghi nhận, hệ thống cho phép tra cứu bằng mã ý định và
+                        giữ nguyên trách nhiệm của chuyến cùng các cam kết hiện có.
+Business Rules          BR-G01; BR-G04; BR-G06; BR-G08; BR-A05; BR-D04; BR-D05
+AUTO & UC l.quan        AUTO áp dụng: AUTO08. UC-D04 nhận mã vụ việc và hồ sơ thuê để xử lý. UC-A06 hiển thị tiến độ;
+                        kết thúc sự cố không thay thế bằng chứng trả xe trong UC-A05.
+NFR                     NFR-PERF-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions       Tần suất khi cần hỗ trợ. Đây là điểm tiếp nhận cho hành trình thuê; nhân viên điều hành có thể ghi
+                        nhận yêu cầu thay cho sinh viên thông qua UC-D04 nếu sinh viên không thể tự thao tác.
+
+
+8.3 Phần B Chỗ đỗ và sức chứa
+
+UC-B01 Đặt chỗ đỗ xe
+
+Trường đặc tả           UC-B01 Đặt chỗ đỗ xe
+Actors                  Sinh viên
+Description             Đặt chỗ cho xe cá nhân hoặc xe thuê dùng chung tại một Hub và khoảng thời gian. Phạm vi: Smart E
+                        Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: B.
+Trigger                 Sinh viên chọn đặt chỗ từ UC-A01, từ hồ sơ thuê hoặc từ nhu cầu đỗ kèm sạc.
+Preconditions           Sinh viên được nhận diện; có xe cá nhân đã khai báo hoặc xe thuê gắn với lượt giữ hay chuyến của
+                        mình.
+Success Guarantee       Một quyền đỗ được ghi nhận với Hub, vị trí, xe, khoảng thời gian và mã QR; không tạo ra xung đột.
+                        Việc đặt chỗ cho tương lai không làm vị trí hiện tại thành bị chiếm.
+
+
+
+
+                                                         16
+Trường đặc tả         UC-B01 Đặt chỗ đỗ xe
+Minimal Guarantee     Không xác nhận nếu không đủ điều kiện; không để lại gói đỗ kèm sạc được thông báo thành công một
+                      phần.
+Normal Flow           1. Sinh viên chọn Hub và giờ đến; đối với xe cá nhân khai báo giờ kết thúc theo BR-P01, xe thuê áp
+                      dụng BR-P06; nêu nhu cầu sạc nếu có.
+                      2. Hệ thống kiểm tra về thời gian, tương thích và khả năng cung cấp theo BR-P02, BR-P03, BR-P04;
+                      dữ liệu chưa đủ mới phải được xử lý theo AUTO03.
+                      3. Hệ thống hiển thị vị trí hoặc phương án phù hợp, điều kiện đến đúng giờ, có đệm thời gian theo
+                      BR-P01 và phạm vi dịch vụ.
+                      4. Sinh viên xác nhận; hệ thống kiểm tra xung đột, ghi quyền đỗ và liên kết xe hoặc hồ sơ thuê.
+                      5. Hệ thống trả QR, chỉ cập nhật lịch cam kết, không cộng số xe đang đỗ.
+                      6. UC kết thúc. Sinh viên có thể hủy bằng UC-B02; khi xe đến, UC-B03 sử dụng cùng mã QR.
+Alternative Flows     A2a tại bước 2: Đã có quyền đỗ phù hợp cho cùng xe và đang sử dụng thì trả quyền đó, không đặt
+                      thêm.
+                      A2b tại bước 2: Không đủ chỗ hoặc vượt ngưỡng tiếp nhận thì có các đề xuất mới theo UC-A01; nếu
+                      có sự cố ảnh hưởng quyền cũ được UC-B05 xử lý.
+                      A3a tại bước 3: Chọn đỗ kèm sạc thì chuyển thông tin dự kiến sang UC-C01; chỉ xác nhận gói khi
+                      BR-G07 được đáp ứng. Nếu không sạc được, khách có thể chủ động chỉ chọn chỗ đỗ.
+                      A3b tại bước 3: Khách đổi lựa chọn thì quay lại bước 1; chưa tạo quyền.
+Exception Flows       E4a: Người khác vừa lấy tài nguyên thì hủy hệ thống báo lỗi cho người dùng, làm mới phương án và
+                      quay lại bước 2.
+                      E4b: Mất phản hồi thì tra lại theo mã yêu cầu; không tạo quyền thứ hai.
+                      E2a: Xe không thuộc quyền hoặc đã có quyền đỗ xung đột thì từ chối theo BR-G01 và BR-P04.
+Business Rules        BR-G01; BR-G02; BR-G03; BR-G06; BR-G07; BR-A03; BR-P01; BR-P02; BR-P03; BR-P04; BR-P06
+AUTO & UC l.quan      AUTO áp dụng: AUTO02; AUTO03; AUTO04. UC-A01 hoặc UC-A02 cung cấp đầu vào; UC-C01 điều
+                      phối gói có sạc. UC-B03 và UC-B04 ghi nhận mã QR đã xác nhận để đối chiếu khi người dùng đến đỗ.
+NFR                   NFR-PERF-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions     Tần suất theo nhu cầu. Không yêu cầu Hub còn trống trong precondition vì đây là điều kiện phải kiểm
+                      tra khi xác nhận.
+
+
+
+UC-B02 Hủy quyền đặt chỗ đỗ
+
+Trường đặc tả         UC-B02 Hủy quyền đặt chỗ đỗ
+Actors                Sinh viên
+Description           Hủy một quyền đỗ chưa sử dụng và xử lý các quyền sạc phụ thuộc nếu có Phạm vi: Smart E Mobility
+                      Hub. Mức: Mục tiêu người dùng. Phụ trách: B.
+Trigger               Sinh viên yêu cầu hủy hoặc UC-A03 yêu cầu hủy quyền phụ thuộc chưa dùng.
+Preconditions         Quyền đỗ có mã và xác định được người hoặc hồ sơ có yêu cầu.
+Success Guarantee     Quyền chưa sử dụng chuyển sang trạng thái CANCELLED; phần cam kết liên quan chưa dùng được xử
+                      lý theo lựa chọn và BR-G07. Trạng thái của vị trí được giữ nguyên.
+Minimal Guarantee     Không hủy sự chiếm chỗ thực tế, không đặt vị trí thành Available khi còn cam kết hoặc bất thường
+                      khác.
+Normal Flow           1. Sinh viên chọn quyền đỗ cần hủy; hệ thống hiển thị thời gian và phần sạc liên kết nếu có.
+                      2. Hệ thống kiểm tra chủ sở hữu, tình trạng chỗ đỗ và dấu hiệu xe đã đến hoặc đang được xác minh.
+                      3. Hệ thống nêu phạm vi hủy; nếu sạc phụ thuộc quyền đỗ này thì hiển thị việc hủy hoặc thay thế quyền
+                      đỗ cần thiết. Sinh viên xác nhận.
+                      4. Hệ thống hủy quyền đỗ chưa dùng và phần sạc chưa dùng phụ thuộc qua UC-C02; lưu kết quả cùng
+                      hồ sơ.
+                      5. Hệ thống đánh giá lại lịch khả dụng, trả xác nhận và cho quay lại UC-A01 hoặc UC-B01. UC kết
+                      thúc.
+Alternative Flows     A2a tại bước 2: Đã hủy hoặc hết hạn thì trả kết quả hiện có.
+                      A2b tại bước 2: Xe đã đỗ thì không được phép hủy việc sử dụng; khi rời chỗ thực hiện UC-B04.
+                      A3a tại bước 3: Khách không đồng ý hủy phần sạc phụ thuộc thì gợi ý các quyền đỗ có thể thay thế.
+                      A4a tại bước 4: Chỗ có lịch khác trong tương lai thì chỉ giải phóng quyền bị hủy, không xóa lịch khác.
+Exception Flows       E2a: Đang có bằng chứng vào đỗ nhưng chưa xác minh thì không cho phép hủy và chuyển sang UC-D04
+                      để đối soát.
+                      E4a: Chưa rõ kết quả lưu thì tra lại cùng mã yêu cầu theo BR-G06; không khẳng định chỗ đã trống.
+                      E2b: Nếu hệ thống hiển thị sai tình trạng chỗ đỗ thì từ chối và giữ nguyên hồ sơ.
+Business Rules        BR-G01; BR-G06; BR-G07; BR-G08; BR-P05
+
+
+
+                                                       17
+Trường đặc tả          UC-B02 Hủy quyền đặt chỗ đỗ
+AUTO & UC l.quan       AUTO áp dụng: AUTO04; AUTO05. UC-A03 có thể khởi tạo hủy quyền phụ thuộc; UC-C02 xử lý phiên
+                       sạc phụ thuộc chưa bắt đầu. Cần xác minh thêm nếu có vấn đề chưa rõ thuộc UC-D04.
+NFR                    NFR-PERF-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions      Tần suất theo nhu cầu. Hủy quyền giữ là thay đổi lịch, không phải sự kiện xe rời chỗ.
+
+
+
+UC-B03 Ghi nhận xe vào chỗ đỗ
+
+Trường đặc tả          UC-B03 Ghi nhận xe vào chỗ đỗ
+Actors                 Sinh viên, Hệ thống IoT hoặc giả lập, Nhân viên điều hành, Nhân viên điều chuyển
+Description            Ghi nhận đúng xe, vị trí và quyền tiếp nhận; chuyển quyền giữ thành chiếm chỗ đỗ. Phạm vi: Smart E
+                       Mobility Hub. Mức: Hành vi hỗ trợ nhận sự kiện. Phụ trách: B.
+Trigger                Có yêu cầu vào đỗ kèm mã quyền hoặc có sự kiện vật lý xe vào vị trí.
+Preconditions          Hub xác định; khách, xe và vị trí liên quan có thể được xác định; dữ liệu đầu vào được kiểm tra qua
+                       UC-D07 nếu đến từ IoT.
+Success Guarantee      Xe được tiếp nhận hợp lệ tại vị trí; chỗ đỗ tương ứng chuyển thành CONSUMED hoặc phiên đỗ bắt
+                       đầu. Số chỗ đang chiếm và phần giữ chưa dùng thay đổi để phản ánh sự kiện xe vào chỗ đỗ.
+Minimal Guarantee      Không bỏ qua xe thực sự đã vào sai chỗ. Quan sát chưa đủ căn cứ được đánh dấu cần xác minh thêm
+                       và không xác nhận hợp lệ.
+Normal Flow            1. Sinh viên xuất trình QR hoặc hệ thống nhận hồ sơ tiếp nhận từ UC-A05 hay UC-D03; sự kiện xác
+                       định xe và vị trí.
+                       2. Hệ thống kiểm tra quyền đang áp dụng, chủ xe, khoảng thời gian và điều kiện vị trí; giữ riêng quyền
+                       đang bàn giao.
+                       3. Hệ thống hướng dẫn hoặc xác nhận vị trí tiếp nhận cho xe.
+                       4. Hệ thống nhận bằng chứng xe thực sự chiếm vị trí, từ IoT hoặc xác minh có quyền được ghi vết.
+                       5. Hệ thống ghi lại sự chiếm chỗ, xóa quyền giữ chỗ và cập nhật số liệu theo BR-P02 và BR-P05.
+                       6. Hệ thống trả kết quả cho hồ sơ gọi và cập nhật trạng thái. UC kết thúc; sạc tiếp tục qua UC-C02,
+                       chuyến thuê đóng trong UC-A05, lệnh điều chuyển cập nhật trong UC-D03.
+Alternative Flows      A2a tại bước 2: Xe vãng lai chưa có quyền thì dựa vào số chỗ đỗ hiện tại; kiểm tra và tạo quyền hiện
+                       tại theo chính sách UC-B01 trước khi cho tiếp nhận. Không đủ điều kiện thì chuyển UC-B05.
+                       A2b tại bước 2: Khi khách đến sớm hoặc trễ thì kiểm tra lại việc chiếm dụng; chỉ điều chỉnh khi không
+                       xung đột và khách đồng ý. Hết quyền không có nghĩa xe đã được phép vào.
+                       A4a tại bước 4: Xe đỗ sai vị trí thì ghi sự chiếm chỗ thực tế và bất thường, không cho phép lấy chỗ đỗ
+                       của người khác; UC-D04 điều phối sửa vị trí và ảnh hưởng.
+                       A4b tại bước 4: Nhân viên điều chuyển cung cấp bằng chứng trong UC-D03 hoặc nhân viên điều hành
+                       xác minh theo UC-D04 thì dùng cùng quy tắc ghi nhận.
+Exception Flows        E1a: Không nhận diện được vị trí đỗ thì giữ sự kiện, không cấp chỗ đỗ ngay và chuyển UC-D04.
+                       E5a: Sự kiện lặp hoặc kết quả lưu chưa rõ thì áp dụng BR-G06; không cộng Occupied lần thứ hai.
+                       E4a: Xác nhận QR không thành công thì tiếp tục chờ và đợi xác nhận thêm.
+Business Rules         BR-G01; BR-G03; BR-G05; BR-G06; BR-G08; BR-P01; BR-P02; BR-P03; BR-P04; BR-P05; BR-P06
+AUTO & UC l.quan       AUTO áp dụng: AUTO02; AUTO03; AUTO04; AUTO08. Được UC-A05 sử dụng khi trả xe; UC-D03
+                       sử dụng khi giao xe. UC-D07 xác thực sự kiện; UC-B05 và UC-D04 xử lý thiếu chỗ hoặc sai thực tế.
+NFR                    NFR-DATA-01; NFR-PERF-02; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions      Tần suất mỗi lần vào vị trí. Nhân viên chỉ xác nhận trong công việc được phép; xác nhận vào cổng Hub
+                       chưa chứng minh xe đã vào đúng vị trí.
+
+
+
+UC-B04 Ghi nhận xe rời chỗ đỗ
+
+Trường đặc tả          UC-B04 Ghi nhận xe rời chỗ đỗ
+Actors                 Sinh viên, Hệ thống IoT hoặc giả lập, Nhân viên điều hành, Nhân viên điều chuyển
+Description            Ghi nhận vị trí được giải phóng vật lý và cho phép các quyền cấp chỗ theo đúng lịch. Phạm vi: Smart
+                       E Mobility Hub. Mức: Hành vi hỗ trợ nhận sự kiện. Phụ trách: B.
+Trigger                Nhận sự kiện xe rời một vị trí hoặc bằng chứng lấy xe của UC-A04 hay UC-D03.
+Preconditions          Xác định được sự kiện và có dữ liệu vị trí hoặc xe liên quan để đối chiếu.
+Success Guarantee      Sự chiếm chỗ tại vị trí cũ kết thúc đúng một lần; lịch còn hiệu lực được giữ; việc rời Hub, chuyển vị trí
+                       hay lên xe tải được ghi đúng loại.
+
+
+
+
+                                                         18
+Trường đặc tả          UC-B04 Ghi nhận xe rời chỗ đỗ
+Minimal Guarantee      Không tăng số chỗ trống do sự kiện trùng, không xóa lịch đặt trong tương lai và không coi vị trí chưa
+                       xác minh là có thể cấp.
+Normal Flow            1. Hệ thống nhận thông tin xe vào chỗ đỗ, bao gồm thông tin về xe và vị trí đỗ từ QR, hệ thống IoT
+                       hoặc hồ sơ tiếp nhận.
+                       2. Hệ thống xác định xe và vị trí đỗ, sau đó kiểm tra quyền đỗ của xe tại thời điểm hiện tại.
+                       3. Hệ thống kiểm tra các điều kiện tiếp nhận, bao gồm chủ xe, thời gian đặt chỗ và trạng thái của vị
+                       trí đỗ.
+                       4. Hệ thống xác nhận xe được phép đỗ tại vị trí đã xác định và ghi nhận bằng chứng cho thấy xe thực
+                       sự đã chiếm vị trí.
+                       5. Hệ thống cập nhật trạng thái chỗ đỗ từ đang được giữ sang đang được chiếm dụng; đồng thời cập
+                       nhật số lượng chỗ đang chiếm dụng và số lượng chỗ được giữ theo BR-P02.
+                       6. Hệ thống lưu lại thông tin sự kiện và cập nhật trạng thái liên quan, sau đó trả kết quả ghi nhận
+                       thành công cho tác vụ gọi.
+                       7. Use case kết thúc.
+Alternative Flows      A2a tại bước 2: Không đủ thông tin thì nhân viên điều hành xác minh qua UC-D04; khi có căn cứ mới
+                       tiếp tục bước 3.
+                       A5a tại bước 5: Nếu vị trí đỗ vẫn còn trống và chưa được cấp cho người khác, hệ thống có thể cấp vị
+                       trí đó cho người dùng đang có quyền giữ chỗ. Nếu chỉ có lịch đặt chỗ trong tương lai, hệ thống có thể
+                       xem xét cho phép người dùng nhận chỗ sớm hơn thời gian dự kiến, nếu thời gian sớm hơn đó vẫn phù
+                       hợp với quy định của hệ thống BR-P01.
+                       A3a tại bước 3: Di chuyển trong cùng Hub thì ghi liên kết vị trí mới qua UC-B03; không tự kết thúc
+                       quyền đỗ tại Hub hoặc chuyến thuê.
+Exception Flows        E2a: Trạng thái chỗ đỗ không được cập nhật đúng thì lưu bất thường và chuyển UC-D04.
+                       E4a: Mất kết nối hoặc phản hồi chưa rõ thì giữ mã sự kiện để đối soát; hệ thống không mặc định dữ
+                       liệu đã được cập nhật.
+                       E2b: Nếu dữ liệu quan sát cũ được gửi đến sau khi hệ thống đã ghi nhận lần xe vào mới, hệ thống
+                       không sử dụng dữ liệu cũ để ghi đè lên trạng thái mới nhất theo UC-D07.
+Business Rules         BR-G01; BR-G05; BR-G06; BR-G08; BR-P01; BR-P02; BR-P05
+AUTO & UC l.quan       AUTO áp dụng: AUTO03; AUTO04; AUTO08. Được UC-A04 sử dụng khi nhận xe; UC-D03 sử dụng
+                       khi lấy xe. UC-B03 ghi vị trí mới nếu di chuyển nội bộ; UC-D04 xử lý lệch thực tế.
+NFR                    NFR-DATA-01; NFR-PERF-02; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions      Tần suất mỗi lần rời vị trí. Rút dây sạc thuộc UC-C02 và không đủ để chứng minh xe đã rời chỗ đỗ.
+
+
+
+UC-B05 Xử lý Hub thiếu khả năng tiếp nhận
+
+Trường đặc tả          UC-B05 Xử lý Hub thiếu khả năng tiếp nhận
+Actors                 Nhân viên điều hành, Sinh viên
+Description            Lựa chọn và theo dõi phương án cho yêu cầu đỗ hoặc trả xe không thể được tiếp nhận như dự kiến.
+                       Phạm vi: Smart E Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: B.
+Trigger                Hệ thống phát hiện cảnh báo mức cao hoặc một yêu cầu tiếp nhận không thể thực hiện, đặc biệt đối
+                       với những yêu cầu đã có cam kết.
+Preconditions          Có đầy đủ thông tin về Hub, yêu cầu và các quyền hiện có; Nhân viên điều hành có quyền xử lý tình
+                       huống.
+Success Guarantee      Một phương án khả thi được người có quyền xác nhận và được khách chấp thuận khi cần. Nếu chưa
+                       thể đáp ứng yêu cầu, tình trạng này được ghi nhận rõ ràng cùng người phụ trách và bước xử lý tiếp
+                       theo. Việc xử lý cảnh báo không được xem là đồng nghĩa với việc tất cả các hồ sơ liên quan đã được
+                       giải quyết.
+Minimal Guarantee      Hệ thống không cấp vượt quá sức chứa, không chiếm quyền của người khác, không tạo thêm chỗ đỗ
+                       ngoài cấu hình và không ép khách phải chấp nhận một Hub khác. Các hồ sơ liên quan vẫn được tiếp
+                       tục theo dõi.
+
+
+
+
+                                                        19
+Trường đặc tả           UC-B05 Xử lý Hub thiếu khả năng tiếp nhận
+Normal Flow             1. Hệ thống cung cấp thông tin về mức độ chiếm dụng, các vị trí chưa rõ trạng thái, những cam kết
+                        sắp đến và các yêu cầu đang bị ảnh hưởng.
+                        2. Nhân viên điều hành phân biệt các trường hợp: khách đã có quyền được xác nhận, yêu cầu mới và
+                        xe thuê đang cần hỗ trợ.
+                        3. Hệ thống kiểm tra các vị trí phù hợp trong Hub. Phần chỗ dự phòng chỉ được cấp khi có đủ căn cứ
+                        theo BR-P04.
+                        4. Nhân viên điều hành lựa chọn phương án xử lý: tiếp nhận tại Hub hiện tại, đề nghị khách chờ, chuyển
+                        sang Hub khác hoặc hủy phần chưa sử dụng. Hệ thống hiển thị rõ khả năng tiếp nhận thực tế tại thời
+                        điểm xử lý.
+                        5. Khách xác nhận phương án có ảnh hưởng đến mình. Hệ thống kiểm tra lại tình trạng hiện tại và tạo
+                        hoặc thay đổi quyền theo UC-B01 nếu phù hợp, đồng thời lưu lại lịch sử của phương án trước đó.
+                        6. Hệ thống theo dõi kết quả tiếp nhận thông qua UC-B03 hoặc chuyển vụ việc sang UC-D04. UC kết
+                        thúc với trạng thái được ghi nhận rõ ràng: đã đáp ứng, đang chờ hoặc không thể đáp ứng.
+Alternative Flows       A3a – Tại bước 3: Nếu xe đã quá thời gian cho phép nhưng vẫn đang chiếm chỗ, hệ thống ghi nhận
+                        tình trạng xe vẫn đang chiếm chỗ và liên hệ để xử lý. Hệ thống không tự động giải phóng chỗ ngay khi
+                        thời gian cho phép kết thúc.
+                        A3b – Tại bước 3: Nếu cần điều chuyển xe dùng chung, Nhân viên điều hành lập UC-D02 khi đã xác
+                        định được Hub đích và có đủ năng lực vận chuyển. Hệ thống không tự động điều chuyển xe cá nhân.
+                        A4a – Tại bước 4: Nếu khách không thể tiếp tục di chuyển, UC-D04 tiếp tục quản lý và hỗ trợ vụ việc.
+                        Đối với xe thuê, xử lý theo BR-A05; đối với xe cá nhân, hệ thống thông báo rõ khả năng tiếp nhận thực
+                        tế.
+                        A4b – Tại bước 4: Nếu không còn Hub nào có khả năng tiếp nhận, hệ thống ghi nhận yêu cầu là chưa
+                        đáp ứng và xác định người phụ trách xử lý. Hệ thống không cam kết thời gian có chỗ khi chưa có đủ
+                        căn cứ.
+Exception Flows         E5a: Nếu tài nguyên thay đổi trước khi khách xác nhận phương án, hệ thống kiểm tra lại tình trạng và
+                        quay về bước 3.
+                        E1a: Nếu dữ liệu đã quá cũ, hệ thống yêu cầu xác minh thông qua UC-D04. Hệ thống không đưa ra
+                        quyết định dựa trên số chỗ chỉ được suy đoán từ dữ liệu cũ.
+                        E5b: Nếu khách không đồng ý với phương án được đề xuất, hệ thống giữ nguyên vụ việc và trạng thái
+                        hiện tại để tiếp tục xử lý.
+Business Rules          BR-G01; BR-G03; BR-G05; BR-G08; BR-A05; BR-P02; BR-P03; BR-P04; BR-D04; BR-D05
+AUTO & UC l.quan        AUTO áp dụng: AUTO04; AUTO08. UC-A05, UC-B04 hoặc AUTO04 phát sinh tình huống. UC-D02
+                        thực hiện điều chuyển; UC-D04 quản lý trách nhiệm sự cố; UC-B03 xác nhận tiếp nhận thực tế.
+NFR                     NFR-PERF-01; NFR-DATA-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions       Tần suất xảy ra tình huống thiếu khả năng tiếp nhận. Phần mềm không thể tạo thêm sự khả dụng khi
+                        Hub đã đầy; yêu cầu chưa thể được đáp ứng phải được hệ thống biểu diễn và ghi nhận một cách trung
+                        thực.
+
+
+8.4 Phần C Sạc và tài nguyên sạc
+
+UC-C01 Đăng ký phiên sạc xe cá nhân
+
+Trường đặc tả           UC-C01 Đăng ký phiên sạc xe cá nhân
+Actors                  Sinh viên
+Description             Đăng ký một phiên sạc cho xe cá nhân tại một Hub trong khoảng thời gian xác định. Hệ thống kiểm
+                        tra quyền sử dụng, phương tiện, cổng sạc, công suất và các cam kết liên quan trước khi xác nhận phiên.
+                        Phạm vi: Smart E Mobility Hub. Mức: Mục tiêu người dùng. Phụ trách: C.
+Trigger                 Sinh viên chọn chức năng “Đăng ký lịch sạc” trên hệ thống.
+Preconditions           Sinh viên đã được xác thực và có quyền sử dụng dịch vụ; phương tiện đã được đăng ký hợp lệ; hệ thống
+                        có dữ liệu về Hub, cổng sạc và công suất; không có cam kết xung đột với yêu cầu mới.
+Success Guarantee       Một phiên sạc được tạo và gắn đúng với sinh viên và phương tiện. Cổng sạc và công suất cần thiết
+                        được giữ hoặc phân bổ theo khoảng thời gian của phiên nếu đủ điều kiện. Nếu yêu cầu có chỗ đỗ đi
+                        kèm, các tài nguyên liên quan được liên kết theo quy tắc chung. Thông tin phiên và các thay đổi quan
+                        trọng được lưu lại để theo dõi và rà soát lại khi có vấn đề.
+Minimal Guarantee       Không tạo trùng phiên hoặc cam kết cho cùng một yêu cầu; không cấp tài nguyên đang có cam kết
+                        xung đột. Nếu kết quả xác nhận chưa rõ, hệ thống không tạo thêm cam kết.
+
+
+
+
+                                                         20
+Trường đặc tả          UC-C01 Đăng ký phiên sạc xe cá nhân
+Normal Flow            1. Sinh viên chọn chức năng “Đăng ký lịch sạc”.
+                       2. Hệ thống hiển thị danh sách Mobility Hub, cổng sạc khả dụng và các khung thời gian có thể phục
+                       vụ.
+                       3. Sinh viên chọn Hub, thời gian bắt đầu, thời gian kết thúc dự kiến, mức pin hiện tại và mức pin mong
+                       muốn.
+                       4. Hệ thống kiểm tra thông tin phương tiện và nhu cầu sạc theo BR-C01, đồng thời kiểm tra mức pin
+                       theo BR-C04 và quyền sử dụng theo BR-G01.
+                       5. Hệ thống kiểm tra cổng sạc, công suất, lịch sử dụng và các cam kết có khả năng xung đột theo
+                       BR-G02 và BR-G03.
+                       6. Hệ thống kiểm tra cổng sạc có đủ điều kiện để giữ hoặc phân bổ, đồng thời xác nhận tài nguyên
+                       không thuộc diện đang bị ngừng cấp theo BR-G04.
+                       7. Hệ thống xác định cổng sạc phù hợp và áp dụng BR-C03 để xác định thời gian giữ trước khi phiên
+                       bắt đầu.
+                       8. Hệ thống hiển thị kết quả kiểm tra, cổng sạc dự kiến, khoảng thời gian sử dụng và các điều kiện liên
+                       quan để sinh viên xem xét.
+                       9. Sinh viên xác nhận đăng ký phiên sạc.
+                       10. Hệ thống kiểm tra lại điều kiện tài nguyên ngay trước khi ghi nhận cam kết theo BR-G02 và BR-G06.
+                       11. Nếu mọi điều kiện vẫn hợp lệ, hệ thống tạo phiên sạc, giữ tài nguyên và lưu lịch sử thay đổi.
+                       12. Hệ thống cấp mã phiên sạc và thông báo kết quả cho sinh viên. UC kết thúc.
+Alternative Flows      A2a tại bước 2: Không có Hub hoặc khung giờ phù hợp thì hệ thống hiển thị kết quả rỗng, nêu nguyên
+                       nhân và đề xuất khung giờ hoặc Hub khác nếu có; sinh viên có thể thay đổi tiêu chí và thực hiện lại
+                       bước 2.
+                       A3a tại bước 3: Sinh viên thay đổi mức pin hoặc thời gian sạc thì hệ thống tính lại nhu cầu và kiểm tra
+                       khả năng đáp ứng.
+                       A7a tại bước 7: Có nhiều cổng sạc phù hợp thì hệ thống hiển thị các lựa chọn theo khả năng phục vụ;
+                       sinh viên chọn phương án trước khi xác nhận.
+                       A9a tại bước 9: Sinh viên không xác nhận thì không tạo phiên và không giữ thêm tài nguyên.
+Exception Flows        E4a: Thông tin phương tiện hoặc mức pin không hợp lệ thì từ chối đăng ký và yêu cầu cập nhật thông
+                       tin.
+                       E5a: Cổng sạc hoặc công suất không còn đủ khả năng phục vụ thì không tạo phiên; hệ thống cập nhật
+                       lại kết quả và cho phép chọn phương án khác.
+                       E6a: Tài nguyên đang lỗi hoặc chờ kiểm tra thì không được cấp mới theo BR-G04.
+                       E10a: Tài nguyên thay đổi trước khi xác nhận thì hệ thống không tạo phiên, cập nhật trạng thái tài
+                       nguyên và quay lại bước 4 để kiểm tra lại.
+                       E10b: Kết quả yêu cầu chưa rõ thì đối soát theo BR-G06; không tạo thêm phiên hoặc cam kết.
+Business Rules         BR-G01; BR-G02; BR-G03; BR-G04; BR-G06; BR-G07; BR-G08; BR-C01; BR-C03; BR-C04; BR-C10
+AUTO & UC l.quan       AUTO áp dụng: AUTO02; AUTO05. UC-A01 cung cấp thông tin Hub và tài nguyên; UC-B01 có thể
+                       cung cấp quyền đỗ liên kết; UC-C02 quản lý phiên sau khi được tạo; UC-C03 lập và điều chỉnh lịch sạc;
+                       UC-D07 cung cấp hoặc đối soát bằng chứng sự kiện vật lý khi cần.
+NFR                    NFR-PERF-01; NFR-DATA-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions      Tần suất theo nhu cầu. Đăng ký phiên sạc là việc tạo quyền sử dụng theo lịch, không phải xác nhận
+                       phương tiện đã cắm hoặc đã bắt đầu được sạc. Việc tạo phiên và giữ tài nguyên phải được xử lý nhất
+                       quán; nếu giữ tài nguyên thất bại thì không xác nhận phiên thành công.
+
+
+
+UC-C02 Quản lý phiên sạc xe cá nhân
+
+Trường đặc tả          UC-C02 Quản lý phiên sạc xe cá nhân
+Actors                 Sinh viên, IOT, Nhân viên điều hành
+Description            Sau khi đăng ký phiên sạc, sinh viên xem thông tin phiên và thực hiện thao tác phù hợp với trạng thái
+                       hiện tại như bắt đầu, kết thúc sớm hoặc hủy phiên. Hệ thống tiếp nhận sự kiện từ IoT để cập nhật
+                       thông tin phiên và tài nguyên theo bằng chứng hợp lệ. Phạm vi: Smart E Mobility Hub. Mức: Mục tiêu
+                       người dùng, có hỗ trợ tiếp nhận sự kiện từ IoT. Phụ trách: C.
+Trigger                Sinh viên chọn chức năng “Quản lý phiên sạc” hoặc hệ thống nhận được sự kiện liên quan đến phiên
+                       sạc từ IoT.
+Preconditions          Sinh viên đã đăng nhập và chỉ có quyền truy cập các phiên thuộc tài khoản của mình. Phiên sạc tồn
+                       tại và có thể truy xuất. Hệ thống có thể đọc trạng thái phiên, tài nguyên và dữ liệu sự kiện liên quan.
+Success Guarantee      Trạng thái phiên được cập nhật theo kết quả đã xác nhận. Thông tin mức pin được cập nhật khi có dữ
+                       liệu hợp lệ. Tài nguyên được giải phóng hoặc tiếp tục được giữ theo trạng thái thực tế. Lịch sạc được
+                       đánh giá lại khi điều kiện phục vụ thay đổi. Mọi thay đổi quan trọng được lưu lịch sử.
+
+
+
+                                                         21
+Trường đặc tả           UC-C02 Quản lý phiên sạc xe cá nhân
+Minimal Guarantee       Không cho phép sinh viên truy cập hoặc thay đổi phiên của người khác; không chuyển phiên sạc sang
+                        trạng thái đang sạc nếu chưa có xác nhận hợp lệ; không coi việc kết thúc phiên phần mềm là xác nhận
+                        phương tiện đã rút khỏi cổng; không giải phóng cổng khi trạng thái vật lý chưa được xác nhận.
+Normal Flow             1. Sinh viên chọn chức năng “Quản lý phiên sạc”.
+                        2. Hệ thống hiển thị danh sách phiên sạc của tài khoản theo trạng thái hiện tại.
+                        3. Sinh viên chọn một phiên sạc cụ thể.
+                        4. Hệ thống hiển thị thông tin phiên, Hub, cổng sạc, thời gian, mức pin và trạng thái tài nguyên theo
+                        dữ liệu mới nhất hợp lệ theo BR-G08.
+                        5. Sinh viên chọn thao tác phù hợp với trạng thái phiên hoặc hệ thống tiếp nhận sự kiện IoT.
+                        6. Hệ thống kiểm tra quyền, trạng thái phiên và tính hợp lệ của thao tác theo BR-G01, BR-G05 và
+                        BR-G06.
+                        7. Nếu là bắt đầu sạc, hệ thống chỉ chuyển trạng thái sau khi có xác nhận hợp lệ theo BR-C02 và
+                        BR-C05.
+                        8. Nếu là kết thúc hoặc hủy, hệ thống cập nhật phiên và xử lý phần tài nguyên chưa được sử dụng theo
+                        BR-C06, BR-C07 và BR-G07.
+                        9. Hệ thống lưu trạng thái trước, trạng thái sau, nguồn sự kiện, thời điểm và lý do khi cần theo BR-G08.
+                        10. Hệ thống đánh giá lại lịch và khả năng phục vụ nếu việc thay đổi phiên làm thay đổi tài nguyên;
+                        sau đó hiển thị kết quả cho sinh viên hoặc nhân viên điều hành. UC kết thúc.
+Alternative Flows       A5a – Bắt đầu phiên: Tại bước 5, sinh viên cắm phương tiện hoặc thực hiện thao tác xác nhận bắt đầu;
+                        hệ thống chờ sự kiện IoT/cơ chế xác nhận hợp lệ rồi chuyển phiên sang trạng thái đang sạc.
+                        A5b – Kết thúc sớm: Sinh viên yêu cầu kết thúc trước thời gian dự kiến; hệ thống thực hiện quy trình
+                        dừng và cập nhật phần tài nguyên còn lại, nhưng không tự xác nhận cổng đã trống.
+                        A5c – Hủy trước khi bắt đầu: Sinh viên hủy phiên chưa bắt đầu; hệ thống giải phóng phần tài nguyên
+                        chưa sử dụng do phiên tạo ra theo BR-G07 và đánh giá lại lịch.
+                        A8a: Phiên đã kết thúc nhưng cổng vẫn còn bị chiếm thì giữ trạng thái tài nguyên tương ứng và kích
+                        hoạt AUTO06 nếu đủ điều kiện.
+Exception Flows         E2a: Không tìm thấy phiên hoặc sinh viên không có quyền thì từ chối truy cập và giữ nguyên dữ liệu.
+                        E4a: Nếu dữ liệu trạng thái hoặc IoT quá cũ, hệ thống đánh dấu dữ liệu là chưa được xác minh; không
+                        sử dụng dữ liệu đó làm căn cứ duy nhất cho quyết định vận hành quan trọng.
+                        E6a: Thao tác không phù hợp với trạng thái hiện tại thì từ chối và giữ nguyên phiên.
+                        E7a: Không có bằng chứng hợp lệ về việc bắt đầu sạc thì không chuyển phiên sang trạng thái đang sạc.
+                        E8a: Tài nguyên phát sinh sự cố thì ngừng cấp mới, xác định các phiên bị ảnh hưởng và chuyển sang
+                        xử lý theo UC-D04/AUTO08.
+                        E9a: Nếu kết quả cập nhật chưa rõ, hệ thống kiểm tra lại theo BR-G06, không tạo thêm lần cập nhật
+                        hoặc giải phóng tài nguyên khi chưa xác minh.
+Business Rules          BR-G01; BR-G04; BR-G05; BR-G06; BR-G07; BR-G08; BR-C02; BR-C03; BR-C05; BR-C06 ;BR-C07;
+                        BR-C08 ; BR-C10; BR-C11
+AUTO & UC l.quan        AUTO áp dụng: AUTO02; AUTO05; AUTO06; AUTO08. UC-C01 tạo phiên; UC-C03 lập lại lịch khi
+                        điều kiện tài nguyên thay đổi; UC-D07 tiếp nhận và đối soát bằng chứng vật lý; UC-D04 xử lý sự cố
+                        khi tài nguyên sạc gặp vấn đề.
+NFR                     NFR-PERF-01; NFR-DATA-01; NFR-REL-01; NFR-REL-03; NFR-SEC-01
+Notes/Assumptions       Trạng thái phiên sạc và trạng thái vật lý của cổng sạc là hai thông tin độc lập. COMPLETED chỉ xác
+                        nhận phiên đã kết thúc theo quy trình phần mềm; không mặc nhiên có nghĩa phương tiện đã rút và
+                        cổng đã sẵn sàng cho phiên mới.
+
+
+
+UC-C03 Lập và điều chỉnh lịch sạc
+
+Trường đặc tả           UC-C03 Lập và điều chỉnh lịch sạc
+Actors                  Nhân viên điều hành
+Description             Hệ thống hỗ trợ nhân viên điều hành lập và điều chỉnh lịch sạc dựa trên mức pin hiện tại, nhu cầu sử
+                        dụng, thời gian dự kiến sử dụng tiếp theo, công suất và khả năng cung cấp của Hub. Kết quả lập lịch
+                        là một phương án phân bổ; mọi việc thay đổi vận hành phải được actor có thẩm quyền kiểm tra và xác
+                        nhận. Phạm vi: Smart E Mobility Hub. Mức: Mục tiêu quản trị. Phụ trách: C.
+Trigger                 Nhân viên điều hành yêu cầu lập lịch lại hoặc hệ thống phát hiện điều kiện cần lập lịch lại sau khi đăng
+                        ký, hủy, kết thúc phiên, thay đổi nhu cầu, công suất hoặc trạng thái cổng sạc.
+Preconditions           Hệ thống có dữ liệu về phương tiện, mức pin, phiên sạc và nhu cầu sử dụng. Có dữ liệu về cổng sạc,
+                        công suất và giới hạn của Hub. Các quy tắc ưu tiên sạc đã được cấu hình. Dữ liệu quá cũ hoặc chưa
+                        được xác minh phải được đánh dấu và không được sử dụng làm căn cứ duy nhất cho quyết định vận
+                        hành.
+
+
+
+                                                          22
+Trường đặc tả       UC-C03 Lập và điều chỉnh lịch sạc
+Success Guarantee   Hệ thống tạo được phương án lịch sạc dựa trên nhu cầu và khả năng cung cấp hiện tại; không phân bổ
+                    vượt công suất hoặc tài nguyên không hợp lệ; các phiên bị ảnh hưởng được xác định; nhân viên điều
+                    hành nhận được phương án và có thể xác nhận thay đổi theo quyền được cấp.
+Minimal Guarantee   Không phân bổ vượt công suất hoặc tạo cam kết trên tài nguyên không đủ điều kiện. Khi thiếu dữ liệu,
+                    hệ thống không suy đoán trạng thái tài nguyên. Kết quả mô phỏng hoặc lập lịch không được xem là đã
+                    thực hiện thao tác vật lý trên phương tiện hoặc cổng sạc.
+Normal Flow         1. Nhân viên điều hành kích hoạt lập hoặc điều chỉnh lịch sạc, hoặc AUTO05 tạo yêu cầu lập lại lịch.
+                    2. Hệ thống thu thập các phiên đang sạc, đang chờ sạc, mức pin, nhu cầu, thời điểm sử dụng dự kiến
+                    và trạng thái tài nguyên.
+                    3. Hệ thống kiểm tra độ mới và tính hợp lệ của dữ liệu theo BR-C10 và BR-G08.
+                    4. Hệ thống xác định nhu cầu sạc theo mức pin, mục tiêu và thời gian cần sử dụng theo BR-C04.
+                    5. Hệ thống xác định công suất, số cổng và khả năng phục vụ của từng Hub theo BR-G03 và BR-G04.
+                    6. Hệ thống tính toán mức độ ưu tiên và lập phương án phân bổ phiên sạc.
+                    7. Hệ thống kiểm tra xung đột thời gian, giới hạn công suất và khả năng phục vụ theo BR-G02; BR-G03;
+                    BR-C04.
+                    8. Hệ thống hoàn thiện phương án lịch, xác định các phiên được giữ nguyên, các phiên bị ảnh hưởng
+                    và phần nhu cầu chưa đáp ứng.
+                    9. Hệ thống hiển thị phương án cho nhân viên điều hành, bao gồm nguyên nhân của các thay đổi và
+                    các tài nguyên liên quan.
+                    10. Nhân viên điều hành kiểm tra và xác nhận phương án nếu cần thay đổi vận hành.
+                    11. Sau khi được xác nhận, hệ thống cập nhật các thông tin được phép thay đổi, lưu lịch sử theo
+                    BR-G08 và kích hoạt các quy trình liên quan.
+                    12. Nếu phương án không được xác nhận, hệ thống giữ nguyên trạng thái vận hành hiện tại và kết thúc
+                    UC.
+Alternative Flows   A2a – Có yêu cầu sạc được ưu tiên: Tại bước 2, hệ thống phát hiện phương tiện có nhu cầu sử dụng
+                    gấp hoặc yêu cầu ưu tiên; ghi nhận yêu cầu và cập nhật dữ liệu đầu vào, sau đó quay lại bước 3.
+                    A5a – Khả năng cung cấp của Hub giảm: Tại bước 5, hệ thống phát hiện công suất hoặc số cổng khả
+                    dụng giảm; xác định các phiên bị ảnh hưởng và tiếp tục lập phương án trong phạm vi khả dụng.
+                    A6a – Không cần thay đổi phân bổ: Tại bước 6, nếu lịch hiện tại vẫn phù hợp thì hệ thống giữ nguyên
+                    phân bổ và chuyển đến bước 9.
+                    A8a – Có phiên không thể đáp ứng: Hệ thống đưa phiên vào hàng đợi hoặc đề xuất khung giờ khác,
+                    đồng thời hiển thị rõ phần nhu cầu chưa đáp ứng.
+                    A10a – Nhân viên điều hành không xác nhận: Hệ thống không áp dụng thay đổi vận hành; phương án
+                    chỉ được lưu như kết quả tính toán nếu chính sách cho phép.
+Exception Flows     E3a – Không đủ dữ liệu để lập lịch: Hệ thống không phân bổ mới đối với tài nguyên chưa xác định được
+                    trạng thái, thông báo cho nhân viên điều hành và kết thúc UC.
+                    E5a – Tổng nhu cầu vượt khả năng cung cấp của Hub: Hệ thống xác định các phiên theo chính sách
+                    ưu tiên; các phiên chưa được đáp ứng sẽ được điều chỉnh thời gian hoặc đưa vào hàng đợi, không phân
+                    bổ vượt công suất.
+                    E5b – Cổng sạc phát sinh lỗi: Tài nguyên được ngừng cấp mới; các phiên bị ảnh hưởng được xác định
+                    để lập lại lịch hoặc chuyển sang xử lý sự cố.
+                    E7a – Phát hiện xung đột hoặc cam kết không còn khả thi: Hệ thống không tự hủy cam kết đã xác
+                    nhận; tạo phương án xử lý và chuyển cho actor có quyền xác nhận.
+                    E10a: Phương án thay đổi nhưng nhân viên điều hành không có quyền xác nhận thì không áp dụng thay
+                    đổi.
+Business Rules      BR-G02; BR-G03; BR-G04; BR-G06; BR-G08; BR-C04; BR-C09; BR-C11
+AUTO & UC l.quan    AUTO áp dụng: AUTO05; AUTO07. UC-C01 cung cấp phiên sạc mới; UC-C02 cung cấp trạng thái
+                    phiên và kết quả sử dụng; UC-D01 cung cấp thông tin năng lực Hub; UC-D04 xử lý các tình huống sự
+                    cố; UC-D06 cung cấp kết quả mô phỏng/khuyến nghị khi có nhu cầu.
+NFR                 NFR-PERF-03; NFR-DATA-01; NFR-REL-01; NFR-REL-03; NFR-SEC-01; NFR-MTN-01
+Notes/Assumptions   Tần suất theo sự kiện hoặc theo yêu cầu của nhân viên điều hành. Kết quả lập lịch là phương án phân
+                    bổ dựa trên dữ liệu tại thời điểm tính toán. Phương án không đồng nghĩa với việc đã cắm dây, cấp điện
+                    hoặc thực hiện thao tác vật lý trên phương tiện. Những thay đổi ảnh hưởng cam kết đã xác nhận phải
+                    tuân theo quyền và quy trình tương ứng.
+
+
+
+
+                                                     23
+8.5 Phần D Vận hành điều chuyển và mô phỏng
+
+UC-D01 Giám sát trạng thái mạng lưới
+
+Trường đặc tả          UC-D01 Giám sát trạng thái mạng lưới
+Actors                 Primary Actor: Nhân viên điều hành hệ thống
+                       Secondary Actor: Không có
+Description            Goal: Theo dõi trạng thái vận hành của mạng lưới Hub và phát hiện các Hub ở mức Cảnh báo hoặc
+                       Quá tải.
+                       Scope: Phân hệ Vận hành & Điều phối của Hệ thống Smart E-Mobility Hub.
+                       Level: User goal
+Trigger                Nhân viên điều hành yêu cầu hệ thống hiển thị trạng thái mạng lưới.
+Preconditions          - Nhân viên điều hành đã được xác thực và có quyền giám sát mạng lưới.
+                       - Thông tin cấu hình của các Mobility Hub đã tồn tại trên hệ thống.
+Success Guarantee      - Hệ thống cung cấp trạng thái của toàn bộ Mobility Hub dựa trên dữ liệu trạng thái mới nhất.
+                       - Hệ thống xác định và hiển thị cảnh báo cho các Hub đạt mức Cảnh báo hoặc Quá tải.
+Minimal Guarantee      Hệ thống giữ nguyên dữ liệu trạng thái gần nhất và cảnh báo khi không có dữ liệu mới.
+Normal Flow            1. Nhân viên điều hành yêu cầu hệ thống hiển thị trạng thái mạng lưới.
+                       2. Hệ thống hiển thị trạng thái mới nhất của các Mobility Hub, phương tiện, chỗ đỗ, mức pin và cổng
+                       sạc.
+                       3. Hệ thống xác định mức độ chiếm dụng theo BR-P02 và hiển thị trạng thái cùng cảnh báo tương ứng.
+                       4. Nhân viên điều hành yêu cầu kết thúc phiên giám sát.
+                       5. Hệ thống kết thúc phiên giám sát. Use case kết thúc.
+Alternative Flows      A2a. Hệ thống không thể lấy đầy đủ trạng thái của một hoặc nhiều Hub:
+                       - A2a1. Tại bước 2, dữ liệu trạng thái của một hoặc nhiều Hub không khả dụng.
+                       - A2a2. Hệ thống cảnh báo các Hub không có dữ liệu trạng thái mới.
+                       - A2a3. Hệ thống tiếp tục tại bước 3 của Normal Flow.
+                       A3a. Nhân viên điều hành xem thông tin chi tiết một Hub:
+                       - A3a1. Tại bước 3, nhân viên điều hành yêu cầu xem chi tiết một Hub.
+                       - A3a2. Hệ thống hiển thị chi tiết trạng thái vị trí đỗ, cổng sạc và phương tiện của Hub.
+                       - A3a3. Nhân viên điều hành yêu cầu quay lại theo dõi toàn mạng lưới.
+                       - A3a4. Hệ thống quay lại bước 3 của Normal Flow.
+Exception Flows        E2a. Không thể truy xuất dữ liệu trạng thái mạng lưới:
+                       - E2a1. Tại bước 2, hệ thống không thể truy xuất dữ liệu trạng thái.
+                       - E2a2. Hệ thống thông báo không thể tải dữ liệu trạng thái mạng lưới.
+                       - E2a3. Use case kết thúc.
+Business Rules         BR-P02; BR-P03
+NFR                    NFR-PERF-01; NFR-REL-01; NFR-SEC-01
+Notes/Assumptions      Frequency: Thường xuyên.
+                       Assumptions: Dữ liệu trạng thái tài nguyên đã được tiếp nhận và xử lý hợp lệ trước khi cung cấp cho
+                       chức năng giám sát.
+
+
+
+UC-D02 Điều phối phương tiện giữa các Hub
+
+Trường đặc tả          UC-D02 Điều phối phương tiện giữa các Hub
+Actors                 Primary Actor: Nhân viên điều hành
+                       Secondary Actor: Nhân viên điều chuyển xe
+Description            Goal: Nhân viên điều hành tạo và phát hành lệnh điều chuyển phương tiện từ Hub nguồn đến Hub đích
+                       để cân bằng số lượng phương tiện.
+                       Scope: Phân hệ Vận hành & Điều phối của Hệ thống Smart E-Mobility Hub
+                       Level: User goal
+Trigger                Nhân viên điều hành yêu cầu khởi tạo lệnh điều chuyển phương tiện.
+Preconditions          1. Nhân viên điều hành đã được xác thực và có quyền điều phối phương tiện.
+                       2. Thông tin trạng thái các Hub và phương tiện liên quan có sẵn trên hệ thống.
+Success Guarantee      - Hệ thống tạo và lưu trữ lệnh điều chuyển ở trạng thái ISSUED.
+                       - Hệ thống chuyển các phương tiện trong lệnh sang PENDING_REDISTRIBUTION và gắn với mã lệnh.
+                       - Hệ thống chuyển giao lệnh cho Nhân viên điều chuyển được phân công.
+
+
+
+
+                                                       24
+Trường đặc tả       UC-D02 Điều phối phương tiện giữa các Hub
+Minimal Guarantee   - Hệ thống không phát hành lệnh không hợp lệ.
+                    - Nếu phát hành không thành công, hệ thống không lưu lệnh dở dang và giữ nguyên trạng thái các
+                    phương tiện liên quan.
+                    - Nếu không thể chuyển giao lệnh, hệ thống không tự động thay đổi trạng thái lệnh hoặc phương tiện
+                    đã phát hành.
+Normal Flow         1. Nhân viên điều hành gửi yêu cầu khởi tạo lệnh điều chuyển phương tiện.
+                    2. Hệ thống hiển thị trạng thái các Hub, số lượng phương tiện AVAILABLE, sức chứa tiếp nhận và Nhân
+                    viên điều chuyển đang sẵn sàng.
+                    3. Nhân viên điều hành chọn Hub nguồn, Hub đích, phương tiện và Nhân viên điều chuyển, rồi yêu cầu
+                    lập lệnh.
+                    4. Hệ thống kiểm tra yêu cầu và hiển thị thông tin tóm lược của lệnh để Nhân viên điều hành xác nhận.
+                    5. Nhân viên điều hành kiểm tra thông tin và xác nhận phát hành lệnh điều chuyển.
+                    6. Hệ thống tạo lệnh ở trạng thái ISSUED và chuyển các phương tiện được chọn sang
+                    PENDING_REDISTRIBUTION. Phát hành chỉ hoàn tất khi cả hai cập nhật thành công.
+                    7. Hệ thống chuyển giao lệnh cho Nhân viên điều chuyển được phân công.
+                    8. Hệ thống thông báo kết quả phát hành và chuyển giao lệnh cho Nhân viên điều hành. Use case kết
+                    thúc.
+Alternative flows   A3a. Không có Nhân viên điều chuyển đang sẵn sàng:
+                    - A3a1. Tại bước 3, Nhân viên điều hành không thể chỉ định Nhân viên điều chuyển đang sẵn sàng.
+                    - A3a2. Hệ thống thông báo không có Nhân viên điều chuyển khả dụng.
+                    - A3a3. Nhân viên điều hành hủy việc lập lệnh.
+                    - A3a4. Use Case kết thúc.
+                    A4a. Phương tiện được chọn không còn hợp lệ:
+                    - A4a1. Tại bước 4, hệ thống phát hiện phương tiện được chọn không đáp ứng điều kiện điều chuyển
+                    theo BR-D02-01.
+                    - A4a2. Hệ thống thông báo các phương tiện không hợp lệ.
+                    - A4a3. Nhân viên điều hành loại bỏ hoặc điều chỉnh danh sách phương tiện và yêu cầu kiểm tra lại.
+                    - A4a4. Luồng tiếp tục tại Bước 4.
+                    A4b. Hub nguồn không đủ phương tiện:
+                    - A4b1. Tại bước 4, hệ thống phát hiện số lượng phương tiện đáp ứng điều kiện điều chuyển tại Hub
+                    nguồn không đủ.
+                    - A4b2. Hệ thống thông báo số lượng phương tiện có thể điều chuyển.
+                    - A4b3. Nhân viên điều hành điều chỉnh số lượng hoặc danh sách phương tiện và yêu cầu kiểm tra lại.
+                    - A4b4. Luồng tiếp tục tại Bước 4.
+                    A4c. Hub đích không đủ sức chứa:
+                    - A4c1. Tại bước 4, hệ thống phát hiện sức chứa tiếp nhận tại Hub đích không đủ.
+                    - A4c2. Hệ thống thông báo sức chứa tiếp nhận khả dụng.
+                    - A4c3. Nhân viên điều hành thay đổi Hub đích hoặc điều chỉnh số lượng phương tiện và yêu cầu kiểm
+                    tra lại.
+                    - A4c4. Luồng tiếp tục tại Bước 4.
+                    A5a. Điều chỉnh thông tin trước khi xác nhận:
+                    - A5a1. Tại bước 5, Nhân viên điều hành yêu cầu điều chỉnh thông tin lệnh điều chuyển.
+                    - A5a2. Nhân viên điều hành điều chỉnh thông tin và yêu cầu kiểm tra lại.
+                    - A5a3. Luồng tiếp tục tại Bước 4.
+                    A7a. Không thể chuyển giao lệnh:
+                    - A7a1. Tại bước 7, hệ thống không thể chuyển giao lệnh cho Nhân viên điều chuyển được phân công.
+                    - A7a2. Hệ thống thông báo việc chuyển giao lệnh không thành công.
+                    - A7a3. Use Case kết thúc.
+Exception flows     E5a. Phương tiện không còn đáp ứng điều kiện tại thời điểm phát hành:
+                    - E5a1. Sau bước 5, hệ thống phát hiện phương tiện trong lệnh không còn đáp ứng BR-D02-01.
+                    - E5a2. Hệ thống từ chối phát hành và thông báo các phương tiện không hợp lệ.
+                    - E5a3. Use Case kết thúc.
+                    E6a. Không thể hoàn tất việc phát hành lệnh và cập nhật phương tiện:
+                    - E6a1. Tại bước 6, hệ thống không thể hoàn tất việc phát hành lệnh và cập nhật các phương tiện.
+                    - E6a2. Hệ thống không lưu lệnh dở dang và giữ nguyên trạng thái các phương tiện liên quan.
+                    - E6a3. Hệ thống thông báo việc phát hành lệnh không thành công.
+                    - E6a4. Use Case kết thúc.
+
+
+
+
+                                                     25
+Trường đặc tả          UC-D02 Điều phối phương tiện giữa các Hub
+Note and Issues        Business Rules: BR-D02-01; BR-D02-02; BR-D02-03; BR-D02-04
+                       Non-Functional Requirements: NFR-PERF-01; NFR-USE-01; NFR-SEC-01
+                       Frequency: Phát sinh theo nhu cầu điều phối giữa các Hub. Assumptions:
+                       - Dữ liệu trạng thái phương tiện và sức chứa của các Hub được hệ thống cập nhật và có sẵn khi Nhân
+                       viên điều hành thực hiện điều phối.
+                       - Lệnh điều chuyển ở trạng thái ISSUED được xử lý tiếp trong use case liên quan đến Nhân viên điều
+                       chuyển.
+
+
+
+UC-D03 Xác nhận hoàn tất điều chuyển phương tiện
+
+Trường đặc tả          UC-D03 Xác nhận hoàn tất điều chuyển phương tiện
+Actors                 Primary Actor: Nhân viên điều chuyển xe
+                       Secondary Actor: Không có
+Description            Goal: Nhân viên điều chuyển xe thực hiện lệnh, xác nhận bàn giao phương tiện tại Hub đích và hoàn
+                       tất lệnh khi toàn bộ phương tiện đã được bàn giao.
+                       Scope: Phân hệ Vận hành & Điều phối.
+                       Level: User-Goal level.
+Trigger                Nhân viên điều chuyển xe gửi yêu cầu truy xuất thông tin lệnh điều chuyển được phân công.
+Preconditions          - Lệnh đang ở trạng thái ISSUED hoặc IN_PROGRESS, được phân công đúng người.
+                       - Các phương tiện chưa bàn giao ở trạng thái PENDING_REDISTRIBUTION.
+Success Guarantee      - Phương tiện bàn giao thành công chuyển sang AVAILABLE tại Hub đích.
+                       - Cập nhật số lượng phương tiện, dung lượng chỗ đỗ và sức chứa cam kết tại Hub đích theo thực tế.
+                       - Khi toàn bộ phương tiện thuộc lệnh đã bàn giao, lệnh chuyển sang COMPLETED.
+Minimal Guarantee      - Lệnh không chuyển sang COMPLETED nếu chưa bàn giao hợp lệ toàn bộ.
+                       - Trạng thái đã cập nhật trước đó không bị mất khi kích hoạt lại Use Case.
+Normal Flow            1. Nhân viên điều chuyển xe yêu cầu hệ thống cung cấp thông tin lệnh được phân công.
+                       2. Hệ thống cung cấp thông tin lệnh (Hub nguồn, Hub đích, danh sách xe).
+                       3. Nhân viên điều chuyển xe xác nhận bắt đầu thực hiện lệnh.
+                       4. Hệ thống chuyển trạng thái lệnh từ ISSUED sang IN_PROGRESS.
+                       5. Nhân viên điều chuyển xe xác nhận danh sách phương tiện cần bàn giao.
+                       6. Hệ thống kiểm tra tính hợp lệ của danh sách phương tiện và sức chứa tại Hub đích.
+                       7. Hệ thống cập nhật trạng thái các phương tiện được xác nhận thành AVAILABLE tại Hub đích.
+                       8. Hệ thống cập nhật số lượng phương tiện, chỗ đỗ và sức chứa đã cam kết tại Hub đích.
+                       9. Hệ thống chuyển trạng thái lệnh từ IN_PROGRESS sang COMPLETED.
+                       10. Hệ thống thông báo hoàn tất điều chuyển. Use Case kết thúc.
+
+
+
+
+                                                       26
+Trường đặc tả       UC-D03 Xác nhận hoàn tất điều chuyển phương tiện
+Alternative flows   A2a. Lệnh đã ở trạng thái IN_PROGRESS:
+                    - A2a1. Tại Bước 2, Hệ thống xác định lệnh đang ở trạng thái IN_PROGRESS và cung cấp danh sách
+                    phương tiện còn phải bàn giao.
+                    - A2a2. Luồng bỏ qua Bước 3 và Bước 4, tiếp tục tại Bước 5.
+                    A5a. Xác nhận bàn giao một phần phương tiện:
+                    - A5a1. Tại Bước 5, Nhân viên điều chuyển xe xác nhận chỉ một phần phương tiện trong lệnh đã được
+                    đưa đến Hub đích thành công.
+                    - A5a2. Hệ thống kiểm tra tính hợp lệ của các phương tiện được xác nhận và kiểm tra sức chứa tiếp
+                    nhận khả dụng tại Hub đích.
+                    - A5a3. Hệ thống cập nhật trạng thái các phương tiện được xác nhận thành AVAILABLE tại Hub đích.
+                    - A5a4. Hệ thống cập nhật số lượng phương tiện, dung lượng chỗ đỗ và phần sức chứa đã cam kết tại
+                    Hub đích theo số phương tiện đã bàn giao.
+                    - A5a5. Hệ thống giữ lệnh ở trạng thái IN_PROGRESS và các phương tiện chưa bàn giao ở trạng thái
+                    PENDING_REDISTRIBUTION.
+                    - A5a6. Luồng quay lại Bước 5.
+                    A6a. Phương tiện được xác nhận không thuộc lệnh điều chuyển:
+                    - A6a1. Tại Bước 6, Hệ thống phát hiện một hoặc nhiều phương tiện được xác nhận không thuộc danh
+                    sách phương tiện còn phải bàn giao của lệnh.
+                    - A6a2. Hệ thống thông báo các phương tiện không hợp lệ cho Nhân viên điều chuyển xe.
+                    - A6a3. Nhân viên điều chuyển xe loại bỏ phương tiện không hợp lệ hoặc điều chỉnh danh sách; nếu
+                    không tiếp tục, hủy đợt xác nhận.
+                    - A6a4. Nếu tiếp tục, luồng quay lại Bước 5; nếu hủy, hệ thống giữ lệnh IN_PROGRESS và Use Case
+                    kết thúc.
+                    A6b. Phương tiện không còn ở trạng thái PENDING_REDISTRIBUTION:
+                    - A6b1. Tại Bước 6, Hệ thống phát hiện một hoặc nhiều phương tiện được xác nhận không còn ở trạng
+                    thái PENDING_REDISTRIBUTION.
+                    - A6b2. Hệ thống thông báo các phương tiện không hợp lệ và trạng thái hiện tại của chúng cho Nhân
+                    viên điều chuyển xe.
+                    - A6b3. Nhân viên điều chuyển xe loại bỏ phương tiện không hợp lệ hoặc điều chỉnh danh sách; nếu
+                    không tiếp tục, hủy đợt xác nhận.
+                    - A6b4. Nếu tiếp tục, luồng quay lại Bước 5; nếu hủy, hệ thống giữ lệnh IN_PROGRESS và Use Case
+                    kết thúc.
+                    A6c. Hub đích không đủ sức chứa cho toàn bộ phương tiện được xác nhận:
+                    - A6c1. Tại Bước 6, Hệ thống phát hiện sức chứa tiếp nhận khả dụng tại Hub đích không đủ để tiếp
+                    nhận toàn bộ số phương tiện được xác nhận.
+                    - A6c2. Hệ thống thông báo số lượng phương tiện tối đa có thể tiếp nhận tại Hub đích cho Nhân viên
+                    điều chuyển xe.
+                    - A6c3. Nhân viên điều chuyển xe xác định lại danh sách phương tiện có thể được bàn giao trong phạm
+                    vi sức chứa khả dụng.
+                    - A6c4. Luồng quay lại Bước 5.
+                    A6d. Hủy đợt xác nhận bàn giao:
+                    - A6d1. Trong quá trình xác nhận, Nhân viên điều chuyển xe hủy đợt xác nhận bàn giao.
+                    - A6d2. Hệ thống giữ lệnh ở trạng thái IN_PROGRESS và không thực hiện các cập nhật từ đợt xác
+                    nhận chưa hoàn tất.
+                    - A6d3. Use Case kết thúc.
+Exception flows     E6a. Không thể hoàn tất cập nhật kết quả bàn giao:
+                    - E6a1. Tại bước 7 hoặc 8, Hệ thống không thể hoàn tất cập nhật trạng thái phương tiện hoặc tài
+                    nguyên Hub.
+                    - E6a2. Hệ thống không hoàn tất lần xác nhận và giữ nguyên trạng thái trước lần xác nhận nếu các
+                    cập nhật chưa hoàn tất.
+                    - E6a3. Hệ thống thông báo việc cập nhật kết quả bàn giao không thành công cho Nhân viên điều
+                    chuyển xe.
+                    - E6a4. Use Case kết thúc.
+Note and Issues     Business Rules: BR-D03-01; BR-D03-02; BR-D03-03; BR-D03-04; BR-D03-05
+                    Non-Functional Requirements: NFR-REL-02; NFR-SEC-01
+                    Frequency: Phát sinh khi thực hiện hoặc tiếp tục một lệnh điều chuyển.
+                    Assumptions:
+                    - Nhân viên điều chuyển xe chỉ xác nhận bàn giao sau khi các phương tiện thực tế đã được đưa đến
+                    Hub đích.
+
+
+
+
+                                                    27
+UC-D04 Điều phối xử lý sự cố vận hành
+
+Trường đặc tả          UC-D04 Điều phối xử lý sự cố vận hành
+Actors                 Primary Actor: Nhân viên điều hành hệ thống
+                       Secondary Actor: Kỹ thuật viên bảo trì
+Description            Goal: Ghi nhận sự cố, cô lập tài nguyên lỗi và tạo phiếu xử lý sự cố ở trạng thái OPEN để phân công
+                       cho Kỹ thuật viên bảo trì.
+                       Scope: Phân hệ Vận hành & Điều phối.
+                       Level: User-Goal level.
+Trigger                Nhân viên điều hành gửi yêu cầu lập phiếu xử lý sự cố.
+Preconditions          - Nhân viên điều hành có quyền lập phiếu.
+                       - Tài nguyên chưa ở trạng thái OUT_OF_SERVICE. Có kỹ thuật viên hợp lệ để phân công.
+Success Guarantee      - Tài nguyên lỗi chuyển sang OUT_OF_SERVICE, không cấp cho phiên mới.
+                       - Phiếu sự cố được lưu ở trạng thái OPEN và chuyển đến Kỹ thuật viên được phân công.
+Minimal Guarantee      Nếu thất bại, giữ nguyên trạng thái trước đó, không lưu phiếu chưa hoàn tất. Nếu không thể gửi thông
+                       báo, phiếu vẫn ở OPEN và tài nguyên giữ OUT_OF_SERVICE.
+Normal Flow            1. Nhân viên điều hành yêu cầu lập phiếu xử lý sự cố.
+                       2. Hệ thống cung cấp thông tin tài nguyên và danh sách Kỹ thuật viên khả dụng.
+                       3. Nhân viên điều hành nhập thông tin sự cố, chọn Kỹ thuật viên và xác nhận.
+                       4. Hệ thống kiểm tra tính hợp lệ của thông tin sự cố và trạng thái tài nguyên.
+                       5. Hệ thống chuyển tài nguyên sang OUT_OF_SERVICE, lưu phiếu sự cố ở trạng thái OPEN.
+                       6. Hệ thống chuyển phiếu đến Kỹ thuật viên được phân công.
+                       7. Hệ thống thông báo kết quả. Use Case kết thúc.
+Alternative flows      A1a. Khởi tạo từ cảnh báo sự cố:
+                       - A1a1. Nhân viên điều hành lựa chọn yêu cầu lập phiếu từ một cảnh báo sự cố đã có.
+                       - A1a2. Hệ thống sử dụng thông tin cảnh báo làm thông tin ban đầu của sự cố.
+                       - A1a3. Luồng tiếp tục tại Bước 2.
+                       A3a. Hủy thao tác lập phiếu:
+                       - A3a1. Nhân viên điều hành hủy thao tác lập phiếu trước khi xác nhận yêu cầu.
+                       - A3a2. Hệ thống hủy thao tác và không lưu thông tin sự cố.
+                       - A3a3. Use Case kết thúc.
+                       A4a. Kỹ thuật viên không còn khả dụng:
+                       - A4a1. Tại Bước 4, Hệ thống phát hiện Kỹ thuật viên được chọn không còn khả dụng.
+                       - A4a2. Hệ thống thông báo cho Nhân viên điều hành và cung cấp danh sách Kỹ thuật viên bảo trì khả
+                       dụng hiện tại.
+                       - A4a3. Nếu còn Kỹ thuật viên khả dụng, Nhân viên điều hành chọn Kỹ thuật viên khác.
+                       - A4a4. Hệ thống quay lại Bước 4 để kiểm tra lại thông tin và khả năng tiếp nhận của Kỹ thuật viên
+                       được chọn.
+                       - A4a5. Nếu không còn Kỹ thuật viên khả dụng, Hệ thống thông báo và Use Case kết thúc.
+Exception flows        E4a. Trạng thái tài nguyên không còn hợp lệ:
+                       - E4a1. Tại Bước 4, Hệ thống phát hiện tài nguyên không còn đáp ứng điều kiện lập phiếu.
+                       - E4a2. Hệ thống thông báo trạng thái hiện tại của tài nguyên và từ chối tiếp tục lập phiếu.
+                       - E4a3. Use Case kết thúc.
+                       E5a. Không thể tạo phiếu và cô lập tài nguyên:
+                       - E5a1. Tại Bước 5, Hệ thống không thể hoàn tất việc tạo phiếu và chuyển tài nguyên sang
+                       OUT_OF_SERVICE.
+                       - E5a2. Hệ thống không xác nhận việc khởi tạo, giữ nguyên trạng thái trước đó của tài nguyên và không
+                       lưu phiếu xử lý sự cố chưa hoàn tất.
+                       - E5a3. Hệ thống thông báo cho Nhân viên điều hành rằng việc lập phiếu thất bại.
+                       - E5a4. Use Case kết thúc.
+Note and Issues        Business Rules: BR-D04-01; BR-D04
+                       Non-Functional Requirements: NFR-REL-02; NFR-SEC-01
+                       Frequency: Phát sinh khi phương tiện hoặc cổng sạc cần được ghi nhận sự cố.
+                       Assumptions:
+                       - Nhân viên điều hành có thông tin ban đầu cần thiết để ghi nhận sự cố.
+                       - Tài nguyên chỉ được đưa trở lại trạng thái hoạt động phù hợp sau khi sự cố đã được xử lý theo quy
+                       trình của hệ thống.
+
+
+
+UC-D05 Cập nhật kết quả khắc phục sự cố
+
+
+
+                                                        28
+Trường đặc tả       UC-D05 Cập nhật kết quả khắc phục sự cố
+Actors              Primary Actor: Kỹ thuật viên bảo trì
+                    Secondary Actor: Không có
+Description         Goal: Ghi nhận kết quả xử lý sự cố, cập nhật trạng thái phiếu và trạng thái vận hành của tài nguyên.
+                    Scope: Phân hệ Vận hành & Điều phối.
+                    Level: User-goal.
+Trigger             Kỹ thuật viên bảo trì hoàn tất kiểm tra/khắc phục thực tế và gửi yêu cầu cập nhật.
+Preconditions       - Phiếu đang ở trạng thái OPEN và phân công đúng cho Kỹ thuật viên thao tác.
+                    - Tài nguyên liên quan đang ở trạng thái OUT_OF_SERVICE.
+Success Guarantee   - Phiếu chuyển từ OPEN sang RESOLVED (nếu khắc phục xong) hoặc ESCALATED_WORKSHOP
+                    (nếu không thể sửa tại chỗ).
+                    - Tài nguyên được khôi phục về trạng thái hoạt động phù hợp (khi RESOLVED) hoặc tiếp tục
+                    OUT_OF_SERVICE (khi ESCALATED_WORKSHOP).
+Minimal Guarantee   Khi cập nhật thất bại, phiếu giữ OPEN và tài nguyên giữ OUT_OF_SERVICE.
+Normal flow         1. Kỹ thuật viên bảo trì yêu cầu truy xuất phiếu sự cố được phân công.
+                    2. Hệ thống cung cấp thông tin chi tiết của sự cố và tài nguyên liên quan.
+                    3. Kỹ thuật viên bảo trì nhập nội dung kết quả xử lý, xác nhận sự cố đã được khắc phục hoàn toàn và
+                    gửi yêu cầu hoàn tất.
+                    4. Hệ thống kiểm tra tính đầy đủ, hợp lệ của thông tin cập nhật và điều kiện an toàn kỹ thuật của tài
+                    nguyên.
+                    5. Hệ thống chuyển trạng thái phiếu sự cố từ OPEN sang RESOLVED và khôi phục trạng thái tài
+                    nguyên liên quan về trạng thái hoạt động phù hợp; việc cập nhật chỉ được xác nhận thành công khi cả
+                    hai trạng thái được cập nhật thành công.
+                    6. Hệ thống thông báo kết quả cập nhật cho Kỹ thuật viên bảo trì và Nhân viên điều hành. Use case
+                    kết thúc.
+Alternative flows   A3a. Không thể khắc phục tại chỗ:
+                    - A3a1. Tại Bước 3, Kỹ thuật viên bảo trì xác nhận sự cố không thể khắc phục tại chỗ, nhập lý do và
+                    gửi yêu cầu cập nhật.
+                    - A3a2. Hệ thống kiểm tra tính đầy đủ và hợp lệ của thông tin báo cáo.
+                    - A3a3. Hệ thống chuyển trạng thái phiếu sự cố từ OPEN sang ESCALATED_WORKSHOP và duy trì
+                    phương tiện hoặc cổng sạc ở trạng thái OUT_OF_SERVICE.
+                    - A3a4. Hệ thống thông báo kết quả cập nhật cho Kỹ thuật viên bảo trì và Nhân viên điều hành.
+                    - A3a5. Use Case kết thúc.
+                    A3b. Hủy thao tác:
+                    - A3b1. Tại Bước 3, Kỹ thuật viên bảo trì lựa chọn hủy bỏ thao tác cập nhật.
+                    - A3b2. Hệ thống hủy thao tác, không ghi nhận kết quả mới và giữ phiếu OPEN, tài nguyên
+                    OUT_OF_SERVICE.
+                    - A3b3. Use Case kết thúc.
+                    A4a. Thông tin cập nhật hoặc điều kiện an toàn kỹ thuật chưa đạt:
+                    - A4a1. Tại Bước 4, Hệ thống phát hiện thông tin cập nhật không hợp lệ, thiếu dữ liệu bắt buộc hoặc
+                    tài nguyên chưa đáp ứng điều kiện an toàn kỹ thuật.
+                    - A4a2. Hệ thống thông báo lý do chưa thể hoàn tất cập nhật và giữ phiếu ở trạng thái OPEN, tài
+                    nguyên ở trạng thái OUT_OF_SERVICE.
+                    - A4a3. Kỹ thuật viên bảo trì bổ sung hoặc điều chỉnh thông tin, hoặc tiếp tục xử lý để tài nguyên đáp
+                    ứng điều kiện an toàn.
+                    - A4a4. Luồng quay lại Bước 4 để Hệ thống kiểm tra lại.
+Exception flows     E5a. Không thể cập nhật nhất quán giữa phiếu sự cố và tài nguyên:
+                    - E5a1. Tại Bước 5, Hệ thống không thể hoàn tất việc chuyển trạng thái phiếu sự cố sang RESOLVED
+                    và khôi phục trạng thái tài nguyên về trạng thái hoạt động phù hợp.
+                    - E5a2. Hệ thống không xác nhận kết quả cập nhật, duy trì phiếu sự cố ở trạng thái OPEN và tài
+                    nguyên ở trạng thái OUT_OF_SERVICE.
+                    - E5a3. Hệ thống thông báo việc cập nhật không thành công cho Kỹ thuật viên bảo trì.
+                    - E5a4. Use Case kết thúc.
+Note and Issues     Business Rules: BR-D05-01; BR-D05-02
+                    Non-Functional Requirements: NFR-REL-02; NFR-SEC-01
+                    Frequency: Phát sinh khi Kỹ thuật viên bảo trì hoàn tất kiểm tra hoặc xử lý sự cố.
+                    Assumptions:
+                    - Việc kiểm tra và sửa chữa vật lý được thực hiện ngoài phạm vi của hệ thống trước khi Kỹ thuật viên
+                    gửi thông tin cập nhật.
+                    - Trạng thái hoạt động phù hợp của tài nguyên được xác định theo trạng thái thực tế và quy tắc vận
+                    hành.
+
+
+
+
+                                                     29
+UC-D06 Chạy mô phỏng kịch bản What-if
+
+Trường đặc tả         UC-D06 Chạy mô phỏng kịch bản What-if
+Actors                Primary Actor: Nhân viên điều hành hệ thống
+                      Secondary Actor: Không có
+Description           Goal: Thiết lập và chạy mô phỏng kịch bản giả định để đánh giá ảnh hưởng lên năng lực phục vụ của
+                      mạng lưới, đưa ra phương án khuyến nghị.
+                      Scope: Phân hệ Vận hành & Điều phối.
+                      Level: User-goal.
+Trigger               Nhân viên điều hành yêu cầu thực hiện mô phỏng.
+Preconditions         Nhân viên điều hành có quyền mô phỏng. Hệ thống có sẵn dữ liệu cấu hình và trạng thái mạng lưới
+                      hiện tại.
+Success Guarantee     - Hệ thống hiển thị kết quả mô phỏng và các phương án điều phối khuyến nghị.
+                      - Nếu lựa chọn áp dụng phương án, hệ thống tạo bản thảo lệnh điều chuyển để rà soát.
+Minimal Guarantee     Hệ thống không thay đổi trạng thái vận hành và dữ liệu thực tế khi chạy mô phỏng.
+Normal Flow           1. Nhân viên điều hành yêu cầu thực hiện mô phỏng What-if.
+                      2. Hệ thống cung cấp các tham số cần thiết để thiết lập kịch bản.
+                      3. Nhân viên điều hành thiết lập tham số giả định và gửi yêu cầu mô phỏng.
+                      4. Hệ thống kiểm tra tính hợp lệ của tham số đầu vào.
+                      5. Hệ thống thực hiện mô phỏng và đánh giá mức độ ảnh hưởng lên mạng lưới.
+                      6. Hệ thống hiển thị kết quả và các phương án điều phối khuyến nghị. UC kết thúc.
+Alternative flows     A3a. Hủy thiết lập kịch bản:
+                      - A3a1. Nhân viên điều hành hệ thống hủy yêu cầu tại Bước 3 của Normal Flow.
+                      - A3a2. Hệ thống hủy việc thiết lập và không thay đổi trạng thái vận hành thực tế của mạng lưới.
+                      - A3a3. Use Case kết thúc.
+                      A4a. Tham số không hợp lệ hoặc thiếu thông tin:
+                      - A4a1. Tại Bước 4, Hệ thống phát hiện tham số không hợp lệ hoặc thiếu thông tin cần thiết.
+                      - A4a2. Hệ thống thông báo cho Nhân viên điều hành hệ thống.
+                      - A4a3. Nhân viên điều hành hệ thống điều chỉnh tham số và gửi lại yêu cầu mô phỏng.
+                      - A4a4. Luồng quay lại Bước 4.
+                      A6a. Áp dụng phương án điều phối được khuyến nghị:
+                      - A6a1. Tại Bước 6 của Normal Flow, Nhân viên điều hành hệ thống lựa chọn một phương án điều phối
+                      được khuyến nghị để áp dụng.
+                      - A6a2. Hệ thống tạo bản thảo lệnh điều chuyển từ các thông số của phương án được lựa chọn.
+                      - A6a3. Hệ thống cung cấp bản thảo lệnh điều chuyển để Nhân viên điều hành hệ thống rà soát và xử
+                      lý theo UC-D02.
+                      - A6a4. Use Case kết thúc.
+Exception flows       E5a. Không thể hoàn tất mô phỏng:
+                      - E5a1. Tại Bước 5, Hệ thống không thể hoàn tất mô phỏng.
+                      - E5a2. Hệ thống thông báo mô phỏng không thể hoàn tất.
+                      - E5a3. Hệ thống giữ nguyên trạng thái vận hành và dữ liệu thực tế của mạng lưới.
+                      - E5a4. Use Case kết thúc.
+Note and Issues       Business Rules: BR-D06
+                      Non-Functional Requirements: NFR-PERF-03; NFR-SEC-01
+                      Frequency: Khi Nhân viên điều hành hệ thống cần đánh giá một tình huống giả định hoặc hỗ trợ việc
+                      lập phương án điều phối.
+                      Assumptions:
+                      - Các tham số được thiết lập phản ánh tình huống giả định mà Nhân viên điều hành hệ thống muốn
+                      đánh giá.
+                      - Dữ liệu cấu hình và trạng thái mạng lưới được sử dụng làm cơ sở mô phỏng phản ánh trạng thái hiện
+                      tại tại thời điểm bắt đầu mô phỏng.
+
+
+
+
+                                                      30
+UC-D07 Tiếp nhận dữ liệu và cảnh báo từ IoT
+
+Trường đặc tả                UC-D07 Tiếp nhận dữ liệu và cảnh báo từ IoT
+Actors                       Primary Actor: Hệ thống IoT / Cảm biến
+                             Secondary Actor: Không có
+Description                  Goal: Tiếp nhận dữ liệu viễn trắc để cập nhật trạng thái tài nguyên và phát cảnh báo khi phát hiện bất
+                             thường hoặc nguy cơ vận hành.
+                             Scope: Phân hệ Vận hành & Điều phối.
+                             Level: Subfunction.
+Trigger                      Thiết bị IoT / Cảm biến định kỳ gửi dữ liệu trạng thái về hệ thống.
+Preconditions                Thiết bị IoT / Cảm biến đã được nhận diện hợp lệ và gắn với tài nguyên cụ thể.
+Success Guarantee            - Dữ liệu hợp lệ được kiểm tra và cập nhật cho tài nguyên tương ứng.
+                             - Phát cảnh báo cho Nhân viên điều hành nếu phát hiện bất thường hoặc vượt ngưỡng.
+Minimal Guarantee            Dữ liệu không hợp lệ không làm sai lệch trạng thái tài nguyên. Khi gặp lỗi, giữ nguyên trạng thái vận
+                             hành hiện tại.
+Normal Flow                  1. Hệ thống IoT / Cảm biến gửi gói dữ liệu viễn trắc định kỳ.
+                             2. Hệ thống tiếp nhận, kiểm tra tính hợp lệ và xác định tài nguyên tương ứng.
+                             3. Hệ thống cập nhật trạng thái vận hành của tài nguyên theo quy tắc chuyển trạng thái.
+                             4. Hệ thống ghi nhận dữ liệu viễn trắc phục vụ giám sát. Use case kết thúc.
+Alternative flows            A3a. Phát hiện thông số bất thường hoặc dấu hiệu nguy cơ vận hành:
+                             - A3a1. Tại Bước 3 của Normal Flow, Hệ thống phát hiện thông số bất thường, dấu hiệu nguy cơ vận
+                             hành hoặc dấu hiệu sự cố kỹ thuật từ dữ liệu viễn trắc.
+                             - A3a2. Hệ thống phát cảnh báo cho Nhân viên điều hành hệ thống và cung cấp thông tin về thông số
+                             bất thường, dấu hiệu nguy cơ vận hành hoặc sự cố kỹ thuật được phát hiện.
+                             - A3a3. Luồng tiếp tục tại Bước 4 của Normal Flow.
+                             A3b. Tỷ lệ chiếm dụng chỗ đỗ đạt ngưỡng Cảnh báo hoặc Quá tải:
+                             - A3b1. Tại Bước 3 của Normal Flow, Hệ thống phát hiện tỷ lệ chiếm dụng chỗ đỗ tại một Hub đạt
+                             ngưỡng Cảnh báo hoặc ngưỡng Quá tải theo quy tắc nghiệp vụ định trước.
+                             - A3b2. Hệ thống phát cảnh báo nguy cơ vận hành cho Nhân viên điều hành hệ thống.
+                             - A3b3. Luồng tiếp tục tại Bước 4 của Normal Flow.
+Exception flows              E2a. Lỗi kết nối hoặc gián đoạn truyền nhận:
+                             - E2a1. Tại Bước 2 của Normal Flow, quá trình truyền nhận dữ liệu từ Hệ thống IoT / Cảm biến bị
+                             gián đoạn hoặc mất kết nối.
+                             - E2a2. Hệ thống giữ nguyên trạng thái vận hành hiện tại của tài nguyên.
+                             - E2a3. Hệ thống thông báo tình trạng tiếp nhận dữ liệu bị gián đoạn.
+                             - E2a4. Use Case kết thúc và bảo đảm Minimal Guarantee.
+                             E2b. Dữ liệu không hợp lệ hoặc không xác định được tài nguyên:
+                             - E2b1. Tại Bước 2 của Normal Flow, Hệ thống phát hiện dữ liệu không hợp lệ hoặc không xác định
+                             được tài nguyên tương ứng.
+                             - E2b2. Hệ thống từ chối sử dụng dữ liệu không hợp lệ để cập nhật trạng thái tài nguyên.
+                             - E2b3. Hệ thống ghi nhận lỗi dữ liệu.
+                             - E2b4. Hệ thống giữ nguyên trạng thái vận hành hiện tại của tài nguyên.
+                             - E2b5. Use Case kết thúc và bảo đảm Minimal Guarantee.
+Note and Issues              Business Rules: BR-D07-01
+
+                             Non-Functional Requirements: NFR-PERF-02
+
+                             Frequency: Liên tục theo chu kỳ gửi dữ liệu trạng thái từ Hệ thống IoT / Cảm biến.
+                             Assumptions:
+                             - Hệ thống IoT / Cảm biến cung cấp dữ liệu phản ánh trạng thái của tài nguyên.
+                             - Các quy tắc nghiệp vụ về ngưỡng cảnh báo và chuyển trạng thái đã được xác định.
+                             - Việc xử lý nghiệp vụ tiếp theo sau khi phát hiện cảnh báo được thực hiện thông qua các Use Case
+                             tương ứng.
+
+
+
+
+9 Tình huống kiểm tra yêu cầu và mô phỏng
+Các tình huống Q được sử dụng để kiểm tra tính nhất quán của đặc tả; các phương án xử lý tương ứng đã được thể hiện trong
+BR, UC, AUTO hoặc NFR. Các tính huống này không tạo thành một bộ quy tắc độc lập và không thay thế cho UC-D06, là
+chức năng mô phỏng của sản phẩm.
+
+
+                                                              31
+9.1 Tình huống phối hợp giữa các nghiệp vụ
+
+Mã và tình huống                Kết quả phải quan sát được                                                Yêu cầu liên quan
+Q01 Hai người đặt chiếc xe      Chỉ một lượt giữ được xác nhận; người còn lại nhận thông báo về lý do     BR-G02; BR-G06; UC-A02;
+cuối cùng                       từ chối. Gửi lại cùng một yêu cầu phải trả về cùng một kết quả.           UC-A06
+Q02 Đã có quyền đỗ nhưng xe     Không tự giải phóng quyền đỗ chỉ dựa trên thời gian. Tìm chỗ khác         BR-P05; UC-B03; UC-B05
+trước chưa rời                  trong cùng Hub hoặc phương án được khách đồng ý; nếu chưa đáp ứng
+                                được thì giữ vụ việc và thông tin người xử lý.
+Q03 Xe thuê đến Hub đầy và      Ghi nhận yêu cầu hỗ trợ; kiểm tra khả năng tiếp nhận còn được phép.       BR-A05; BR-P04; UC-A05;
+không đi tiếp được              Khi chưa có bằng chứng bàn giao thì chuyến vẫn chưa đóng.                 UC-A07
+Q04 Xe cá nhân không thể        Nêu rõ khả năng tiếp nhận thực tế, phương án chờ hoặc hỗ trợ điều         BR-G03; UC-B05
+chuyển sang Hub khác            phối; không tự điều chuyển xe cá nhân và không tạo hoặc cấp một vị
+                                trí nằm ngoài cấu hình.
+Q05 Đỗ đặt được nhưng không     Không xác nhận một gói dịch vụ chưa hoàn tất. Chỉ xác nhận riêng          BR-G07; UC-B01
+giữ được sạc                    quyền đỗ nếu khách chủ động lựa chọn; bảo toàn quyền đỗ độc lập đã
+                                có.
+Q06 Cổng hỏng khi đã có lịch    Cô lập cổng, chờ xác nhận ngừng cấp điện và bảo vệ các phiên khác;        BR-G04; AUTO06; AUTO08
+hoặc đang sạc                   ghi nhận phiếu xử lý ngay cả khi chưa có kỹ thuật viên.
+Q07 Sạc xong nhưng xe chưa      Phiên có thể hoàn thành nhưng cổng vẫn bị chiếm dụng. Sau 15 phút,        AUTO06; UC-C02; UC-B04
+rút cổng                        hệ thống nhắc và báo vận hành; nếu chưa có sự kiện rời, chỗ vẫn ở
+                                trạng thái Occupied.
+Q08 Mất phản hồi sau khi        Giữ nguyên mã hồ sơ và mã sự kiện; tra cứu kết quả, không mở hai          BR-G05; BR-G06; UC-A04;
+nhận hoặc trả xe                chuyến hoặc ghi nhận tác động hai lần. Nếu kết quả chưa rõ, thực hiện     UC-A05; UC-A06
+                                đối soát với người có thẩm quyền.
+Q09 IoT gửi trùng muộn hoặc     Không ghi đè trạng thái mới bằng dữ liệu quan sát cũ và không lặp lại     BR-G08;   AUTO03;   NFR-
+im lặng                         tác động. Khi dữ liệu vượt ngưỡng độ mới, đánh dấu dữ liệu là cũ và       DATA-01
+                                khoanh vùng để không cấp mới.
+Q10 Xe tải giao được ba trong   Ghi nhận ba xe đã được tiếp nhận và cập nhật tương ứng ba đơn vị quyền    UC-D02
+bốn xe                          đích; xe còn lại vẫn ở trên xe tải, lệnh ở trạng thái IN_PROGRESS và
+                                tiếp tục được điều phối.
+Q11 Xe tải đang đi thì đích     Giữ nguyên trách nhiệm của lệnh; kiểm tra và giữ phương án đích mới       UC-D02
+mất khả năng tiếp nhận          trước khi thay đổi. Không đưa xe trở lại nguồn hoặc tự giải phóng quyền
+                                đang cần.
+Q12 Quá giờ đến hoặc hủy        Kiểm tra cùng bằng chứng và trạng thái hiện tại. Quyền chưa sử dụng       BR-G05; BR-G06; BR-P01;
+đồng thời với vào đỗ            có thể hết hạn; nếu có dấu hiệu bàn giao, giữ trạng thái chờ xác minh     AUTO02; UC-B02; UC-B03
+                                và chưa cấp chỗ cho người khác.
+Q13 Khởi động lại khi còn cam   Khôi phục dữ liệu đã xác nhận, giữ trạng thái chờ và tiếp tục đối soát;   BR-G06; NFR-REL-01; UC-
+kết & bàn giao chờ              việc gửi lại yêu cầu không được tạo thêm tài nguyên trùng lặp.            A06
+Q14 Sửa xong ở xưởng hoặc       Phiếu chuyển xưởng tiếp tục được cập nhật; nếu chưa có kỹ thuật viên      BR-G04; BR-D04; BR-D05
+người nhận phiếu vắng           tiếp nhận, phiếu vẫn được giữ ở trạng thái OPEN.
+Q15 Dùng tài khoản khác để      Từ chối nếu không đáp ứng đồng thời điều kiện về vai trò và quyền sở      BR-G01; NFR-SEC-01; UC-
+đọc / hủy hồ sơ                 hữu; không sử dụng dữ liệu đầu vào để thay thế danh tính đã được xác      A03; UC-B02; UC-C02
+                                thực.
+
+
+
+9.2 Các kịch bản của chức năng What if
+
+Kịch bản                  Thay đổi đầu vào                                                Kết quả đánh giá
+SIM01 Tăng đột biến khách Tăng số lượt yêu cầu tại H01 trong các khoảng thời gian cao điểm.
+                                                                                          Số người được phục vụ, mức thiếu
+tại Metro                                                                                 xe hoặc chỗ; phương án điều
+                                                                                          chuyển và thời gian chờ có xét đến
+                                                                                          thời gian vận chuyển bằng xe tải.
+SIM02 Hub hết khả năng đỗ Tăng mức chiếm dụng hoặc đóng một phần vị trí trong khi vẫn còn Số cam kết bị ảnh hưởng và phần
+                          quyền đã xác nhận.                                              nhu cầu không được tiếp nhận; đề
+                                                                                          nghị đổi Hub hoặc sử dụng phương
+                                                                                          án dự phòng hợp lệ.
+
+
+
+
+                                                                  32
+Kịch bản                   Thay đổi đầu vào                                                Kết quả đánh giá
+SIM03 Nhu cầu sạc tăng     Tăng số yêu cầu hoặc SOC mục tiêu khi giữ nguyên công suất.     Thời gian chờ, số phiên chưa được
+                                                                                           đáp ứng và phương án phân bổ
+                                                                                           theo cam kết và mức ưu tiên;
+                                                                                           không vượt quá công suất cho
+                                                                                           phép.
+SIM04 Một phần cổng sạc Loại một hoặc nhiều cổng ở một thời điểm.                          Các phiên bị ảnh hưởng, phần lịch
+hỏng                                                                                       còn khả thi và phương án điều
+                                                                                           chỉnh; các cổng bị lỗi không được
+                                                                                           phân bổ.
+SIM05 Xe tập trung tại một Thay phân bố xe giữa các Hub trên cùng tổng số xe.              Thiếu xe tại các Hub khác, quá
+địa điểm                                                                                   tải chỗ đỗ tại Hub dư xe; đề xuất
+                                                                                           phương án vận chuyển có xét đến
+                                                                                           giới hạn về số xe tải, nhân viên và
+                                                                                           sức chứa tại đích.
+
+
+Khi so sánh, giữ cùng trạng thái đầu, luồng nhu cầu, thời gian mô phỏng và giá trị khởi tạo ngẫu nhiên nếu có. Báo cáo phải
+nêu số yêu cầu được phục vụ và chưa phục vụ, thời gian chờ trung bình và p95 của nhóm đã phục vụ, mức chiếm dụng theo
+thời gian, công suất và cam kết bị ảnh hưởng. Không loại các yêu cầu chưa được phục vụ khỏi báo cáo để tránh làm sai lệch
+kết quả về thời gian chờ. Không phương án đề xuất nào được phép vượt các ràng buộc về sức chứa, công suất, xe tải hoặc
+quyền đã xác nhận. Nếu không có phương án khả thi, kết quả phải nêu giới hạn và phần nhu cầu chưa đáp ứng. Các phiên mô
+phỏng không được thay đổi dữ liệu vận hành.
+
+
+
+
+                                                             33
+

@@ -1,0 +1,2391 @@
+ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH
+  TRƯỜNG ĐẠI HỌC BÁCH KHOA
+
+
+
+BÁO CÁO BÀI TẬP LỚN
+   CÔNG NGHỆ PHẦN MỀM
+ SUBMISSION 3 — SYSTEM DESIGN
+     Hệ thống Smart E-Mobility Hub
+
+
+
+          Sinh viên thực hiện
+
+       Họ và tên            MSSV
+       Phan Ngọc Xuân Lợi   2411969
+       Phan Kỳ Nhân         2412432
+       Phạm Gia Khang       2411471
+       Phạm Anh Tuấn        2413800
+LỜI MỞ ĐẦU
+Trong bối cảnh phương tiện giao thông sử dụng năng lượng điện ngày càng được quan tâm, việc xây dựng một hệ thống quản
+lý phương tiện và hạ tầng phục vụ hiệu quả là một yêu cầu thiết thực. Đặc biệt, tại các khuôn viên trường đại học, việc quản
+lý xe điện dùng chung, vị trí đỗ, cổng sạc và hoạt động điều phối cần có sự phối hợp chặt chẽ nhằm sử dụng hợp lý tài nguyên
+và đáp ứng nhu cầu của người dùng.
+Xuất phát từ bài toán trên, nhóm thực hiện đề tài Smart E-Mobility Hub với mục tiêu thiết kế một hệ thống hỗ trợ quản lý
+các hoạt động thuê và trả xe điện, đặt chỗ đỗ, đăng ký phiên sạc, lập lịch sạc và giám sát vận hành tại các Hub. Hệ thống
+được phân chia thành bốn nhóm chức năng chính, tương ứng với quản lý hành trình thuê xe, quản lý chỗ đỗ và sức chứa, quản
+lý sạc và lập lịch sạc, cùng các hoạt động vận hành, xử lý sự cố và mô phỏng.
+Trong khuôn khổ Submission 3 – System Design, báo cáo tập trung trình bày thiết kế chi tiết của hệ thống dựa trên các yêu cầu
+nghiệp vụ và luồng xử lý đã được xây dựng ở những giai đoạn trước. Nội dung chính bao gồm Development/Implementation
+View nhằm thể hiện cách tổ chức các module phần mềm, Deployment View mô tả phương án triển khai hệ thống, cùng các
+Class Diagram thể hiện cấu trúc lớp, thuộc tính, phương thức và mối quan hệ giữa các thành phần. Bên cạnh đó, báo cáo
+trình bày phần Method Descriptions để làm rõ trách nhiệm của từng phương thức, các giao diện phối hợp giữa các module
+và những Test Case dự kiến nhằm đánh giá tính đúng đắn của thiết kế.
+Thông qua quá trình thực hiện, nhóm hướng đến việc xây dựng một mô hình thiết kế có sự phân chia trách nhiệm rõ ràng, bảo
+đảm tính nhất quán của dữ liệu và tạo cơ sở thuận lợi cho giai đoạn phát triển, tích hợp hệ thống sau này.
+Nhóm em xin chân thành cảm ơn thầy/cô đã tận tình giảng dạy, hướng dẫn và cung cấp những kiến thức cần thiết trong học
+phần Công nghệ phần mềm, giúp nhóm có cơ sở để thực hiện và hoàn thiện báo cáo này.
+
+
+
+
+                                                             1
+Mục lục
+
+Lời mở đầu                                                   1
+
+1 Giới thiệu và phạm vi báo cáo                              4
+
+2 Development/Implementation View                            5
+
+3 Deployment View                                            6
+
+4 Đối chiếu Use Case với thiết kế lớp                        7
+
+
+I     Quản lý thuê xe và hành trình (Module A)               8
+5 Sơ đồ lớp (Class Diagram) của Module A                     8
+
+6 Quy tắc nghiệp vụ và trạng thái                           10
+
+7 Tổ chức các lớp của Module A                              10
+
+8 Mô tả phương thức (Method Descriptions) — Module A        11
+
+9 Quan hệ và sự phụ thuộc giữa các lớp                      16
+
+10 Đối chiếu Use Case với lớp xử lý                         16
+
+11 Test Case Module A                                       17
+
+
+II    Quản lý chỗ đỗ và sức chứa Hub (Module B)             18
+12 Sơ đồ lớp (Class Diagram) của Module B                   18
+
+13 Quy tắc nghiệp vụ và quản lý sức chứa                    19
+
+14 Tổ chức các lớp của Module B                             20
+
+15 Các quy trình phối hợp liên module                       21
+
+16 Giao diện trao đổi với các Module A, C và D              21
+
+17 Mô tả phương thức (Method Descriptions) — Module B       22
+
+18 Quan hệ UML và đối chiếu Use Case                        28
+
+19 Test Case Module B                                       28
+
+20 Dữ liệu chỗ đỗ cung cấp cho Module C                     30
+
+
+III    Đăng ký và lập lịch sạc (Module C)                   31
+21 Sơ đồ lớp (Class Diagram) của Module C                   31
+
+22 Quy tắc nghiệp vụ và trạng thái sạc                      33
+
+23 Tổ chức các lớp của Module C                             34
+
+24 Các quy trình phối hợp các module                        35
+
+25 Mô tả phương thức (Method Descriptions) — Module C       35
+
+26 Quan hệ UML và cấu trúc dữ liệu                          43
+
+27 Đối chiếu Use Case với phương thức                       43
+
+
+
+
+                                                        2
+28 Test Case Module C                                        44
+
+29 Mối liên hệ của Module C                                  44
+
+
+IV    Vận hành, điều chuyển và IoT (Module D)                45
+30 Sơ đồ lớp của Module D                                    45
+
+31 Quy tắc nghiệp vụ và quản lý trạng thái                   47
+
+32 Mô tả phương thức (Method Descriptions) — Module D        48
+
+33 Hợp đồng phối hợp với Module A, B, C và Shared Core       52
+
+34 Đối chiếu Use Case với Class Diagram                      52
+
+35 Test case Module D                                        53
+
+
+
+
+                                                         3
+1 Giới thiệu và phạm vi báo cáo
+Báo cáo trình bày thiết kế hệ thống Smart E-Mobility Hub dựa trên bốn nhóm chức năng chính: quản lý hành trình thuê xe,
+quản lý chỗ đỗ và sức chứa Hub, sạc và lập lịch sạc, cùng các hoạt động vận hành và giám sát. Nội dung tập trung vào hai góc
+nhìn kiến trúc là Development/Implementation View và Deployment View, kết hợp với Class Diagram và phần mô tả phương
+thức của từng module. Ngoài ra, nhóm xây dựng các Test Case để đánh giá tính hợp lý của thiết kế.
+Thiết kế được xây dựng dựa trên các yêu cầu nghiệp vụ đã xác định trong Assignment 1 và các luồng xử lý của Assignment
+2. Trong quá trình hoàn thiện, nhóm đã đối chiếu các giao diện giữa bốn module để thống nhất cách trao đổi dữ liệu và phân
+chia trách nhiệm. Báo cáo tập trung vào thiết kế phần mềm; các chức năng và Test Case sẽ cần được kiểm chứng khi nhóm
+hoàn thiện sản phẩm MVP.
+
+1.1 Phân công các nhóm chức năng
+
+Role               Use cases                 Phạm vi chịu trách nhiệm                                  Biểu đồ lớp
+A                  UC-A01–A07                Tra cứu và giữ xe, hủy giữ, nhận/trả, hồ sơ hành trình,   Core Class Diagram
+                                             hỗ trợ sinh viên.
+B                  UC-B01–B05                Quyền đỗ, xe vào/rời vị trí, chiếm dụng thực tế, kiểm     Core Class Diagram
+                                             soát sức chứa Hub.
+C                  UC-C01–C03                Đăng ký, quản lý phiên và kế hoạch sạc, trạng thái        Core + Data Contracts
+                                             cổng, điều phối lịch.
+D                  UC-D01–D07                Giám sát mạng lưới, điều chuyển, sự cố/bảo trì, mô        Class Diagram
+                                             phỏng và IoT.
+
+
+
+
+                                                             4
+2 Development/Implementation View
+Nhóm lựa chọn kiến trúc modular monolith cho phiên bản MVP. Giao diện web được xây dựng theo vai trò người sử dụng và
+gửi yêu cầu qua tầng API/xác thực. Bên trong một backend, bốn module A (thuê xe), B (đỗ xe), C (sạc) và D (vận hành/IoT)
+chịu trách nhiệm cho các nghiệp vụ riêng. Các module chia sẻ hợp đồng dữ liệu, cơ chế giao dịch ngắn (Unit of Work), biên
+nhận thao tác và hệ thống tiếp nhận sự kiện đã xác minh. Ngoài ra, module D có thành phần mô phỏng What-if chỉ đọc dữ
+liệu hiện có, không trực tiếp thay đổi lịch hoặc lệnh vận hành. Cách phân tầng này cho phép phát triển từng module tương đối
+độc lập mà vẫn bảo đảm các ràng buộc chung.
+
+
+
+
+                              Hình 1: Development/Implementation View của toàn hệ thống.
+
+
+2.1 Trách nhiệm quản lý dữ liệu của từng module
+
+
+
+
+                                                             5
+   Owner                   Dữ liệu được ghi                       Giao tiếp với các module khác
+   A                       VehicleHold, RentalTrip, liên kết      B/C/D chỉ cung cấp trạng thái, hiệu ứng và sự kiện đã xác
+                           hành trình–sự cố                       minh; D02 cạnh tranh claim xe qua registry dùng chung.
+   B                       ParkingRight,          ParkingSpot,    A/D yêu cầu hiệu ứng xe vào/rời hoặc giữ sức chứa qua
+                           ParkingVisit,   khả    năng     tiếp   interface B; C cùng xác nhận quyền đỗ+sạc.
+                           nhận Hub
+   C                       ChargingSession,      phân       bổ    B cung cấp quyền đỗ; D cung cấp quan sát kỹ thuật đã
+                           ChargingPort, SchedulePlan             xác minh; C quyết định khả năng phân bổ sạc và gửi lệnh
+                                                                  start/stop qua outbox.
+   D                       RedistributionOrder, IncidentTicket,   D07 xác minh sự kiện; D thông báo trạng thái thiết bị
+                           quan sát IoT và trạng thái kỹ thuật    cho C, nhưng không trực tiếp ghi phiên sạc, lượt thuê hay
+                                                                  quyền đỗ.
+   Shared                  Claim     registry,    unit-of-work,   Điều phối tính nguyên tử, idempotency và giao tiếp; không
+                           operation receipt và outbox            thay owner của các bản ghi nghiệp vụ.
+
+
+2.2 Nguyên tắc tích hợp giữa các module
+1. Không cấp phát trùng: claim xe, chỗ đỗ, cổng sạc và sức chứa phải được kiểm tra lại ngay tại điểm commit; retry dùng
+   intent/receipt cũ.
+2. Đỗ kèm sạc phải nguyên tử: B01+C01 xác nhận cả hai quyền trong một giao dịch ngắn hoặc rollback đồng thời.
+
+3. Không suy diễn trạng thái vật lý từ UI: A04/A05, B03/B04, C02 và D03 chỉ áp hiệu ứng khi có bằng chứng D07 hợp lệ.
+4. Phân biệt sự kiện và hiệu ứng: nhận dạng sự kiện theo (sourceId,eventId), còn hiệu ứng theo (ownerModule,sourceId,
+   eventId,effectKind) để không ghi lặp.
+
+5. Kết quả chưa rõ không phải thành công: giữ PENDING/UNKNOWN, lưu receipt và đối soát thay vì tự đóng chuyến, giải phóng
+   quyền hoặc xác nhận sạc.
+6. Dữ liệu và mô phỏng có độ mới: trạng thái cũ/UNKNOWN không được coi như tài nguyên rảnh; D06 chỉ đọc snapshot
+   và trả phương án đề xuất; không trực tiếp sửa dữ liệu vận hành. Phương án được lựa chọn phải đi qua use case có thẩm
+   quyền và kiểm tra lại ràng buộc.
+
+
+3 Deployment View
+Ở góc nhìn triển khai, trình duyệt của sinh viên, nhân viên điều hành và nhân viên kỹ thuật/điều chuyển kết nối đến cùng một
+máy chủ ứng dụng qua HTTPS hoặc HTTP nội bộ khi trình diễn. Máy chủ chứa tầng API, bốn module nghiệp vụ và hạ tầng
+dùng chung; dữ liệu dự kiến lưu trong một tệp SQLite sử dụng chế độ WAL. IoT Simulator là tiến trình bên ngoài, gửi telemetry
+và ACK qua đầu vào D07; nó không truy cập cơ sở dữ liệu trực tiếp. Khi cần gửi lệnh thiết bị, hệ thống ghi lệnh vào outbox
+trong giao dịch ngắn, rồi chuyển lệnh sau khi commit. Trạng thái nghiệp vụ chỉ được cập nhật khi có bằng chứng hợp lệ, thay
+vì dựa vào việc người dùng vừa bấm nút hoặc lệnh vừa được gửi đi.
+
+
+
+
+                                                              6
+                                     Hình 2: Deployment View của toàn hệ thống.
+
+
+4 Đối chiếu Use Case với thiết kế lớp
+Mỗi UC kế thừa yêu cầu Assignment 1, các luồng Assignment 2 và được truy về lớp điều phối cùng mô tả phương thức của
+một Role ở phần tiếp theo. Các bảng trong từng Role trình bày sâu hơn về điều kiện nghiệp vụ và mối liên kết.
+
+ UC             Owner           Nghiệp vụ                                         Lớp điều phối chính
+ UC-A01         A               Tra cứu Hub và tài nguyên phù hợp                 ResourceSearchController
+
+ UC-A02         A               Đặt xe dùng chung                                 VehicleReservationController
+
+ UC-A03         A               Hủy lượt đặt xe                                   VehicleReservationController
+
+ UC-A04         A               Nhận xe đã đặt                                    HandoverController
+
+ UC-A05         A               Trả xe dùng chung                                 HandoverController
+
+ UC-A06         A               Xem lượt đặt và chuyến đi                         MyJourneyController
+
+ UC-A07         A               Gửi và theo dõi hỗ trợ hành trình                 JourneySupportController
+
+ UC-B01         B               Đặt chỗ đỗ xe                                     ParkingReservationController
+
+ UC-B02         B               Hủy quyền đặt chỗ đỗ                              ParkingReservationController
+
+ UC-B03         B               Ghi nhận xe vào chỗ đỗ                            ParkingCheckInOutController
+
+ UC-B04         B               Ghi nhận xe rời chỗ đỗ                            ParkingCheckInOutController
+
+ UC-B05         B               Xử lý Hub thiếu khả năng tiếp nhận                HubCapacityController
+
+ UC-C01         C               Đăng ký phiên sạc xe cá nhân                      ChargingRegistrationController
+
+ UC-C02         C               Quản lý phiên sạc xe cá nhân                      ChargingSessionController
+
+ UC-C03         C               Lập và điều chỉnh lịch sạc                        ChargingScheduleController
+
+ UC-D01         D               Giám sát trạng thái mạng lưới                     OperationController
+
+ UC-D02         D               Điều phối phương tiện giữa các Hub                OperationController
+
+ UC-D03         D               Xác nhận hoàn tất điều chuyển                     OperationController
+
+ UC-D04         D               Điều phối xử lý sự cố vận hành                    IncidentController
+
+ UC-D05         D               Cập nhật kết quả khắc phục sự cố                  IncidentController
+
+ UC-D06         D               Chạy mô phỏng kịch bản What-if                    SimulationController
+
+ UC-D07         D               Tiếp nhận dữ liệu IoT                             TelemetryController
+
+
+
+
+                                                             7
+Phần I
+Quản lý thuê xe và hành trình (Module A)
+5 Sơ đồ lớp (Class Diagram) của Module A
+
+
+
+
+                                Hình 3: Sơ đồ lớp Module A: quản lý thuê xe và hành trình.
+
+
+5.1 Giải thích quan hệ và bội số (Multiplicity) theo quy tắc nghiệp vụ — Module A
+
+Cặp Lớp liên kết                     Loại quan hệ & Bội          Căn cứ Quy tắc Nghiệp vụ (UC-A01 đến UC-A07)
+                                     số
+
+ResourceSearchController,            Directed Assoc. (1-->       Ủy quyền điều phối 1-1 từ các Controller tầng Presentation
+VehicleReservationController,        1)                          xuống Service tầng Application tương ứng cho các use case
+HandoverController,                                              từ UC-A01 đến UC-A07.
+MyJourneyController,
+JourneySupportController        →
+ServicestÔặÔángòệẩng
+
+VehicleReservationService,           Dependency (--> )           Đánh giá điều kiện phương tiện khả dụng theo quy tắc BR-A02
+HandoverService,                                                 (SOC ≥ 20%, đúng Hub, không đang sạc/điều chuyển/lỗi)
+ResourceDiscoveryService        →                                trước khi tìm kiếm, đặt xe hoặc bàn giao.
+VehicleEligibilityPolicy
+
+
+
+
+                                                             8
+Cặp Lớp liên kết                     Loại quan hệ & Bội            Căn cứ Quy tắc Nghiệp vụ (UC-A01 đến UC-A07)
+                                     số
+
+VehicleReservationService,           Directed Assoc. (--> )        Đọc và ghi nhận trạng thái nguyên tử cho các thực thể dữ
+HandoverService,                                                   liệu VehicleHold, RentalTrip và hồ sơ liên quan theo giao dịch
+JourneyQueryService,                                               (BR-G02, BR-G06).
+JourneySupportService            →
+IRentalRecordRepository
+
+VehicleHold → RentalTrip             Dependency            /       Lượt giữ xe (ACTIVE) khi được xác minh bàn giao nhận xe
+                                     Transition (1-->0..1)         thành công (UC-A04) sẽ chuyển sang CONSUMED và khởi tạo duy
+                                                                   nhất 1 chuyến thuê xe (OPEN).
+RentalTrip → SupportLink             Directed Assoc. (1-->         Một chuyến đi đang diễn ra có thể khởi tạo hoặc liên kết với
+                                     0..*)                         0 hoặc nhiều yêu cầu hỗ trợ / sự cố hành trình (UC-A07) thông
+                                                                   qua IIncidentPort.
+VehicleHold  → HoldStatus        &   Directed Assoc. (1-->         Quản lý chặt chẽ vòng đời trạng thái của lượt giữ xe (ACTIVE,
+RentalTrip → TripStatus              1)                            HANDOVER_PENDING, CONSUMED, CANCELLED, EXPIRED) và chuyến đi
+                                                                   (OPEN, HANDOVER_PENDING, ASSISTANCE_PENDING, CLOSED) (BR-A01,
+                                                                   BR-A04, BR-A05).
+
+HandoverService                  →   Dependency (--> )             Tích hợp với Phân hệ D (UC-D07) để xác minh bằng chứng sự
+IEventVerificationPort                                             kiện vật lý (IoT telemetry/QR) độc lập trước khi mở chuyến
+                                                                   hoặc đóng chuyến thuê xe (BR-G05, BR-A04, BR-A05).
+VehicleReservationService,           Dependency (--> )             Kiểm tra quyền đỗ xe, sức chứa Hub đích (UC-B01/B05) và ủy
+HandoverService → IParkingPort                                     quyền cho Phân hệ B ghi nhận xe rời/vào ô đỗ (UC-B03/B04)
+                                                                   khi thực hiện nhận/trả xe (BR-A03, BR-A05).
+VehicleReservationService,           Dependency (--> )             Đăng ký và quản lý độc quyền cam kết (exclusive claim) cho
+HandoverService                  →                                 xe tại registry dùng chung, ngăn chặn xung đột giữ xe giữa
+IVehicleClaimPort                                                  người dùng (UC-A02) và lệnh điều chuyển (UC-D02) theo BR-G02.
+
+
+
+
+                                                               9
+6 Quy tắc nghiệp vụ và trạng thái
+6.1 Các quy tắc nghiệp vụ chính
+  1. Giới hạn lượt thuê (BR-A01): mỗi sinh viên có tối đa một lượt giữ xe hoặc một chuyến chưa trả, kể cả hồ sơ đang chờ
+     xác minh. Lượt giữ có hạn 10 phút tính từ lúc xác nhận thành công.
+
+  2. Khả dụng xe (BR-A02): xe phải ở đúng Hub, hoạt động bình thường, SOC từ 20% trở lên, dữ liệu đủ mới, không có
+     cam kết xung đột và không đang sạc hoặc điều chuyển. Trước nhận xe phải xác minh trạng thái sạc/kết nối khi có liên
+     quan.
+  3. Đỗ ở Hub đích (BR-A03): đặt xe không tự tạo quyền đỗ tại điểm trả. Quyền đỗ phải đặt riêng qua UC-B01; không có
+     quyền trước thì cần kiểm tra khả năng tiếp nhận thực tế của B.
+  4. Hủy trước bàn giao (BR-A04): không cho phép hủy lượt giữ đã trở thành chuyến đi. Tranh chấp giữa hủy và nhận xe
+     phải đưa về một kết quả hợp lệ duy nhất.
+  5. Đóng chuyến (BR-A05): chỉ đóng khi có bằng chứng tiếp nhận hợp lệ ở vị trí được phép. Xe ít pin hoặc hỏng vẫn có
+     thể được nhận nhưng không tự động sẵn sàng để thuê tiếp.
+
+  6. Idempotency và tính không chắc chắn (BR-G05, BR-G06): thao tác/sự kiện lặp phải trả kết quả đã ghi; mất phản
+     hồi không đồng nghĩa thất bại. Không suy diễn xe đã nhận/trả chỉ từ nút bấm hoặc hết thời gian chờ.
+
+6.2 Trạng thái các đối tượng nghiệp vụ
+
+  Đối tượng                   Trạng thái / ràng buộc
+  Lượt giữ xe                 ACTIVE, HANDOVER_PENDING, CONSUMED, CANCELLED, EXPIRED. Chỉ chuyển sang CONSUMED sau khi nhận
+                              xe đã được xác minh. Hết hạn không giải phóng lượt đang bàn giao chưa rõ.
+  Chuyến thuê                 OPEN, HANDOVER_PENDING, ASSISTANCE_PENDING, CLOSED. Chuyến đang chờ hỗ trợ hoặc đối soát vẫn
+                              là chuyến chưa đóng.
+  Xe dùng chung               Tách biệt vị trí vật lý, tình trạng kỹ thuật, trạng thái sử dụng, SOC, cam kết thuê, sạc và
+                              điều chuyển. AVAILABLE là kết quả đánh giá, không phải bằng chứng độc lập.
+  Sự kiện bàn giao            Có eventId, đối tượng liên quan, nguồn, mốc thời gian và kết quả kiểm tra. Một eventId
+                              không tạo hai thay đổi nghiệp vụ.
+
+
+7 Tổ chức các lớp của Module A
+7.1 Phân chia lớp theo tầng
+
+ Tầng                        Lớp / giao diện đề xuất                  Trách nhiệm
+ Presentation            /   ResourceSearchController,                Nhận yêu cầu, kiểm tra dữ liệu đầu vào, lấy danh tính
+ Controller                  VehicleReservationController,            xác thực, gọi service và ánh xạ kết quả; không chứa
+                             HandoverController,                      quy tắc cấp phát.
+                             MyJourneyController,
+                             JourneySupportController
+
+ Application / Service       ResourceDiscoveryService,                Điều phối các UC A01–A07, duy trì idempotency và
+                             VehicleReservationService,               giải quyết trạng thái chờ.
+                             HandoverService, JourneyQueryService,
+                             JourneySupportService
+
+ Domain                      VehicleEligibilityPolicy, VehicleHold,   Xác định điều kiện xe đủ khả dụng; lưu bất biến trạng
+                             RentalTrip, SupportLink                  thái của lượt giữ, chuyến và tham chiếu hỗ trợ.
+
+
+
+
+                                                              10
+  Tầng                      Lớp / giao diện đề xuất                    Trách nhiệm
+
+  Persistence               IRentalRecordRepository                    Đọc và ghi hồ sơ giữ/chuyến theo giao dịch hoặc cập
+                                                                       nhật nguyên tử, theo dõi kết quả yêu cầu và sự kiện.
+  Integration               IResourceSnapshotPort,   IParkingPort,     Giao tiếp rõ trách nhiệm với trạng thái tài nguyên của
+                            IEventVerificationPort, IIncidentPort,     B/C/D, sự kiện UC-D07, nghiệp vụ đỗ B và sự cố UC-
+                            IAutomationPort                            D04.
+
+
+7.2 Phạm vi quản lý dữ liệu
+   • Phần A sở hữu trạng thái nghiệp vụ của lượt giữ xe, chuyến thuê và liên kết hồ sơ hỗ trợ; không tự thay trạng thái tài
+     nguyên vật lý ngoài trách nhiệm của mình.
+   • Phần B sở hữu quyền đỗ, vị trí đỗ và cập nhật xe vào/ra chỗ theo UC-B03/UC-B04, kể cả tính toán thiếu sức chứa
+     UC-B05.
+
+   • Phần C quản lý phiên sạc, lịch sạc và quyết định phân bổ cổng từ quan sát thiết bị đã xác minh. Phần A chỉ đọc ràng
+     buộc sạc và chuyển nhu cầu hậu trả xe cho cơ chế liên quan.
+   • Phần D sở hữu xác thực sự kiện UC-D07, đối soát/xử lý sự cố UC-D04 và điều chuyển xe. Phần A giữ tham chiếu kết
+     quả, không nhân bản phiếu sự cố.
+
+
+8 Mô tả phương thức (Method Descriptions) — Module A
+Các khái niệm dưới đây dùng kiểu String, Boolean, DateTime, List<T> và các DTO định danh. Đối với userId, backend lấy từ ngữ
+cảnh xác thực, không tin trực tiếp vào mã người dùng do client tùy ý gửi.
+
+8.1 Các lớp điều khiển (Controller)
+
+   Phương thức công khai                                             Mô tả
+   ResourceSearchController — UC-A01
+   searchResources(criteria:SearchCriteriaDTO):SearchResultDTO       Tiếp nhận bộ lọc Hub, loại dịch vụ, thời gian, Hub đích
+                                                                     tùy chọn; trả trạng thái tài nguyên kèm độ mới, không
+                                                                     tạo cam kết.
+   getResourceDetails(resourceId:String):ResourceDetailDTO           Nạp lại thông tin tài nguyên tại thời điểm xem chi tiết;
+                                                                     không tái sử dụng kết quả cũ như chứng nhận đủ điều
+                                                                     kiện đặt.
+   VehicleReservationController — UC-A02, UC-A03
+   prepareReservation(vehicleId:String,intentId:String):             Kiểm tra sơ bộ điều kiện đặt và trình bày Hub nhận, hạn
+   ReservationPreviewDTO                                             10 phút, lưu ý quyền đỗ ở Hub đích đặt riêng.
+   confirmReservation(vehicleId:String,intentId:String):             Xác nhận một ý định đặt xe; dùng cùng intentId khi gửi
+   ReservationResultDTO                                              lại, không tạo lượt giữ thứ hai.
+   cancelReservation(holdId:String,intentId:String):                 Yêu cầu hủy lượt giữ thuộc người dùng; báo trước phạm
+   OperationResultDTO                                                vi quyền đỗ phụ thuộc chưa dùng.
+   HandoverController — UC-A04, UC-A05
+   requestPickup(holdId:String,vehicleId:String,hubId:String):       Bắt đầu yêu cầu nhận xe theo mã giữ/QR; chưa mở
+   HandoverResultDTO                                                 chuyến chỉ vì sinh viên yêu cầu.
+   confirmPickup(evidence:HandoverEvidenceDTO):                      Nhận bằng chứng IoT/nhân viên đã xác thực đường
+   HandoverResultDTO                                                 truyền; ủy quyền kiểm chứng và hoàn tất bàn giao nếu
+                                                                     hợp lệ.
+
+
+
+
+                                                             11
+  Phương thức công khai                                            Mô tả
+
+  requestReturn(tripId:String,hubId:String,parkingRightId:         Kiểm tra quyền chuyến và khả năng tiếp nhận của B;
+  String):HandoverResultDTO                                        parkingRightId có thể không có.
+
+  confirmReturn(evidence:HandoverEvidenceDTO):                     Nhận sự kiện thực tế; chỉ đóng chuyến sau khi có xác
+  HandoverResultDTO                                                nhận tiếp nhận hợp lệ của B.
+  MyJourneyController — UC-A06
+  getMyRecords(trackingId:String):JourneyListDTO                   Truy vấn các lượt giữ, chuyến, yêu cầu hỗ trợ theo chủ
+                                                                   sở hữu; trackingId tùy chọn. Không sửa hồ sơ.
+  JourneySupportController — UC-A07
+  submitSupport(recordId:String,report:SupportReportDTO,           Ghi nhận hoặc liên kết yêu cầu hỗ trợ; chuyển cho Phần
+  intentId:String):SupportResultDTO                                D mà không tự hủy lượt giữ/đóng chuyến.
+  getSupportStatus(supportId:String):SupportStatusDTO              Trả về trạng thái/hướng dẫn của yêu cầu hỗ trợ thuộc
+                                                                   người dùng, bao gồm dữ liệu chưa xác minh.
+  respondToPlan(supportId:String,response:PlanResponseDTO):        Ghi phản hồi chấp thuận hoặc từ chối phương án của
+  SupportResultDTO                                                 nhân viên vào đúng vụ việc đang theo dõi.
+
+
+8.2 Các lớp xử lý nghiệp vụ (Service)
+
+  Phương thức                                                      Mô tả / bảo đảm nghiệp vụ
+  ResourceDiscoveryService — UC-A01
+  search(criteria:SearchCriteriaDTO):SearchResultDTO               Đọc snapshot tài nguyên, đánh giá chính sách BR-A02
+                                                                   và dữ liệu từ B/C; gắn nguồn và thời điểm cập nhật, loại
+                                                                   khỏi danh sách cấp phát các trạng thái chưa xác minh.
+  getDetails(resourceId:String):ResourceDetailDTO                  Đọc trạng thái mới nhất của Hub/xe/vị trí/sạc; trả điều
+                                                                   kiện và cảnh báo thay đổi để người dùng chọn lại.
+  VehicleReservationService — UC-A02, UC-A03
+  prepare(userId:String,vehicleId:String):                         Kiểm tra quyền và giới hạn BR-A01, gọi chính sách BR-
+  ReservationPreviewDTO                                            A02; chưa phát sinh quyền giữ.
+  confirm(userId:String,vehicleId:String,intentId:String):         Tra kết quả cũ theo ý định; kiểm tra lại xung đột và ghi
+  ReservationResultDTO                                             một VehicleHold(ACTIVE) với expiresAt=confirmedAt+10min
+                                                                   theo thao tác nguyên tử.
+  cancel(userId:String,holdId:String,intentId:String):             Kiểm tra chủ sở hữu và BR-A04, chặn hủy khi đang bàn
+  OperationResultDTO                                               giao; hủy đúng một lần và yêu cầu B xử lý quyền đỗ phụ
+                                                                   thuộc chưa sử dụng nếu có.
+  expireDueHolds(now:DateTime):Integer                             Xử lý AUTO01: chỉ hết hạn lượt giữ đủ điều kiện; không
+                                                                   giải phóng tài nguyên với hồ sơ HANDOVER_PENDING.
+  reconcile(intentId:String):OperationResultDTO                    Truy vấn kết quả đã ghi hoặc trạng thái chờ sau gián
+                                                                   đoạn; không phát sinh một giao dịch mới.
+  HandoverService — UC-A04, UC-A05
+  beginPickup(userId:String,holdId:String,vehicleId:               Kiểm tra quyền, đúng xe/Hub/hạn, điều kiện BR-A02;
+  String,hubId:String):HandoverResultDTO                           chuyển sang HANDOVER_PENDING và giữ xe bị chặn trong khi
+                                                                   chờ bằng chứng.
+  completePickup(evidence:HandoverEvidenceDTO):                    Nhờ D xác minh sự kiện; gọi B ghi nhận rời chỗ bằng
+  HandoverResultDTO                                                cùng eventId; tiêu thụ lượt giữ và mở đúng một chuyến
+                                                                   OPEN khi đủ xác nhận.
+
+
+
+
+                                                              12
+   Phương thức                                                      Mô tả / bảo đảm nghiệp vụ
+
+   beginReturn(userId:String,tripId:String,hubId:String,            Kiểm tra chuyến chưa đóng; nhờ B xác minh quyền/khả
+   parkingRightId:String):HandoverResultDTO                         năng tiếp nhận, chuyển UC-B05 hoặc hỗ trợ khi không
+                                                                    đủ điều kiện.
+   completeReturn(evidence:HandoverEvidenceDTO):                    Nhờ D xác minh sự kiện và B ghi xe vào vị trí một lần;
+   HandoverResultDTO                                                đóng chuyến, ghi SOC và tình trạng xe; kích hoạt đánh
+                                                                    giá lại sạc/sự cố.
+   JourneyQueryService — UC-A06
+   listOwnedRecords(userId:String,trackingId:String):               Đọc hồ sơ theo người dùng đã xác thực, gồm kết quả
+   JourneyListDTO                                                   mới nhất, timestamp và thao tác hợp lệ. Không chuyển
+                                                                    trạng thái.
+   JourneySupportService — UC-A07
+   submit(userId:String,recordId:String,report:                     Kiểm tra quyền; tìm vụ việc đang mở hoặc tạo/liên kết
+   SupportReportDTO,intentId:String):SupportResultDTO               đúng một vụ việc thông qua UC-D04; giữ các cam kết
+                                                                    chưa xác minh.
+   getStatus(userId:String,supportId:String):SupportStatusDTO       Đọc trạng thái vụ việc sau khi kiểm tra quyền và hiển
+                                                                    thị mã theo dõi ổn định.
+   respondToPlan(userId:String,supportId:String,response:           Chuyển phản hồi vào đúng vụ việc bên D; không mặc
+   PlanResponseDTO):SupportResultDTO                                định phương án đã thi hành hoặc chuyến đã đóng.
+   VehicleEligibilityPolicy — BR-A02
+   evaluate(state:VehicleStateDTO,now:DateTime):                    Đánh giá đúng Hub, SOC từ 20%, kỹ thuật, độ mới, lịch
+   EligibilityResultDTO                                             giữ, sạc và điều chuyển. Trả lý do không đủ điều kiện;
+                                                                    không ghi dữ liệu.
+
+
+8.3 Truy xuất và lưu trữ dữ liệu (Repository)
+IRentalRecordRepository là giao diện lưu trữ hồ sơ của Phần A. Để hỗ trợ BR-G02 và BR-G06, các thao tác cấp/đổi trạng thái
+phải nguyên tử ở mức bộ nhớ dùng chung hoặc giao dịch dữ liệu thích hợp; nếu tích hợp B/D qua lời gọi riêng, hệ thống phải
+lưu trạng thái chờ và đối soát, không giả định có giao dịch phân tán tự động.
+
+   Phương thức                                                      Mô tả
+   findOutcomeByIntent(intentId:String):OperationResultDTO          Tìm kết quả hoặc trạng thái đang xử lý của ý định cũ
+                                                                    để tránh tạo bản ghi trùng.
+   findVehicleHold(holdId:String):VehicleHold                       Truy xuất lượt giữ và kiểm tra quyền qua service; đọc
+                                                                    nguyên trạng thái.
+   findOpenTripByUser(userId:String):RentalTrip                     Tìm chuyến chưa đóng, bao gồm trạng thái đang chờ hỗ
+                                                                    trợ hoặc xác minh.
+   atomicCreateHold(userId:String,vehicleId:String,intentId:        Khóa/kiểm tra lại xe và người dùng rồi tạo ACTIVE duy
+   String,expiresAt:DateTime):VehicleHold                           nhất, từ chối khi có tranh chấp.
+   cancelHoldOnce(holdId:String,intentId:String):VehicleHold        Chuyển lượt giữ đủ điều kiện sang CANCELLED duy nhất,
+                                                                    không xóa lịch sử.
+   markHandoverPending(recordId:String):Boolean                     Lưu trạng thái chờ và tiếp tục chặn cấp phát khi bàn
+                                                                    giao chưa có kết luận.
+   consumeHoldAndOpenTripOnce(holdId:String,eventId:String):        Sau xác nhận hợp lệ, chuyển lượt giữ sang CONSUMED và
+   RentalTrip                                                       mở chính xác một chuyến gắn sự kiện.
+   closeTripOnce(tripId:String,eventId:String,soc:Integer,          Đóng chuyến một lần sau khi B xác nhận tiếp nhận; giữ
+   condition:String):RentalTrip                                     bằng chứng, SOC và tình trạng xe.
+
+
+
+                                                               13
+   Phương thức                                                       Mô tả
+
+   findOwnedRecords(userId:String,trackingId:String):                Trả về hồ sơ đúng chủ sở hữu; không để lộ dữ liệu qua
+   JourneyListDTO                                                    mã theo dõi của người khác.
+   expireEligibleHolds(now:DateTime):Integer                         Xử lý các lượt giữ quá hạn chưa bàn giao; không kết
+                                                                     thúc hồ sơ đang HANDOVER_PENDING.
+
+
+8.4 Giao diện tích hợp (Adapter Ports)
+
+   Interface và phương thức                                          Mục đích
+   IResourceSnapshotPort
+   loadSearchSnapshot(criteria:SearchCriteriaDTO):                   Đọc thông tin Hub, xe, SOC, vị trí đỗ, lịch sạc, cam kết
+   ResourceSnapshotDTO                                               và observedAt; không cấp tài nguyên.
+   loadVehicleState(vehicleId:String):VehicleStateDTO                Đọc trạng thái kỹ thuật, sử dụng, sạc, điều chuyển và
+                                                                     độ mới để áp dụng BR-A02.
+   IParkingPort — Phần B
+   checkReturnReception(tripId:String,hubId:String,                  Kiểm tra quyền đỗ và khả năng tiếp nhận theo B; hỗ trợ
+   parkingRightId:String):ReceptionResultDTO                         khách vãng lai nếu chính sách cho phép.
+
+   recordDepartureOnce(event:VerifiedEventDTO,context:               Ủy quyền UC-B04 ghi xe rời chỗ theo cùng sự kiện; A
+   OperationContext):OperationResultDTO                              không tự giảm số xe đang đỗ.
+
+   recordArrivalOnce(event:VerifiedEventDTO,rightId:                 Ủy quyền UC-B03 ghi xe vào vị trí đúng một lần; A
+   String,context:OperationContext):OperationResultDTO               không tự tăng chiếm dụng.
+
+   cancelDependentRightOnce(holdId:String,context:                   Ủy quyền UC-B02 hủy quyền đỗ phụ thuộc chưa dùng
+   OperationContext):OperationResultDTO                              khi lượt giữ bị hủy.
+
+   resolveInsufficientCapacity(tripId:String,hubId:String):          Ủy quyền UC-B05 xử lý Hub đầy/đóng; trả phương án
+   ReceptionResultDTO                                                hoặc trạng thái chưa đáp ứng.
+   IEventVerificationPort — Phần D / UC-D07
+   verify(evidence:HandoverEvidenceDTO):EvidenceResultDTO            Xác minh danh tính sự kiện, nguồn, sự liên kết xe/Hub/vị
+                                                                     trí, thứ tự thời gian và tình trạng lặp/mâu thuẫn.
+   IIncidentPort — Phần D / UC-D04
+   openOrLinkIncident(recordId:String,report:SupportReportDTO,       Tìm vụ việc liên quan còn mở hoặc ghi nhận một vụ việc
+   intentId:String):SupportResultDTO                                 mới; trả mã để A tham chiếu.
+   getIncidentStatus(supportId:String):SupportStatusDTO              Đọc trạng thái/hướng dẫn của nhân viên; không thay
+                                                                     đổi kết quả chuyến thuê.
+   recordPlanResponse(supportId:String,response:                     Chuyển lựa chọn của sinh viên vào cùng vụ việc đang xử
+   PlanResponseDTO):SupportResultDTO                                 lý.
+   IAutomationPort
+   scheduleHoldExpiry(holdId:String,expiresAt:DateTime):void         Đăng ký AUTO01; hành vi thực tế vẫn kiểm tra lại trạng
+                                                                     thái trước khi hết hạn.
+   triggerPostReturnChecks(vehicleId:String):void                    Yêu cầu đánh giá lại khả dụng, sạc và sự cố tương ứng
+                                                                     AUTO07/AUTO08; không tự đổi trạng thái của C/D.
+
+
+8.5 Đối tượng nghiệp vụ và DTO
+VehicleHold chứa holdId, userId, vehicleId, pickupHubId, createdAt, expiresAt, status, intentId. RentalTrip chứa tripId, userId,
+vehicleId, pickupHubId, returnHubId, status, pickupEventId, returnEventId. SupportLink chỉ lưu liên kết giữa hồ sơ A và mã vụ việc
+
+
+                                                               14
+do D quản lý; không phải bản sao của thực thể sự cố bên D.
+
+   Phương thức miền                                                 Bất biến
+   VehicleHold.markPending():void                                   Chỉ cho phép từ lượt giữ có thể bàn giao; giữ nguyên
+                                                                    khóa cam kết xe.
+   VehicleHold.consume(eventId:String):void                         Chỉ chuyển sang CONSUMED với bằng chứng đã xác minh
+                                                                    và không lặp.
+   VehicleHold.cancel():void                                        Không hủy khi CONSUMED hoặc bàn giao đang tranh chấp.
+   VehicleHold.expire(now:DateTime):void                            Chỉ hết hạn khi qua expiresAt và không còn bàn giao
+                                                                    đang chờ xác minh.
+   RentalTrip.markAssistancePending():void                          Giữ chuyến chưa đóng và trách nhiệm xử lý khi không
+                                                                    thể nhận/trả theo kế hoạch.
+   RentalTrip.close(eventId:String):void                            Chỉ đóng khi có kết quả tiếp nhận hợp lệ với eventId
+                                                                    chưa ghi trùng.
+
+
+Các DTO trao đổi dữ liệu gồm:
+   • SearchCriteriaDTO, ResourceSnapshotDTO, VehicleStateDTO, SearchResultDTO, ReservationPreviewDTO, ReservationResultDTO.
+   • HandoverEvidenceDTO, HandoverResultDTO, JourneyListDTO, SupportReportDTO, SupportResultDTO, OperationResultDTO.
+DTO không tự chứa quy tắc cấp phát hoặc chuyển trạng thái.
+
+8.6 Các phương thức hỗ trợ tích hợp
+Bên cạnh các phương thức xử lý nghiệp vụ chính, Module A cần một số giao diện bổ sung để phối hợp với các module còn lại.
+Các giao diện này phục vụ việc kiểm tra quyền sử dụng xe, xác minh trạng thái phương tiện và xử lý những thao tác liên quan
+đến nhiều module. Đối với các thay đổi cần thực hiện đồng thời, hệ thống sử dụng cơ chế giao dịch chung để bảo đảm tính
+nhất quán của dữ liệu.
+
+   Phương thức mới                                                  Mô tả nghiệp vụ / ràng buộc
+   IVehicleClaimPort – Shared Infrastructure
+   reserve(vehicleId:String,kind:String,refId:String,context:       Cấp một cam kết độc quyền theo xe khi A xác nhận lượt
+   OperationContext):OperationResultDTO                             giữ; tranh chấp với D02 phải có duy nhất một kết quả
+                                                                    hợp lệ.
+   transition(vehicleId:String,fromRef:String,toKind:String,        Chuyển claim từ lượt giữ sang chuyến thuê sau bằng
+   toRef:String,context:OperationContext):OperationResultDTO        chứng nhận xe; không thả xe để tranh chấp ở giữa.
+   release(vehicleId:String,expectedRef:String,context:             Giải phóng đúng claim đã kết thúc sau hủy hoặc trả xe
+   OperationContext):OperationResultDTO                             hợp lệ; từ chối nếu không trùng tham chiếu.
+   IUnitOfWork – Shared Infrastructure
+   executeAtomic(command:CompositeCommandDTO):                      Đóng gói các thay đổi có cùng bằng chứng đã xác minh,
+   OperationResultDTO                                               gọi owner A/B/D trong một giao dịch; lỗi thì rollback
+                                                                    toàn bộ.
+   IVehicleObservationReader – Phần D
+   getVerifiedVehicleSnapshot(vehicleId:String):                    Lấy SOC, vị trí, tình trạng kỹ thuật và độ mới từ quan
+   VehicleObservationDTO                                            sát đã xác minh; Phần A không tự nhận quyền sở hữu
+                                                                    giá trị SOC đo được.
+   IUsageDemandReader – API A cung cấp cho C
+   getUsageDemand(vehicleId:String):UsageDemandDTO                  Cung cấp nhu cầu sử dụng dự kiến của xe phục vụ C03;
+                                                                    không nhận dữ liệu đo SOC từ A.
+
+
+
+                                                               15
+   Phương thức mới                                                 Mô tả nghiệp vụ / ràng buộc
+
+   UsageDemandAdapter – implementation của API A
+
+   getUsageDemand(vehicleId:String):UsageDemandDTO                 Ủy quyền cho repository đọc dự kiến từ dữ liệu hành
+                                                                   trình A; dữ liệu thiếu hoặc chưa xác nhận được trả bằng
+                                                                   trạng thái/giá trị chưa xác định, không dự đoán tùy ý.
+   IRentalRecordRepository – bổ sung
+   findUsageDemand(vehicleId:String):UsageDemandDTO                Truy vấn nhu cầu sử dụng dự kiến và thời điểm cập nhật
+                                                                   từ các lượt/chuyến liên quan phục vụ C03; chỉ đọc.
+
+
+Quy tắc phối hợp các lớp.
+
+   • VehicleReservationService.confirm/cancel giữ hoặc giải phóng claim cùng trạng thái A trong một giao dịch. HANDOVER_PENDING
+     không được giải phóng chỉ do hết hạn.
+   • HandoverService.completePickup/completeReturn phải sử dụng bằng chứng D07 đã xác minh; chỉ đóng chuyến sau xác nhận
+     tiếp nhận hợp lệ của B. B ghi nhận sự kiện vật lý bất thường nhưng A vẫn có thể giữ ASSISTANCE_PENDING.
+   • IResourceSnapshotPort.loadVehicleState là adapter tổng hợp read-only từ B/C/D. Mọi trạng thái UNKNOWN hoặc STALE quan
+     trọng phải chặn cấp mới; không tự điền AVAILABLE.
+   • IParkingPort.cancelDependentRightOnce chuyển yêu cầu hủy theo holdId đến IParkingOperations.cancelDependentByHold của
+     Module B. Module B chịu trách nhiệm xác định quyền đỗ phụ thuộc, kiểm tra trạng thái chưa sử dụng và phối hợp
+     Module C xử lý các phiên sạc liên quan trước khi xác nhận hủy.
+   • IEventVerificationPort.verify dùng xác minh D07 với khóa sự kiện (sourceId,eventId); A áp hiệu ứng trong giao dịch và
+     kiểm tra idempotency riêng. Phần IAutomationPort tiếp tục là hỗ trợ nghiệp vụ của các UC, không khai báo UC AUTO
+     độc lập.
+
+Trạng thái kết quả thao tác. OperationResultDTO.status gồm CONFIRMED, PENDING_VERIFICATION, REJECTED, ALREADY_APPLIED,
+CONFLICT. Đây là trạng thái của thao tác, không thay thế trạng thái VehicleHold và RentalTrip. Cùng (actorId,operationName,
+intentId) phải trả về kết quả đã lưu khi retry với cùng payload; retry đổi payload bị từ chối.
+
+
+9 Quan hệ và sự phụ thuộc giữa các lớp
+   • Controller phụ thuộc vào service đúng nhiệm vụ. Service phụ thuộc vào repository interface và integration port; không
+     gọi trực tiếp một UI hay CSDL cụ thể.
+   • VehicleReservationService sử dụng VehicleEligibilityPolicy và IRentalRecordRepository; ResourceDiscoveryService cũng tái
+     sử dụng policy trên dữ liệu snapshot. Nhờ đó điều kiện tìm xe và điều kiện đặt không bị viết thành hai chính sách khác
+     nhau.
+   • VehicleHold gắn với một userId và một vehicleId. Một RentalTrip có thể bắt nguồn từ một lượt giữ đã CONSUMED; cùng một
+     lượt giữ không sinh hai chuyến.
+   • HandoverService chỉ ghi nhận trạng thái logic A sau kết quả hợp lệ từ IEventVerificationPort và IParkingPort. Nếu một
+     phần của chuỗi chưa xác định được, lưu trạng thái chờ và đối soát theo cùng eventId.
+
+   • JourneySupportService tham chiếu vụ việc D qua IIncidentPort. SupportLink chỉ chứa định danh và trạng thái hiển thị;
+     không chuyển quyền sở hữu quy trình xử lý sự cố về A.
+
+
+10 Đối chiếu Use Case với lớp xử lý
+
+  UC                 Lớp điều phối chính                                      Tích hợp và ràng buộc
+  A01                ResourceSearchController, ResourceDiscoveryService       Snapshot B/C/D, VehicleEligibilityPolicy;
+                                                                              không ghi tài nguyên.
+
+
+
+
+                                                             16
+  UC                Lớp điều phối chính                                       Tích hợp và ràng buộc
+
+  A02               VehicleReservationController,                             BR-A01/A02, atomicCreateHold, AUTO01.
+                    VehicleReservationService
+
+  A03               VehicleReservationController,                             BR-A04, B02       hủy    quyền   phụ    thuộc,
+                    VehicleReservationService                                 idempotency.
+  A04               HandoverController, HandoverService                       D07 xác minh, B04 ghi nhận rời chỗ, tạo đúng
+                                                                              một RentalTrip.
+  A05               HandoverController, HandoverService                       B kiểm tra chỗ, D07 xác minh, B03 tiếp nhận;
+                                                                              B05/D04 xử lý ngoại lệ.
+  A06               MyJourneyController, JourneyQueryService                  Đọc hồ sơ đúng chủ sở hữu, trạng thái chờ và
+                                                                              updatedAt.
+
+  A07               JourneySupportController, JourneySupportService           D04 mở/liên kết vụ việc, giữ nguyên cam kết
+                                                                              chưa rõ.
+
+
+11 Test Case Module A
+Các trường hợp dưới đây là thiết kế kiểm thử xuất phát từ UC-A01–A07, BR-A01–A05 và BR-G01–G08. Kết quả mong đợi chỉ
+là oracle của bài kiểm thử; chưa có bằng chứng thực thi trên phần mềm nhóm.
+
+   Mã             Dữ liệu đầu vào / tình huống                        Kết quả mong đợi
+   A-T01          Tra cứu xe với snapshot SOC/vị trí đã quá hạn       Hiển thị trạng thái dữ liệu cũ, không đánh dấu đủ điều
+                  xác minh.                                           kiện cấp mới.
+   A-T02          Hai sinh viên đồng thời xác nhận giữ cùng một       Tối đa một VehicleHold được xác nhận; yêu cầu còn
+                  xe còn đủ điều kiện.                                lại nhận kết quả xung đột.
+   A-T03          Gửi lại cùng intentId do mất phản hồi sau khi       Trả cùng kết quả đã ghi; không tạo lượt giữ thứ hai.
+                  đã tạo lượt giữ.
+   A-T04          Hết 10 phút khi lượt giữ đang HANDOVER_PENDING      Không tự giải phóng xe; giữ trạng thái chờ đối soát.
+                  chưa xác minh.
+   A-T05          Hủy đặt và hoàn tất nhận xe gần như đồng thời.      Không đồng thời xác nhận CANCELLED và tạo chuyến
+                                                                      OPEN; chỉ một kết quả hợp lệ thắng.
+
+   A-T06          Sinh viên bấm nhận xe nhưng thiếu bằng chứng        Không chuyển lượt giữ sang CONSUMED; không mở
+                  D07 hợp lệ.                                         chuyến.
+   A-T07          Sự kiện nhận xe hợp lệ gửi lại với cùng cặp         Không mở chuyến hay ghi thay đổi chỗ đỗ lần thứ hai.
+                  sourceId/eventId.
+
+   A-T08          Trả xe tại Hub đầy hoặc đóng tiếp nhận, chưa        Chuyến chưa được CLOSED; kích hoạt luồng B05 / hỗ
+                  được B xác nhận.                                    trợ, giữ trách nhiệm xử lý.
+   A-T09          Xe trả hợp lệ nhưng SOC thấp hoặc hỏng.             Đóng chuyến đúng một lần; xe không tự chuyển sang
+                                                                      đủ điều kiện thuê tiếp.
+   A-T10          Người dùng truy vấn trackingId của sinh viên        Từ chối truy cập, không lộ dữ liệu hồ sơ.
+                  khác.
+   A-T11          Hai lần gửi hỗ trợ cho cùng sự cố và ý định.        Trả về hoặc liên kết cùng vụ việc D04 đang mở, không
+                                                                      nhân bản trách nhiệm.
+   A-T12          D07 xác minh trả xe nhưng B chưa thể ghi nhận       Giữ kết quả PENDING để đối soát; không tự đóng chuyến
+                  do gián đoạn.                                       và không áp sự kiện lặp.
+
+
+
+
+                                                           17
+Phần II
+Quản lý chỗ đỗ và sức chứa Hub (Module B)
+12 Sơ đồ lớp (Class Diagram) của Module B
+
+
+
+
+                  Hình 4: Sơ đồ lớp Module B: quản lý chỗ đỗ và sức chứa Hub.
+
+
+
+
+                                              18
+12.1 Giải thích quan hệ và bội số (Multiplicity) theo quy tắc nghiệp vụ — Module B
+
+Cặp Lớp liên kết                     Loại quan hệ & Bội             Căn cứ Quy tắc Nghiệp vụ (UC-B01 đến UC-B05)
+                                     số
+
+ParkingReservationController,        Directed Assoc. (1-->          Ủy quyền điều phối 1-1 từ tầng Presentation (Controller)
+HubCapacityController,               1)                             xuống tầng Application (Service) tương ứng cho các use case
+ParkingCheckInOutController     →                                   UC-B01/B02 (đặt/hủy quyền đỗ), UC-B05 (sức chứa Hub) và
+ServicestÔặÔángòệẩng                                                UC-B03/B04 (xe vào/ra ô đỗ).
+
+ParkingReservationService,           Directed Assoc. (1-->          Đọc và truy xuất/lưu trữ trạng thái các thực thể quản lý ô
+HubCapacityService,                  1)                             đỗ (ParkingSpot), quyền đỗ (ParkingRight), phiên đỗ thực tế
+ParkingCheckInOutService        →                                   (ParkingVisit) và tính toán chỉ số C/O/X/H nguyên tử theo
+IParkingRepository                                                  BR-P02.
+
+ParkingReservationService       →    Dependency (--> )              Áp dụng các quy tắc kiểm tra cửa sổ thời gian đặt trước (tối
+ParkingPolicy                                                       đa 24h, giữ 15m–12h, đệm 15m) và ngưỡng chiếm dụng hiệu
+                                                                    dụng (BR-P01 đến BR-P04, BR-P06) trước khi duyệt cấp quyền
+                                                                    đỗ.
+MobilityHub → ParkingSpot            Composition                    Các vị trí đỗ vật lý (ParkingSpot) thuộc về duy nhất một
+                                     (1*--0..*)                     MobilityHub và không thể tồn tại độc lập ngoài mặt bằng của
+                                                                    Hub đó (BR-P02).
+MobilityHub → ParkingRight           Directed Assoc. (1--0.         Một Hub quản lý danh sách các quyền đặt chỗ đỗ
+                                     .*)                            (ParkingRight) được cấp cho các khung giờ khác nhau (đại
+                                                                    diện cho thành phần H trong công thức sức chứa).
+ParkingRight → ParkingVisit          Directed Assoc.     (0.        Mỗi quyền đặt chỗ đỗ khi được sử dụng (CONSUMED) sẽ liên
+                                     .1--0..1)                      kết với tối đa 1 phiên đỗ xe thực tế (ParkingVisit); tuy nhiên
+                                                                    ParkingVisit cũng có thể phát sinh độc lập khi hệ thống phát
+                                                                    hiện xe đỗ không có quyền/đỗ sai ô (BR-P05).
+ParkingVisit → ParkingSpot           Directed   Assoc.   (0.        Mỗi phiên đỗ xe thực tế ghi nhận việc chiếm dụng duy nhất 1
+                                     .*-->1)                        vị trí đỗ vật lý (ParkingSpot) tại một thời điểm (đại diện cho
+                                                                    thành phần O trong công thức BR-P02).
+ParkingSpot → SpotObservation   &    Directed Assoc. (1-->          Mỗi ô đỗ duy trì độc lập hai trạng thái: quan sát vật lý thực tế
+SpotOperationStatus                  1)                             (EMPTY, OCCUPIED, UNKNOWN) và trạng thái khai thác phần mềm
+                                                                    (OPEN, CLOSED) theo BR-G08.
+ParkingRight → ParkingRightStatus    Directed Assoc. (1-->          Quản lý vòng đời trạng thái của quyền đỗ (CONFIRMED,
+                                     1)                             HANDOVER_PENDING, CONSUMED, CANCELLED, EXPIRED) theo BR-P01 và
+                                                                    cơ chế tự động AUTO02.
+ParkingReservationService       →    Dependency (--> )              Tích hợp với Module C để kiểm tra tính tương thích/khả thi
+IChargingOperations                                                 và xác nhận gói đặt chỗ đỗ kèm sạc đồng thời trong cùng
+                                                                    một IUnitOfWork (BR-G07).
+ParkingCheckInOutService        →    Dependency (--> )              Tiếp nhận dữ liệu sự kiện xe vào/rời vị trí đỗ đã qua xác minh
+IVerifiedEventReader                                                từ Module D (UC-D07) để cập nhật ParkingVisit và chỉ số O
+                                                                    chính xác, tuyệt đối không tự suy diễn từ giao diện (BR-G05).
+HubCapacityService              →    Dependency (--> )              Phối hợp điều hướng xử lý ngoại lệ khi Hub quá tải/thiếu
+IRedistributionOperations       &                                   khả năng tiếp nhận (UC-B05), chuyển yêu cầu sang lập lệnh
+IIncidentOperations                                                 điều chuyển xe (Module D02) hoặc ghi nhận phiếu xử lý sự
+                                                                    cố (Module D04).
+
+
+13 Quy tắc nghiệp vụ và quản lý sức chứa
+  1. BR-P01: chỉ cho đặt trước tối đa 24 giờ; xe cá nhân giữ 15 phút đến 12 giờ và đệm 15 phút cho lịch tiếp theo. Quá giờ
+     đến 10 phút chỉ hết quyền khi chắc chắn xe chưa đến/chưa bàn giao.
+
+
+                                                               19
+  2. BR-P02: tại mỗi thời điểm cần xét, C là tổng số ô, O là ô chiếm dụng vật lý, X là ô chưa rõ quan sát, H là phần đã
+     cam kết nhưng chưa thành chiếm dụng. u = 100(O + X + H)/C nếu C > 0, và C = 0 nghĩa là không thể tiếp nhận.
+     Không cộng cùng một ô vừa vào O vừa vào H.
+  3. BR-P03/P04: từ 80% cảnh báo sớm; từ 90% không cấp yêu cầu mới; từ 95% cảnh báo cao. Phần dự phòng 90–100%
+     chỉ được sử dụng cho ngoại lệ có hồ sơ và thẩm quyền, không vượt C; quyền đã xác nhận vẫn được xét tiếp nhận phù
+     hợp.
+
+  4. BR-P05/P06: hết giờ không làm ô đang bị chiếm trở thành trống. Xe dùng chung đang chờ thuê tiếp/điều chuyển vẫn
+     làm ô bị chiếm dụng toàn phần cho đến bằng chứng rời ô.
+  5. BR-G05/G06: QR, nút bấm và lịch dự kiến không thay thế bằng chứng vật lý. Một sự kiện lặp không làm cập nhật O,
+     X, H lần thứ hai; không chắc chắn phải trả PENDING và lưu để đối soát.
+  6. BR-G07: B sở hữu quyền đỗ, C sở hữu phiên sạc/cổng; booking chung chỉ được CONFIRMED nếu cả hai phần cùng
+     được ghi trong một UnitOfWork.
+  7. BR-G08: quyền đặt trước, sự chiếm dụng thực tế, trạng thái OPEN/CLOSED và độ mới quan sát phải được lưu độc lập.
+
+13.1 Trạng thái các đối tượng đỗ xe
+
+  Đối tượng                    Trạng thái chuẩn và ý nghĩa
+  ParkingRight                 CONFIRMED,HANDOVER_PENDING,CONSUMED,CANCELLED,EXPIRED. CONSUMED   là đã dùng quyền tiếp
+                               nhận, không có nghĩa vị trí trống.
+  ParkingSpot                  EMPTY,OCCUPIED,UNKNOWN là quan sát vật lý; OPEN,CLOSED là mở/đóng khai thác, hai chiều độc
+                               lập.
+  ParkingVisit                 Phiên chiếm chỗ thực tế; có thể tồn tại khi phát hiện xe đỗ sai hoặc chưa có quyền hợp
+                               lệ; lưu dấu bất thường.
+  Hub capacity                 C/O/X/H tính theo khoảng thời gian xét; quan sát thật vượt công suất được ghi như bất
+                               thường, không âm thầm chỉnh dữ liệu.
+  OperationReceipt             CONFIRMED,PENDING_VERIFICATION,REJECTED,ALREADY_APPLIED,CONFLICT mô tả kết quả thao tác,
+                               không phải trạng thái domain.
+
+
+14 Tổ chức các lớp của Module B
+14.1 Phân chia trách nhiệm theo tầng
+
+ Tầng                   Lớp                                         Trách nhiệm
+ Controller             3 Controller của B                          Xác thực, nhận yêu cầu, chuyển đúng service; không sửa
+                                                                    số liệu ô đỗ.
+ Service / Policy       ParkingReservationService,                  Kiểm tra BR, phân biệt preview/confirm, điều phối giao
+                        ParkingCheckInOutService,                   dịch và phản hồi PENDING.
+                        HubCapacityService, ParkingPolicy
+ Repository             IParkingRepository,                         Đọc/ghi trạng thái thuộc B theo transaction và khóa
+                        ParkingRepositoryImpl                       idempotency, hiệu ứng vật lý.
+ Domain                 MobilityHub,              ParkingSpot,      Tách quyền giữ, trạng thái ô và chiếm chỗ vật lý.
+                        ParkingRight, ParkingVisit
+ Integration            IParkingOperations, các port C/D,           Trao đổi trạng thái và hiệu ứng với module khác, không
+                        IUnitOfWork                                 trùng quyền ghi.
+
+
+
+
+                                                            20
+15 Các quy trình phối hợp liên module
+15.1 Đặt chỗ đỗ kết hợp sạc (B01/C01)
+Preview không giữ gì. Khi sinh viên xác nhận, B nạp bản nháp theo intentId, tái kiểm tra lịch và C/O/X/H bên trong transaction;
+C tái kiểm tra cổng, thời gian và mức công suất; B lưu ParkingRight(CONFIRMED) và C lưu ChargingSession(BOOKED) cùng một
+transaction. Nếu bất kỳ bước nào không đạt, toàn gói rollback. Cổng chưa được xem là đang cắm hoặc cấp điện. Nếu người
+dùng muốn đổi sang chỉ đỗ, đó là ý định được xác nhận lại với nội dung khác; không thay đổi âm thầm một intent đã ghi.
+
+15.2 Hủy quyền đỗ và phiên sạc liên quan (B02/C02)
+Hủy được khi quyền chưa chuyển sang sử dụng và không có bàn giao đang chờ. C xác định đúng phiên sạc phụ thuộc quyền
+đó, không ảnh hưởng các phiên sạc độc lập. Nếu đã bắt đầu sạc, cổng vẫn đang cắm hoặc không đủ bằng chứng, kết quả là
+PENDING hoặc phương án thay thế; B không giải phóng chiếm dụng vật lý. Nếu đủ điều kiện, B và C cùng commit việc hủy
+trong UoW.
+
+15.3 Xử lý sự kiện xe vào và rời chỗ đỗ
+D07 xác minh (sourceId,eventId), nguồn và thứ tự trước khi B nhận VerifiedEventDTO. B có receipt hiệu ứng riêng theo
+(B,sourceId,eventId,effectKind); A/D có receipt hiệu ứng thuộc owner tương ứng. Một bằng chứng hợp lệ chỉ tạo mỗi hiệu
+ứng một lần. Trên B03, physicallyObserved và authorizedReception là hai kết quả khác nhau: xe thật sự vào sai chỗ vẫn phải ghi
+quan sát và sự cố, nhưng A05 không được tự đóng chuyến. B04 chỉ giải phóng khi xác minh đã rời đúng ô; di chuyển nội Hub
+ghi cả rời ô cũ và vào ô mới trong transaction thích hợp.
+
+15.4 Xử lý thiếu sức chứa và điều chuyển
+B là writer duy nhất của C/O/X/H; D có quyền đọc/đề xuất nhưng không sửa B tables. Khi điều chuyển, D tái kiểm tra claim xe
+A, trạng thái sạc C, vị trí xe D, giới hạn xe tải và sức chứa B; B giữ phần H của Hub đích trong cùng UoW phát lệnh. Lệnh
+chưa giao đủ xe vẫn IN_PROGRESS; khi D03 có bằng chứng, B chuyển H sang O cho đúng xe, không nhân đôi. Nếu không đáp
+ứng, B05 lưu tình trạng chờ và người chịu trách nhiệm qua D04.
+
+
+16 Giao diện trao đổi với các Module A, C và D
+Module B chịu trách nhiệm quản lý quyền đỗ, vị trí đỗ và khả năng tiếp nhận của Hub. Các module khác sử dụng những giao
+diện đã thống nhất để yêu cầu kiểm tra hoặc cập nhật dữ liệu, thay vì truy cập trực tiếp repository của Module B.
+
+  Giao diện được sử dụng                                   Cách phối hợp
+  A: IParkingPort.checkReturnReception(...)                Adapter chuyển thông tin chuyến thuê, Hub và quyền đỗ đến
+                                                           IParkingOperations.checkReception(...). Kết quả kiểm tra không
+                                                           tự đóng chuyến của A.
+  A: recordDepartureOnce(event,context)                    Adapter tiếp nhận VerifiedEventDTO, kiểm tra xe, Hub và vị trí đỗ
+                                                           trước khi gọi IParkingOperations.recordDeparture(event,context).
+                                                           Kết quả được ánh xạ về OperationResultDTO.
+  A: recordArrivalOnce(event,rightId,context)              Adapter kiểm tra bằng chứng, chuyến thuê và quyền đỗ trước khi
+                                                           gọi IParkingOperations.recordArrival(event,rightId,context). Chỉ
+                                                           trả kết quả tiếp nhận hợp lệ khi các điều kiện nghiệp vụ được đáp
+                                                           ứng.
+  A: cancelDependentRightOnce(holdId,context)              Adapter     chuyển      yêu    cầu   đến    IParkingOperations.
+                                                           cancelDependentByHold(holdId,context).  Module B xác định
+                                                           quyền đỗ phụ thuộc, kiểm tra trạng thái chưa sử dụng và phối
+                                                           hợp với Module C khi có phiên sạc liên quan. Nếu liên kết không
+                                                           rõ hoặc đang có bàn giao, hệ thống trả trạng thái chờ hoặc xung
+                                                           đột.
+
+
+
+
+                                                              21
+  Giao diện được sử dụng                                    Cách phối hợp
+
+  A: resolveInsufficientCapacity(tripId,hubId)              Module B thực hiện UC-B05 để đánh giá sức chứa và đề xuất
+                                                            phương án xử lý. Module B không tự thay đổi trạng thái RentalTrip
+                                                            của Module A.
+  B và C: IChargingOperations / IParkingRightReader         Module B sử dụng IChargingOperations do C cung cấp để
+                                                            kiểm tra và xử lý phiên sạc phụ thuộc. Module C sử dụng
+                                                            IParkingRightReader để đọc và xác minh quyền đỗ. Mỗi module
+                                                            chỉ cập nhật dữ liệu thuộc trách nhiệm của mình.
+  D: IParkingOperations                                     Module D sử dụng dữ liệu Hub và tài nguyên để giám sát, điều
+                                                            chuyển và xử lý sự cố. Khi cần thay đổi quyền đỗ, ghi nhận xe
+                                                            vào/rời vị trí hoặc cập nhật sức chứa Hub, Module D gửi yêu cầu
+                                                            thông qua IParkingOperations của Module B. Module D không
+                                                            trực tiếp cập nhật dữ liệu nghiệp vụ thuộc Module B.
+
+
+17 Mô tả phương thức (Method Descriptions) — Module B
+17.1 Các lớp điều khiển (Controller)
+ParkingReservationController                                                                                       UC-B01/B02
+
+
+Phương thức                                                   Mô tả / hậu điều kiện
+sendParkingRequest(hubId:String,vehicleId:String,             Tiếp nhận lựa chọn Hub, xe, khung giờ, nhu cầu sạc và mã ý
+startTime:DateTime,endTime:DateTime,chargingNeed:             định; xác thực quyền xe. Lưu yêu cầu nháp gắn với dấu vân tay
+Boolean,intentId:String)ParkingPreviewDTO                     input; chỉ xem trước, chưa cấp chỗ hoặc cổng.
+confirmReservation(intentId:String)ParkingOutcomeDTO          Nạp đúng bản nháp của intent đã xác thực, gọi service xác nhận
+                                                              và trả kết quả đã cam kết hoặc chờ; không tin dữ liệu preview
+                                                              cũ.
+requestCancelParkingRight(rightId:String,intentId:            Kiểm tra quyền sở hữu, trạng thái quyền đỗ và phiên sạc phụ
+String)CancellationPreviewDTO                                 thuộc; cho biết phạm vi hủy trước khi người dùng xác nhận.
+confirmOrRejectCancellation(rightId:String,confirm:           Nếu từ chối thì giữ nguyên; nếu đồng ý thì gọi service hủy theo
+Boolean,intentId:String)ParkingOutcomeDTO                     cùng intent, tuyệt đối không giải phóng chỗ vật lý do click.
+getParkingRightStatus(rightId:String)ParkingRightDTO          Trả trạng thái mới nhất của quyền thuộc chủ thể được phép,
+                                                              bao gồm trạng thái bàn giao/chưa xác minh.
+
+
+ParkingCheckInOutController                                                                                        UC-B03/B04
+
+
+Phương thức                                                   Mô tả / hậu điều kiện
+presentQRCodeOrRequestForCheckIn(sourceId:String,eventId:     Tiếp nhận tham chiếu bằng chứng vào ô đỗ; chỉ chuyển cho
+String,rightId:String)ParkingEffectDTO                        service sau khi lấy sự kiện đã xác minh qua D07. QR không tự
+                                                              chứng minh xe đã vào.
+sendVehicleDepartureEvent(sourceId:String,eventId:            Nhận tham chiếu sự kiện rời ô đỗ; cùng cơ chế xác minh, kiểm
+String)ParkingEffectDTO                                       soát thứ tự và idempotency trước khi ghi chiếm dụng.
+getEventEffectStatus(sourceId:String,eventId:String)          Tra biên nhận hiệu ứng B, cho phép trả kết quả cũ khi người
+ParkingEffectDTO                                              dùng hoặc IoT gửi lại.
+
+
+HubCapacityController                                                                                                  UC-B05
+
+
+
+
+                                                              22
+Phương thức                                                Mô tả / hậu điều kiện
+getHubOccupancyAndAffectedRequests(hubId:String)           Trả C/O/X/H, phần trăm chiếm dụng hiệu dụng, độ mới và các
+HubCapacityStatusDTO                                       quyền/lượt trả đang bị ảnh hưởng.
+selectProcessOption(requestId:String,option:               Nhận phương án do nhân viên có quyền chọn, kiểm tra sự chấp
+CapacityOptionDTO,intentId:String)ProcessStatusDTO         thuận của khách khi cần, rồi yêu cầu xử lý bằng dữ liệu được
+                                                           kiểm tra lại.
+
+
+17.2 Các lớp xử lý nghiệp vụ (Service)
+ParkingReservationService                                                                                     UC-B01/B02
+
+
+Phương thức                                                Mô tả / hậu điều kiện
+processParkingRequest(request:ParkingRequestDTO)           Kiểm tra sơ bộ thời gian, chính sách B, dữ liệu tươi và tương
+ParkingPreviewDTO                                          thích sạc; trả lựa chọn nhưng không tạo quyền. Ghi yêu cầu
+                                                           nháp gắn intent để xác nhận đúng input.
+
+validateBusinessRules(request:ParkingRequestDTO,state:     Áp    dụng    BR-P01      đến P04,   P06    cùng    BR-
+ResourceStatusDTO)ValidationResultDTO                      G01/G02/G03/G06/G07; tính hiệu dụng cho khoảng đang xét,
+                                                           không chỉ kiểm tra O < C.
+confirmBooking(intentId:String)ParkingOutcomeDTO           Trong một UoW ngắn: nạp intent/dấu vân tay input, kiểm tra
+                                                           lại toàn bộ trạng thái; B ghi ParkingRight CONFIRMED, C giữ
+                                                           cổng và phiên BOOKED nếu có sạc; thiếu một phần thì rollback
+                                                           cả gói.
+reconcileBookingStatus(intentId:String)ParkingOutcomeDTO   Đọc receipt đã lưu theo actor, operation và intentId; mất phản
+                                                           hồi không gây tạo thêm quyền đỗ hay phiên sạc.
+suggestAlternativeHubs(hubId:String,startTime:             Trả phương án tại Hub khác theo snapshot và thời điểm quan
+DateTime,endTime:DateTime)List_HubOptionDTO                sát; không cam kết vị trí khi chỉ đang gợi ý.
+previewCancellation(userId:String,rightId:String)          Kiểm tra chủ sở hữu, liên kết phiên sạc C, việc xe đã đến hoặc
+CancellationPreviewDTO                                     bàn giao chưa rõ; trả phạm vi hủy để sinh viên lựa chọn, chưa
+                                                           thay đổi quyền.
+cancelUnusedRight(rightId:String,intentId:String)          Chỉ hủy quyền chưa dùng, chưa có bàn giao đang chờ; gọi C để
+ParkingOutcomeDTO                                          xử lý đúng phiên phụ thuộc trong cùng UoW. Nếu cổng đã cắm
+                                                           hoặc trạng thái chưa rõ, giữ PENDING và yêu cầu đối soát.
+getRightStatus(userId:String,rightId:String)               Trả quyền đỗ thuộc người được phép, phiên sạc liên kết và trạng
+ParkingRightDTO                                            thái đã xác minh; không để lộ quyền người khác.
+expireUnusedRights(now:DateTime)Integer                    Hỗ trợ AUTO02 trong UC-B01/B02: chỉ hết hạn quyền chưa
+                                                           dùng, qua grace 10 phút và không có bằng chứng đến/bàn giao
+                                                           đang chờ; không xóa sự chiếm dụng thực tế.
+
+
+ParkingCheckInOutService                                                                                      UC-B03/B04
+
+
+Phương thức                                                Mô tả / hậu điều kiện
+checkReception(tripId:String,hubId:String,rightId:         Kiểm tra chính sách vào chỗ cho A05 hoặc D03 tại thời điểm
+String,asOf:DateTime)ReceptionDecisionDTO                  xét, gồm quyền đã xác nhận/vãng lai, ngưỡng, phần dự phòng
+                                                           và trạng thái chưa rõ; không tự ghi chiếm dụng.
+processVehicleCheckIn(event:VerifiedEventDTO,rightId:      Trong UoW, xác thực hiệu lực quyền/tiếp nhận; ghi quan sát
+String)ParkingEffectDTO                                    chiếm chỗ kể cả sai vị trí nếu có bằng chứng, chuyển H thành O
+                                                           khi phù hợp. Tách physicallyObserved khỏi authorizedReception.
+
+
+
+
+                                                           23
+ Phương thức                                                Mô tả / hậu điều kiện
+
+ processVehicleDeparture(event:VerifiedEventDTO)            Trong UoW, ghi xe thực sự rời ô, giảm O đúng một lần và bảo
+ ParkingEffectDTO                                           toàn các lịch còn lại. Nếu thiếu bằng chứng hoặc lỗi thứ tự, giữ
+                                                            UNKNOWN/PENDING; không tự kết thúc chuyến A.
+ guideAndConfirmAssignSpot(rightId:String,spotId:           Chọn/gợi ý vị trí phù hợp sau khi tái kiểm tra quyền, khung giờ
+ String)ReceptionDecisionDTO                                và trạng thái; đây là hướng dẫn, không phải bằng chứng chiếm
+                                                            chỗ.
+ reconcileEventEffect(sourceId:String,eventId:String)       Tra kết quả hiệu ứng B với khóa sourceId/eventId/effectKind;
+ ParkingEffectDTO                                           trả kết quả cũ thay vì cộng trừ lại.
+
+
+HubCapacityService                                                                                                    UC-B05
+
+ Phương thức                                                Mô tả / hậu điều kiện
+ evaluateHubCapacity(hubId:String,asOf:DateTime)            Tính C/O/X/H đúng khoảng và snapshot; C=0 không tiếp nhận.
+ HubCapacityStatusDTO                                       Mức 80% cảnh báo sớm, 90% dừng mới, 95% cảnh báo cao theo
+                                                            BR-P03.
+ proposeAlternativeOptions(requestId:String)List_           Phân loại khách đã có quyền, khách mới, xe thuê cần hỗ trợ;
+ CapacityOptionDTO                                          nêu khả năng tại chỗ, chờ, Hub thay thế, phần dự phòng và điều
+                                                            chuyển khi phù hợp.
+ handleHubOvercapacity(requestId:String,option:             Xác thực nhân viên, lựa chọn và sự đồng ý cần thiết; tái kiểm tra
+ CapacityOptionDTO,intentId:String)ProcessStatusDTO         quyền/công suất rồi chuyển sang B01, D02 hoặc D04. Không
+                                                            tự ép khách đổi Hub.
+ reserveTransferCapacity(orderId:String,vehicleIds:         Là owner B, dành phần H ở Hub đích cho lệnh D02 trong UoW
+ List_String,hubId:String,context:OperationContext)         cùng claim xe và tạo lệnh D. Chặn vượt C hoặc lấy quyền cũ.
+ ParkingEffectDTO
+
+
+
+17.3 Chính sách nghiệp vụ (Policy)
+ParkingPolicy                                                                                      BR-P01/P02/P03/P04/P06
+
+
+ Phương thức                                                Mô tả / hậu điều kiện
+ validateTimeWindow(request:ParkingRequestDTO)              Xe cá nhân: đặt trước tối đa 24 giờ, lưu 15 phút đến 12 giờ,
+ ValidationResultDTO                                        đệm lịch 15 phút; xe dùng chung theo BR-P06.
+ calculateEffectiveOccupancy(snapshot:                      Trả 100*(O+X+H)/C tại khoảng xét; C bằng 0 không chia mà
+ HubCapacitySnapshotDTO)Decimal                             trả tình trạng không khả dụng.
+ decideAdmission(snapshot:HubCapacitySnapshotDTO,request:   Phân biệt yêu cầu mới và cam kết đã xác nhận; ngưỡng 90%
+ ParkingRequestDTO)ReceptionDecisionDTO                     chặn cấp mới, phần 90-100% chỉ cho phép ngoại lệ có thẩm
+                                                            quyền, lý do và không vượt C.
+
+
+17.4 Truy xuất và lưu trữ dữ liệu (Repository)
+IParkingRepository                                                                                                   Interface
+Interface bắt buộc; ParkingRepositoryImpl hiện thực hóa đúng các khái niệm, không có thêm phương thức public riêng trên sơ
+đồ.
+
+ Phương thức                                                Mô tả / hậu điều kiện
+ getRightsOccupancyScheduleAndFreshData(hubId:String,       Truy xuất quyền, lịch, C/O/X/H, trạng thái ô đỗ cùng độ
+ vehicleId:String)ResourceStatusDTO                         mới/phiên bản; snapshot chỉ đọc.
+
+
+
+                                                            24
+Phương thức                                                 Mô tả / hậu điều kiện
+
+recheckConflictsAndSaveRightByIntentId(intentId:            Kiểm tra lại quyền và ghi đúng một quyền CONFIRMED trong
+String,right:ParkingRight)ParkingRight                      transaction hiện hành; không tự commit riêng khi là gói B/C.
+queryExistingRightByIntentId(intentId:String)ParkingRight   Tra cùng receipt/khóa ý định theo chủ thể đã xác thực; dữ liệu
+                                                            khác fingerprint bị từ chối.
+findParkingRight(rightId:String)ParkingRight                Đọc quyền đỗ kèm liên kết phiên sạc và trạng thái hiện tại, phục
+                                                            vụ xác thực chủ sở hữu.
+findActiveVisit(vehicleId:String)ParkingVisit               Tìm phiên chiếm chỗ vật lý đang hoạt động của xe; không suy
+                                                            diễn từ trạng thái quyền đặt trước.
+recordEventCheckIn(event:VerifiedEventDTO,rightId:          Ghi hiệu ứng vào ô với khóa (B,sourceId,eventId,ARRIVAL), cập
+String)ParkingEffectDTO                                     nhật ParkingVisit, spot và H/O đúng một lần.
+recordOccupancyIndexOrCheckOut(event:VerifiedEventDTO)      Ghi hiệu ứng rời với khóa (B,sourceId,eventId,DEPARTURE),
+ParkingEffectDTO                                            giảm chiếm chỗ và giữ lịch tương lai; chống lặp.
+updateSpotObservation(spotId:String,observation:            Cập nhật EMPTY/OCCUPIED/UNKNOWN bằng quan sát có
+SpotObservation,revision:Integer)Boolean                    version; dữ liệu cũ không ghi đè trạng thái mới.
+reserveTransferCapacityOnce(orderId:String,vehicleIds:      Tạo các cam kết đích gắn lệnh điều chuyển cùng transaction; số
+List_String,hubId:String)ParkingEffectDTO                   H không trùng với O/X.
+recordOutcomeByIntent(intentId:String,outcome:              Lưu receipt idempotent và fingerprint đầu vào để retry luôn lấy
+ParkingOutcomeDTO)Boolean                                   kết quả gốc.
+findProcessedEffect(sourceId:String,eventId:String,kind:    Tra receipt hiệu ứng đã áp dụng; không viết lại trạng thái do sự
+String)ParkingEffectDTO                                     kiện trùng.
+
+
+17.5 Các đối tượng nghiệp vụ (Domain)
+MobilityHub                                                                                            Hub parking aggregate
+
+Phương thức                                                 Mô tả / hậu điều kiện
+effectiveOccupancy(asOf:DateTime)Decimal                    Tính mức hiệu dụng tại thời điểm xét từ C/O/X/H không đếm
+                                                            trùng.
+admissionBand(asOf:DateTime)String                          Cho biết NORMAL/WARNING/RESTRICTED/HIGH theo
+                                                            ngưỡng chính sách; C=0 là NO_CAPACITY.
+canReserve(request:ParkingRequestDTO)Boolean                Đánh giá được phép cấp cam kết mới theo năng lực, cửa sổ thời
+                                                            gian và trạng thái OPEN/CLOSED.
+
+
+ParkingSpot                                                                                               Physical observation
+
+Phương thức                                                 Mô tả / hậu điều kiện
+observeOccupancy(observation:SpotObservation,revision:      Đổi quan sát theo nguồn hợp lệ và revision tăng, lưu trạng thái
+Integer)void                                                UNKNOWN khi thiếu căn cứ.
+setOperationalStatus(status:SpotOperationStatus)void        Điều chỉnh OPEN/CLOSED bằng lệnh có thẩm quyền; độc lập
+                                                            với quan sát EMPTY/OCCUPIED.
+canAllocate(range:TimeRangeDTO)Boolean                      Kiểm tra trạng thái hoạt động, độ mới, chiếm chỗ và lịch trên
+                                                            khoảng dự kiến; EMPTY một mình chưa đủ.
+
+
+ParkingRight                                                                                           Reservation entitlement
+
+
+
+
+                                                            25
+ Phương thức                                               Mô tả / hậu điều kiện
+ markHandoverPending(eventId:String)void                   Khóa quyền đang kiểm tra lúc xe đến; không cho hủy/hết hạn
+                                                           khi sự kiện chưa rõ.
+ consumeOnArrival(eventId:String)void                      Chỉ chuyển CONFIRMED/HANDOVER_PENDING thành
+                                                           CONSUMED sau tiếp nhận hợp lệ; không phải giải phóng chỗ.
+ cancelUnused()void                                        Chỉ chuyển sang CANCELLED khi chưa dùng và không có bàn
+                                                           giao tranh chấp; giữ audit.
+ expireUnused(now:DateTime)void                            Chỉ EXPIRED khi quá giờ theo BR-P01/AUTO02, chưa đến và
+                                                           không trong HANDOVER_PENDING.
+
+
+ParkingVisit                                                                                           Physical parking session
+
+ Phương thức                                               Mô tả / hậu điều kiện
+ recordDeparture(eventId:String)void                       Đóng phiên chiếm chỗ được xác nhận rời bằng chứng, đúng một
+                                                           lần; không đụng các quyền tương lai.
+ markAnomaly(reason:String)void                            Ghi bất thường sai chỗ hoặc không có quyền; không xóa quan
+                                                           sát vật lý.
+
+
+17.6 Giao diện nghiệp vụ do Module B cung cấp
+IParkingOperations                                                                                           B-facing contract
+Hợp đồng công khai Role B; ParkingOperationsAdapter hiện thực hóa interface và gọi service B, không thay quyền ghi.
+
+ Phương thức                                               Mô tả / hậu điều kiện
+ checkReception(tripId:String,hubId:String,rightId:        A05 gọi B kiểm tra quyền tiếp nhận, vãng lai và ngoại lệ; nullable
+ String,asOf:DateTime)ReceptionDecisionDTO                 rightId không tự bảo đảm được tiếp nhận.
+ recordDeparture(event:VerifiedEventDTO,context:           A04/D03 gọi cùng event, B cập nhật hiệu ứng departure một
+ OperationContext)ParkingEffectDTO                         lần trong UoW.
+ recordArrival(event:VerifiedEventDTO,rightId:String,      A05/D03 gọi B ghi quan sát vào ô; kết quả tách thực tế đã thấy
+ context:OperationContext)ParkingEffectDTO                 khỏi tiếp nhận hợp lệ.
+ cancelUnusedRight(rightId:String,context:                 A03/UC-B02 yêu cầu B hủy theo đúng rightId, xử lý phụ thuộc
+ OperationContext)ParkingOutcomeDTO                        C trước khi commit.
+ reserveTransferCapacity(orderId:String,vehicleIds:        D02 yêu cầu B dành H ở Hub đích một cách nguyên tử.
+ List_String,hubId:String,context:OperationContext)
+ ParkingEffectDTO
+
+ cancelDependentByHold(holdId:String,context:              B tra cứu liên kết duy nhất giữa holdId và quyền đỗ, chỉ hủy
+ OperationContext)ParkingOutcomeDTO                        phần chưa sử dụng và phối hợp C xử lý phiên sạc phụ thuộc; nếu
+                                                           liên kết không rõ hoặc đang có bàn giao, trả kết quả chờ/xung
+                                                           đột.
+
+
+17.7 Giao diện Module B sử dụng
+IChargingOperations                                                                                                     Role C
+
+ Phương thức                                               Mô tả / hậu điều kiện
+ estimateBundle(vehicleId:String,hubId:String,range:       Chỉ xem trước tương thích/công suất; không giữ cổng.
+ TimeRangeDTO)ChargingEstimateDTO
+
+
+
+
+                                                           26
+Phương thức                                                Mô tả / hậu điều kiện
+
+reserveBundlePort(bundleId:String,rightId:String,portId:   C giữ port và session BOOKED trong cùng UoW khi B xác nhận
+String,range:TimeRangeDTO,context:OperationContext)        gói.
+OperationResultDTO
+
+processDependentCancellation(rightId:String,context:       C xử lý chỉ các phiên phụ thuộc, bảo vệ phiên đang sạc hoặc
+OperationContext)OperationResultDTO                        cổng còn cắm.
+readPlugAndCharge(vehicleId:String)ChargingConstraintDTO   Đọc trạng thái plug/power và phiên sạc để B không hủy/đặt
+                                                           chồng sai.
+
+
+IVerifiedEventReader                                                                                              Role D07
+
+Phương thức                                                Mô tả / hậu điều kiện
+getVerifiedEvent(sourceId:String,eventId:String)           Nhận event đã xác minh nguồn và thứ tự từ D07; không trực
+VerifiedEventDTO                                           tiếp chỉnh B tables.
+
+
+IIncidentOperations                                                                                               Role D04
+
+Phương thức                                                Mô tả / hậu điều kiện
+openOrLink(recordId:String,report:IncidentReportDTO,       Tạo/liên kết sự cố cần đối soát, giữ mã theo dõi và trách nhiệm
+context:OperationContext)IncidentReceiptDTO                nhân viên.
+
+
+IRedistributionOperations                                                                                         Role D02
+
+Phương thức                                                Mô tả / hậu điều kiện
+previewTransfer(sourceHubId:String,destHubId:String,       Gợi ý điều chuyển khả thi, chưa cấp tài nguyên thật.
+vehicleIds:List_String)TransferPreviewDTO
+
+issueOrder(previewId:String,expectedRevision:Integer,      D tái kiểm tra A/C/B/xe tải và phát lệnh cùng UoW; B không
+context:OperationContext)OperationResultDTO                trực tiếp tạo lệnh D.
+
+
+17.8 Thành phần tích hợp dùng chung
+IUnitOfWork                                                                                            Shared infrastructure
+
+Phương thức                                                Mô tả / hậu điều kiện
+executeAtomic(command:CompositeCommandDTO)                 Chạy các handler owner cùng một transaction SQLite; không
+OperationResultDTO                                         giữ transaction trong lúc chờ QR/IoT/con người.
+
+
+17.9 Các kiểu dữ liệu DTO và Enum
+
+  Kiểu                                  Dữ liệu/trách nhiệm
+  ParkingRightStatus                    CONFIRMED,HANDOVER_PENDING,CONSUMED,CANCELLED,EXPIRED.
+
+  SpotObservation                       EMPTY, OCCUPIED, UNKNOWN; phải giữ trạng thái UNKNOWN.
+  SpotOperationStatus                   OPEN, CLOSED; không dùng để suy diễn sự chiếm dụng.
+  ParkingRequestDTO                     hubId, vehicleId, rightOrHoldRef, startTime, endTime, chargingNeed, actor và
+                                        intent correlation.
+
+
+
+                                                           27
+ Kiểu                                    Dữ liệu/trách nhiệm
+
+ ParkingEffectDTO                        status, sourceId, eventId, effectKind, physicallyObserved, authorizedReception,
+                                         spotId, ownerRevision và thông tin bất thường.
+ HubCapacityStatusDTO                    C/O/X/H, effectivePercent, observedAt, verifiedAt, revision, cảnh báo và danh sách
+                                         bị ảnh hưởng.
+ OperationContext                        actorId, actorRole, intentId, correlationId, requestedAtUTC và fingerprint; actor lấy
+                                         từ xác thực server.
+ VerifiedEventDTO                        sourceId, eventId, kind, vehicleId, hubId, spotId, observedAtUTC, verifiedAtUTC,
+                                         revision và bằng chứng.
+ Các DTO khác                            Được định nghĩa trong Shared Contracts; không có logic nghiệp vụ hoặc phương
+                                         thức public riêng trên sơ đồ này.
+
+
+18 Quan hệ UML và đối chiếu Use Case
+  • Realization: ParkingRepositoryImpl hiện thực IParkingRepository.
+      ParkingOperationsAdapter hiện thực IParkingOperations.
+
+  • Composition: MobilityHub gồm các ParkingSpot; liên kết chỉ là cấu hình thuộc B, không cấp quyền D sửa bảng B.
+
+  • Association: ParkingRight liên kết Hub/Spot và có thể gắn một ParkingVisit; quyền đã CONSUMED không làm
+    ParkingVisit tự kết thúc.
+
+  • Dependency: Controller gọi Service; Service gọi Policy/Repository/Port trong transaction phù hợp. Các cổng C/D là phụ
+    thuộc vào hợp đồng, không sao chép nghiệp vụ khác.
+
+
+UC             Controller/Service chính                                  Phụ thuộc và bất biến
+B01            ParkingReservationController                          /   C01/B01; IChargingOperations + UoW, BR-P01–
+               ParkingReservationService                                 P04/P06, BR-G07.
+B02            ParkingReservationController                          /   C02; chỉ hủy chưa dùng; không xóa physical
+               ParkingReservationService                                 occupancy.
+B03            ParkingCheckInOutController                           /   A05, D03, D07; nhận evidence,              phân    biệt
+               ParkingCheckInOutService                                  physical/authorized, H sang O.
+B04            ParkingCheckInOutController                           /   A04, D03, D07; O giảm đúng một lần, giữ lịch tương
+               ParkingCheckInOutService                                  lai.
+B05            HubCapacityController / HubCapacityService                D02/D04; operator quyết định, capacity B là nguồn
+                                                                         chuẩn.
+
+
+19 Test Case Module B
+
+Mã                Kịch bản                                                   Điều kiện đạt
+B-T01             Hai yêu cầu giữ cùng một spot/khung giờ đồng thời          Một quyền được CONFIRMED; không trùng.
+B-T02             C đủ chỗ nhưng không còn port cho gói đỗ+sạc               Không có quyền đỗ được báo thành công một
+                                                                             phần.
+B-T03             Hủy quyền đỗ có phiên sạc đang hoạt động/cổng còn          Không tự giải phóng cổng hoặc chỗ thực tế.
+                  cắm
+B-T04             Sự kiện đến chỗ lặp hai lần                                O chỉ tăng một lần; H giảm một lần khi phù hợp.
+
+
+
+
+                                                               28
+Mã      Kịch bản                                          Điều kiện đạt
+
+B-T05   Sự kiện rời cũ đến sau sự kiện vào mới            Không ghi đè revision mới; giữ dữ liệu chính xác
+                                                          hoặc UNKNOWN.
+B-T06   Spot quan sát UNKNOWN trong khi có ô EMPTY khác   Không cấp nhầm ô UNKNOWN; các cam kết cũ
+                                                          còn.
+B-T07   Hub hiệu dụng từ 90% trở lên và có yêu cầu mới    Yêu cầu mới bị chặn, ngoại lệ có quyền lưu lý do.
+B-T08   Xe thuê trả tại Hub đầy rồi thật sự vào ô sai     Ghi observation/anomaly; A không CLOSED khi
+                                                          chưa được tiếp nhận.
+B-T09   D02 giữ sức chứa đích, D03 giao một phần          Chỉ xe đã bàn giao chuyển H sang O, phần còn
+                                                          lại giữ.
+B-T10   Tiến trình chết sau commit trước response         Retry cùng intent trả receipt cũ, không tạo quyền
+                                                          thứ hai.
+
+
+
+
+                                                    29
+20 Dữ liệu chỗ đỗ cung cấp cho Module C
+IParkingRightReader cung cấp dữ liệu chỉ đọc từ Module B phục vụ C01 và C03. Các phương thức của IParkingOperations,
+gồm cancelDependentByHold, đã được mô tả tập trung trong bảng Owner API của Module B; những phương thức do D sở hữu
+được định nghĩa ở Module D.
+
+  Phương thức                                                   Mô tả / kết quả
+  verifyRight(rightId:String,ownerId:String,vehicleId:          Kiểm tra chủ sở hữu, xe, Hub, trạng thái và khung giờ
+  String,hubId:String,range:TimeRangeDTO)ParkingRightCheckDTO   của quyền đỗ; Module C không đọc trực tiếp bảng dữ
+                                                                liệu B.
+  getHubCapacity(hubId:String,range:TimeRangeDTO)               Trả về số liệu C/O/X/H kèm thời điểm quan sát và phiên
+  HubCapacitySnapshotDTO                                        bản dữ liệu để Module C kiểm tra khả năng phục vụ.
+
+
+
+
+                                                           30
+Phần III
+Đăng ký và lập lịch sạc (Module C)
+21 Sơ đồ lớp (Class Diagram) của Module C
+
+
+
+
+                   Hình 5: Sơ đồ lớp Module C: đăng ký phiên và lập lịch sạc.
+
+
+
+
+                                              31
+Hình 6: Sơ đồ cấu trúc dữ liệu (DTO và Enum) của Module C.
+
+
+
+
+                           32
+21.1 Giải thích quan hệ và bội số (Multiplicity) theo quy tắc nghiệp vụ — Module C
+
+Cặp Lớp liên kết                       Loại quan hệ & Bội               Căn cứ Quy tắc Nghiệp vụ (UC-C01 đến UC-C03)
+                                       số
+
+ChargingRegistrationController,        Directed Assoc. (1-->            Ủy quyền điều phối 1-1 từ tầng Presentation (Controller)
+ChargingSessionController,             1)                               xuống tầng Application (Service) tương ứng cho các use case
+ChargingScheduleController        →                                     UC-C01 (đăng ký sạc), UC-C02 (quản lý phiên sạc) và UC-C03
+ServicestÔặÔángòệẩng                                                    (lập lịch sạc).
+RegistrationService, SessionService,   Directed Assoc. (1-->            Đọc và lưu trữ nguyên tử trạng thái thực thể phiên sạc
+ChargingResourceService,               1)                               (ChargingSession), cổng sạc (ChargingPort), bản ghi sự kiện
+ChargingScheduleService                                                 (ChargingEvent) và kế hoạch sạc (SchedulePlan) theo giao dịch
+→        IChargingRepository      /                                     (BR-G02, BR-G06).
+IScheduleRepository
+
+RegistrationService               →    Directed Assoc. (1-->            Kiểm tra điều kiện khả thi của cổng sạc (tương thích công
+ChargingResourceService                1)                               suất, không lỗi/cũ) trước khi cho phép người dùng đăng ký
+                                                                        phiên sạc mới (BR-C01, BR-C04).
+
+ChargingScheduleService           →    Directed Assoc. (1-->            Ủy quyền cho bộ tính toán thuật toán lập/tối ưu hóa kế hoạch
+ChargingScheduler                      1)                               phân bổ công suất sạc (SchedulePlan) dựa trên nhu cầu hành
+                                                                        trình (Module A), SOC (Module D) và sức chứa Hub (Module
+                                                                        B).
+ChargingSession → ChargingPort         Directed   Assoc.     (0.        Mỗi phiên sạc được phân công duy nhất 1 cổng sạc
+                                       .*-->1)                          (ChargingPort) phù hợp tại Hub trong khung giờ đã đăng ký
+                                                                        (BR-C01, BR-C03).
+SchedulePlan → ChargingSession         Directed Assoc. (1-->            Một kế hoạch sạc (SchedulePlan) được duyệt (APPLIED) điều
+                                       0..*)                            phối và phân bổ công suất/thời gian cho 0 hoặc nhiều phiên
+                                                                        sạc (ChargingSession) trong mạng lưới (BR-C08, BR-C09).
+ChargingSession → ChargingEvent        Composition                      Một phiên sạc lưu trữ lịch sử các biên nhận hiệu ứng/sự kiện
+                                       (1*--0..*)                       đã xác minh (ChargingEvent) với mã nhận dạng duy nhất để
+                                                                        chống lặp tác động nghiệp vụ (BR-C02, BR-G05).
+ChargingServiceFacade             →    Realization (--|> )              Hiện thực hóa giao diện cung cấp cho Module B gọi kiểm
+IChargingOperations                                                     tra/đặt gói đỗ xe kèm sạc (B01) hoặc hủy phiên sạc phụ thuộc
+                                                                        (B02) đồng thời trong cùng một IUnitOfWork (BR-G07).
+RegistrationService, SessionService    Dependency (--> )                Đọc thông tin quyền đỗ từ Module B, xác thực danh tính
+→               IParkingRightReader,                                    người dùng và thực thi giao dịch nguyên tử khi xác nhận dịch
+IPolicyGateway, IUnitOfWork                                             vụ sạc (BR-C01, BR-G07).
+ChargingEventService              →    Dependency (--> )                Tiếp nhận dữ liệu viễn trắc IoT đã xác minh từ Module D
+IVerifiedEventReader              &                                     (UC-D07) và mở/liên kết phiếu xử lý sự cố sang Module D
+IIncidentOperations                                                     (UC-D04) khi phát hiện sự cố cổng sạc hoặc bất thường thiết
+                                                                        bị (BR-C08, BR-D04).
+
+
+22 Quy tắc nghiệp vụ và trạng thái sạc
+22.1 Các quy tắc nghiệp vụ chính
+  1. BR-C01/C04: một xe/khung giờ không tạo các phiên mâu thuẫn; SOC và mục tiêu trong phạm vi hợp lệ, năng lượng
+     cần đáp ứng không vượt năng lực cổng/Hub.
+  2. BR-C02/C05/C06: trạng thái phiên BOOKED, START_PENDING, CHARGING, STOP_PENDING, COMPLETED độc lập với cắm cáp, cấp
+     điện và lỗi phần cứng. Click bắt đầu/kết thúc không phải bằng chứng vật lý; COMPLETED không đồng nghĩa UNPLUGGED.
+  3. BR-C03/C07: quyền giữ cổng trước giờ sạc có thời hạn theo chính sách khoảng 10 phút. Hết hạn/hủy chỉ thu hồi phần
+     chưa sử dụng, không chiếm đoạt quyền của phiên khác.
+
+
+                                                                   33
+  4. BR-C08/C09/C10/C11: khi công suất giảm/lỗi/quan sát quá cũ, ngừng cấp mới phần liên quan, lập phương án có thể
+     không đáp ứng hết nhu cầu, không tự hủy cam kết đã xác nhận, và chỉ áp dụng kế hoạch thay đổi khi operator được
+     phép chấp thuận.
+  5. BR-G02/G05/G06/G07/G08: cam kết tài nguyên không xung đột; sự kiện có bằng chứng; retry không nhân đôi; gói
+     đỗ+kèm sạc phải được commit đồng thời; vị trí/quan sát/trạng thái phần mềm lưu riêng.
+
+22.2 Trạng thái phiên và trách nhiệm quản lý
+
+ Đối tượng                  Trạng thái                                Ý nghĩa
+ ChargingSession            BOOKED,START_PENDING,CHARGING,            Chỉ chuyển CHARGING theo bằng chứng. Phiên hết không
+                            STOP_PENDING,COMPLETED,CANCELLED,         làm cổng trống tự động.
+                            EXPIRED,INTERRUPTED
+
+ ChargingPort plug          UNPLUGGED,CONNECTED,UNKNOWN               Quan sát cắm/rút riêng, UNKNOWN không thể dùng để cấp
+                                                                      mới.
+ ChargingPort power         ON,OFF,UNKNOWN                            Trạng thái cấp điện riêng; ACK ngừng chưa chứng minh
+                                                                      đã rút cáp.
+ ChargingPort health        OPERABLE,OUT_OF_SERVICE,INSPECTION_       Khi có lỗi/cần kiểm tra, loại cổng khỏi phân bổ mới.
+                            PENDING
+
+ SchedulePlan               DRAFT,CONFIRMED,APPLIED,REJECTED          CONFIRMED là phê duyệt; APPLIED là lưu lịch logic, không
+                                                                      phải đã có thao tác thiết bị.
+
+
+Module C quản lý phiên sạc, lịch sạc và cam kết phân bổ cổng. Các trạng thái cắm cáp, cấp điện và tình trạng kỹ thuật
+được lấy từ quan sát đã xác minh qua Module D; Module C sử dụng chúng để quyết định cổng có thể cấp phát hay không.
+Module B quản lý quyền đỗ và sức chứa; Module A cung cấp nhu cầu sử dụng xe; D07 tiếp nhận, xác minh sự kiện IoT. Các
+module trao đổi qua interface, không cập nhật trực tiếp dữ liệu nghiệp vụ do module khác quản lý.
+
+
+23 Tổ chức các lớp của Module C
+Module C triển khai theo các tầng Controller, Service, Repository, Domain và Integration Port trong cùng backend được mô tả
+ở Hình 1. Module C đọc quyền đỗ từ B, nhu cầu sử dụng từ A, và quan sát/sự kiện đã xác minh từ D thông qua các giao diện;
+các thay đổi phiên sạc và lịch sạc do Module C thực hiện.
+
+23.1 Các tầng triển khai của Module C
+
+ Tầng                      Class / interface                            Trách nhiệm
+ Presentation              3 Controller C01/C02/C03                     Xác thực ngữ cảnh, nhận yêu cầu, điều phối service
+                                                                        và trả trạng thái rõ ràng.
+ Application               RegistrationService,     SessionService,     Kiểm tra quy tắc, điều phối transactional effect, quản
+                           ChargingResourceService,                     lý phiên và tạo kế hoạch.
+                           ChargingEventService,
+                           ChargingScheduleService,
+                           ChargingScheduler
+ Persistence               IChargingRepository,                         Chỉ lưu owner C, có version/unique key, effect
+                           IScheduleRepository và các Impl              idempotency và current plan.
+ Domain                    ChargingSession,         ChargingPort,       Giữ bất biến trạng thái phiên, quan sát cổng, event
+                           ChargingEvent, SchedulePlan                  receipt và draft/applied plan.
+
+
+
+
+                                                             34
+ Tầng                       Class / interface                           Trách nhiệm
+
+ Integration                ChargingServiceFacade,                      Chống gọi chéo repository và thống nhất khái niệm
+                            IChargingOperations, các reader/port        với B/A/D.
+                            A/B/D và Shared
+
+
+24 Các quy trình phối hợp các module
+24.1 Xác nhận đỗ xe kèm sạc (B01/C01)
+B sở hữu ParkingRight; C sở hữu ChargingSession và cam kết cổng. Preview ở B/C chỉ quan sát. Khi xác nhận booking
+chung, IUnitOfWork.executeAtomic tái kiểm tra B-right/sức chứa và C-port/công suất, tạo B CONFIRMED với C BOOKED trong cùng
+transaction. Nếu bất kỳ phần nào thất bại, toàn bộ rollback. Không được âm thầm giữ quyền đỗ một mình hoặc coi cổng đã
+cắm/cấp điện. Với C01 độc lập, chỉ sử dụng quyền đỗ đã được B xác nhận và đúng chủ/xe/Hub/khung giờ; khi chưa có quyền
+phù hợp, yêu cầu B01 thay vì tự tạo quyền B.
+
+24.2 Hủy quyền đỗ có phiên sạc liên quan (B02/C02)
+B truyền rightId chính xác; C chỉ lấy các phiên phụ thuộc đúng quyền đỗ đó. Phiên BOOKED chưa dùng được hủy và thu hồi cam
+kết cổng trong cùng UoW với quyền đỗ B; nếu START_PENDING, CHARGING, STOP_PENDING hoặc cổng CONNECTED/UNKNOWN thì không giả
+định đã giải phóng. Trả PENDING/CONFLICT để B giữ quyền và xử lý đối soát; không hủy phiên độc lập hoặc xóa sự chiếm
+dụng vật lý.
+
+24.3 Tiếp nhận sự kiện và điều khiển thiết bị (C02/D07)
+IoT Simulator gửi sự kiện tới D07 trước; D07 xác minh (sourceId,eventId), nguồn, thứ tự và payload. ChargingEventService.
+applyVerifiedEvent đọc verified event, so khớp phiên/cổng và lưu effect C theo (C,sourceId,eventId,effectKind). Sự kiện cũ/trùng
+không tạo thay đổi mới. Click Start tạo START_PENDING; chỉ có bằng chứng hợp lệ mới tạo CHARGING. Lệnh Stop tạo STOP_PENDING;
+kết thúc phiên không tự đổi plugState thành UNPLUGGED.
+
+24.4 Lập lịch sạc và xác nhận kế hoạch (C03)
+collectInput lấy phiên/cổng C, Hub/đỗ B, SOC đã xác minh từ D và usage demand từ A. Kế hoạch DRAFT lưu nguồn, thời điểm
+và revision. confirmAndApply tái kiểm tra thẩm quyền, revision và giới hạn công suất; nếu thay đổi, trả CONFLICT và giữ lịch
+APPLIED cũ. Kế hoạch mới khi commit chỉ thay phân bổ logic, không chứng minh việc vật lý đã diễn ra.
+
+
+25 Mô tả phương thức (Method Descriptions) — Module C
+25.1 Các lớp điều khiển (Controller)
+25.1.1 ChargingRegistrationController
+
+   Method signature                                                Mô tả và điều kiện
+   getSuitablePorts(request:RegistrationRequest)List_              UC-C01: Hiển thị cổng đáp ứng Hub, khung giờ và tình
+   PortInfoDTO                                                     trạng vật lý có độ mới đủ tin cậy. Chỉ đọc; chưa giữ quyền
+                                                                   sử dụng.
+   previewRegistration(request:RegistrationRequest)                UC-C01: Kiểm tra dữ liệu xe, SOC, thời gian, quyền đỗ
+   RegistrationPreviewDTO                                          và nhu cầu công suất; đưa lựa chọn cho sinh viên nhưng
+                                                                   không tạo phiên hay giữ cổng.
+   confirmRegistration(request:RegistrationRequest,portId:         UC-C01: Xác thực chủ xe bằng ngữ cảnh máy chủ, tái
+   String,intentId:String)RegistrationResultDTO                    kiểm tra và xác nhận theo intent; nếu cần gói đỗ mới thì
+                                                                   chuyển sang quy trình B01 thay vì tạo quyền đỗ ngầm.
+
+
+
+
+                                                              35
+  Method signature                                            Mô tả và điều kiện
+
+  getRegistrationOutcome(intentId:String)                     UC-C01: Đọc lại kết quả đã ghi hoặc trạng thái chờ của
+  RegistrationResultDTO                                       đúng ý định; không phát sinh phiên trùng khi mất phản
+                                                              hồi.
+
+
+25.1.2 ChargingSessionController
+
+  Method signature                                            Mô tả và điều kiện
+  listSessions(actorId:String)List_ChargingSessionDTO         UC-C02: Trả các phiên được phép xem của sinh viên hay
+                                                              operator đã xác thực; không để actorId client tự quyết
+                                                              định quyền.
+  getSessionDetail(sessionId:String,actorId:String)           UC-C02: Đọc đúng chủ sở hữu và trả riêng trạng thái
+  ChargingSessionDTO                                          phiên, trạng thái cắm và cấp điện, độ mới dữ liệu cùng
+                                                              mã theo dõi.
+  requestStart(sessionId:String,actorId:String)               UC-C02: Ghi ý định bắt đầu; trạng thái
+  OperationResultDTO                                          START_PENDING không được xem là CHARGING
+                                                              trước khi có bằng chứng vật lý được D07 xác minh.
+  requestFinish(sessionId:String,actorId:String)              UC-C02: Yêu cầu kết thúc/điều khiển ngừng cấp điện;
+  OperationResultDTO                                          chưa kết luận cổng đã rút hoặc phiên đã hoàn thành nếu
+                                                              thiếu ACK hợp lệ.
+  cancelSession(sessionId:String,actorId:String)              UC-C02: Hủy phiên chưa bắt đầu khi không xung đột cam
+  OperationResultDTO                                          kết với B; từ chối hoặc PENDING khi cổng còn chiếm
+                                                              dụng/kết quả chưa rõ.
+  getEventEffectStatus(sourceId:String,eventId:String)        UC-C02: Đối soát tác động phiên/cổng theo sự kiện đã
+  EventResultDTO                                              xác minh, trả kết quả cũ nếu sự kiện đã được áp dụng.
+
+
+25.1.3 ChargingScheduleController
+
+  Method signature                                            Mô tả và điều kiện
+  previewSchedule(operatorId:String)SchedulePlanDTO           UC-C03: Sau kiểm tra quyền operator, tạo/đọc phương
+                                                              án DRAFT. Không cập nhật lịch vận hành chỉ từ thao tác
+                                                              preview.
+  confirmSchedule(planId:String,operatorId:String)            UC-C03: Yêu cầu áp dụng phương án sau xác minh quyền,
+  OperationResultDTO                                          revision và điều kiện tài nguyên hiện tại; báo CONFLICT
+                                                              nếu snapshot đã thay đổi.
+  rejectSchedule(planId:String,operatorId:String)             UC-C03: Từ chối kế hoạch nháp, giữ nguyên kế hoạch
+  OperationResultDTO                                          đang áp dụng và các cam kết đã xác nhận.
+  getCurrentSchedule(operatorId:String)SchedulePlanDTO        UC-C03: Đọc kế hoạch APPLIED hiện tại cho người có
+                                                              quyền; không nhầm với bản DRAFT lưu để xem.
+
+
+25.2 Các lớp xử lý nghiệp vụ (Service)
+25.2.1 RegistrationService
+
+
+
+
+                                                         36
+  Method signature                                                  Mô tả và điều kiện
+  validate(request:RegistrationRequest)ValidationResultDTO          BR-C01/C04: Kiểm tra quyền sở hữu xe, SOC 0–100, mục
+                                                                    tiêu lớn hơn hiện tại, thời gian hợp lệ, không trùng xe và
+                                                                    hạn mức phiên.
+  findSuitablePorts(request:RegistrationRequest)List_               Kết hợp chính sách C với dữ liệu quyền đỗ B và cổng C;
+  PortInfoDTO                                                       loại dữ liệu lỗi/cũ khỏi khả năng cấp mới, nhưng cho phép
+                                                                    trả thông tin để người dùng nhận biết lý do.
+  preview(request:RegistrationRequest)RegistrationPreviewDTO        Trả ước lượng thời gian/năng lượng và các lựa chọn cổng;
+                                                                    chỉ là snapshot tham khảo, chưa tạo cam kết hay khóa
+                                                                    port.
+  confirmWithExistingRight(request:RegistrationRequest,             UC-C01: Với quyền đỗ đã CONFIRMED của đúng
+  portId:String,rightId:String,intentId:String)                     xe/chủ/Hub/khung giờ, C tái kiểm tra và lưu một phiên
+  RegistrationResultDTO                                             BOOKED trong UnitOfWork; không tạo quyền B mới.
+  reconcile(intentId:String)RegistrationResultDTO                   Khôi phục receipt theo intent và payload fingerprint;
+                                                                    phân biệt CONFIRMED/PENDING/REJECTED thay vì
+                                                                    coi timeout là thất bại.
+
+
+25.2.2 SessionService
+
+  Method signature                                                  Mô tả và điều kiện
+  listOwned(actorId:String)List_ChargingSessionDTO                  Đọc phiên sau kiểm tra vai trò/chủ sở hữu; không tiết lộ
+                                                                    hồ sơ khác khi đổi sessionId hoặc actorId.
+  getDetail(sessionId:String,actorId:String)                        Đọc trạng thái phần mềm, quyền đỗ liên quan,
+  ChargingSessionDTO                                                plug/power/health, observedAt và trạng thái xử lý mới
+                                                                    nhất.
+  requestStart(sessionId:String,actorId:String)                     Chỉ đưa phiên BOOKED sang START_PENDING sau khi
+  OperationResultDTO                                                xác nhận đúng quyền và cổng; gửi lệnh thiết bị bất đồng
+                                                                    bộ, không bật CHARGING giả.
+  requestFinish(sessionId:String,actorId:String)                    Chuyển CHARGING sang STOP_PENDING và yêu
+  OperationResultDTO                                                cầu ngừng cấp điện; chỉ hoàn tất phần mềm khi có
+                                                                    ACK/observation hợp lệ, giữ cổng nếu còn CONNECTED.
+  cancel(sessionId:String,actorId:String)OperationResultDTO         Chỉ hủy phiên chưa thực sự bắt đầu và phần giữ chưa
+                                                                    sử dụng của đúng phiên; không giải phóng nếu cổng vẫn
+                                                                    được quan sát là chiếm dụng.
+  expireUnusedSessions(now:DateTime)Integer                         Kiểm tra thời hạn BR-C03; chỉ hết hạn phiên chưa
+                                                                    dùng sau khoảng cho phép, tránh thay đổi phiên đang
+                                                                    START_PENDING chưa rõ bằng chứng.
+  getChargingConstraint(vehicleId:String)                           Trả cho A/D trạng thái sạc/kết nối/giữ cổng và độ mới
+  ChargingConstraintDTO                                             để loại xe đang sạc hoặc đang nối cáp khỏi cấp thuê/điều
+                                                                    chuyển.
+
+
+25.2.3 ChargingResourceService
+
+
+
+
+                                                               37
+  Method signature                                                 Mô tả và điều kiện
+  findSuitablePorts(request:RegistrationRequest)List_              Tìm các cổng sạc phù hợp với Hub, khung giờ và công suất
+  PortInfoDTO                                                      yêu cầu. Loại những cổng có trạng thái kỹ thuật OUT_OF_
+                                                                   SERVICE, INSPECTION_PENDING, trạng thái kết nối không phù
+                                                                   hợp hoặc dữ liệu quan sát đã quá cũ. Chỉ trả các cổng
+                                                                   đáp ứng điều kiện sơ bộ; khả năng cấp phát được kiểm
+                                                                   tra lại khi xác nhận.
+  recheckAvailability(portId:String,range:TimeRangeDTO,            Tại thời điểm commit, kiểm tra lại thời gian, năng lực
+  requiredKW:Decimal)ValidationResultDTO                           cổng và tổng công suất Hub; không tin preview hoặc số
+                                                                   liệu C/O/X/H cũ.
+  reservePortOnce(sessionId:String,portId:String,range:            Tạo một cam kết cổng cho phiên và khung giờ trong
+  TimeRangeDTO,context:OperationContext)OperationResultDTO         UnitOfWork; unique key ngăn chồng lấn, không phát lệnh
+                                                                   bật điện trong transaction.
+  releaseUnusedPort(sessionId:String,portId:String,context:        Giải phóng đúng quyền giữ chưa sử dụng và bảo toàn các
+  OperationContext)OperationResultDTO                              quyền khác; cổng chưa được coi là trống nếu quan sát
+                                                                   vẫn CONNECTED/UNKNOWN.
+  reconcilePhysicalState(portId:String)PortObservationDTO          Đọc quan sát đã xác minh mới nhất, tách
+                                                                   plugState/powerState/health và giữ UNKNOWN
+                                                                   khi mất tín hiệu; không đoán từ COMPLETED.
+
+
+25.2.4 ChargingEventService
+
+  Method signature                                                 Mô tả và điều kiện
+  applyVerifiedEvent(sourceId:String,eventId:String)               Lấy VerifiedEventDTO từ D07; C xác minh ràng buộc
+  EventResultDTO                                                   session/port/revision và áp dụng effect một lần theo
+                                                                   (C,sourceId,eventId,effectKind).
+  reconcileEventEffect(sourceId:String,eventId:String)             Trả effect receipt đã ghi hoặc kết quả chờ nếu D07 đã
+  EventResultDTO                                                   nhận nhưng module C chưa áp dụng; không kích hoạt lại
+                                                                   việc vật lý.
+  markUnverified(sourceId:String,eventId:String,reason:            Ghi dấu sự kiện thiếu tin cậy vào audit/incident; không
+  String)void                                                      thay trạng thái phiên/cổng bằng sự kiện chưa xác minh.
+
+
+25.2.5 ChargingScheduleService
+
+  Method signature                                                 Mô tả và điều kiện
+  collectInput()SchedulingInputDTO                                 Tổng hợp phiên/cổng C, quyền đỗ và công suất Hub từ B,
+                                                                   SOC quan sát D, nhu cầu xe A; gắn revision và timestamp
+                                                                   từng nguồn.
+  generateDraft(operatorId:String)SchedulePlan                     Sau kiểm tra quyền, tạo DRAFT từ snapshot đủ mới, ghi
+                                                                   các phiên bị ảnh hưởng và nhu cầu không đáp ứng; chưa
+                                                                   tự sửa lịch.
+  confirmAndApply(planId:String,operatorId:String)                 Kiểm tra lại actor, revision nguồn, xung đột giờ và mức
+  OperationResultDTO                                               công suất; áp dụng phân bổ C trong transaction, không
+                                                                   tự xem đã cấp điện vật lý.
+  reject(planId:String,operatorId:String)OperationResultDTO        Đổi DRAFT sang REJECTED theo revision; giữ nguyên
+                                                                   lịch đang APPLIED.
+  getCurrentPlan()SchedulePlan                                     Đọc một kế hoạch APPLIED hiện hành; phục vụ đối chiếu
+                                                                   trước khi operator quyết định áp dụng thay đổi.
+
+
+                                                              38
+  Method signature                                                  Mô tả và điều kiện
+
+  reevaluateAfterSessionChange(sessionId:String)void                Đánh dấu cần lập lịch lại do thay đổi phiên; chỉ tạo đề
+                                                                    xuất, không tự xác nhận thay nhân viên điều hành.
+
+
+25.2.6 ChargingScheduler
+
+  Method signature                                                  Mô tả và điều kiện
+  determineNeeds(input:SchedulingInputDTO)List_                     Tính nhu cầu năng lượng theo SOC đã xác minh, mục
+  ChargingNeedDTO                                                   tiêu, dung lượng pin và hạn sử dụng; đánh dấu unknown
+                                                                    nếu không đủ dữ liệu.
+  prioritize(needs:List_ChargingNeedDTO)List_ChargingNeedDTO        Sắp thứ tự theo BR-C04 và thời điểm sử dụng, chờ đợi,
+                                                                    với quy tắc phá hòa ổn định và giải thích được.
+  allocate(input:SchedulingInputDTO)SchedulePlan                    Tạo phân bổ cổng/thời gian/công suất dưới các cam
+                                                                    kết hiện hành; trình bày unmet demand và phiên bị ảnh
+                                                                    hưởng.
+  validatePlan(plan:SchedulePlan)ValidationResultDTO                Xác nhận không đè cam kết, không vượt công suất theo
+                                                                    thời đoạn, không dùng cổng lỗi/cũ hoặc quyền đỗ không
+                                                                    hợp lệ.
+  suggestAlternatives(plan:SchedulePlan)SchedulePlan                Thêm khung giờ/Hub khả thi thay thế và lý do; không tự
+                                                                    thay đổi lịch đã xác nhận.
+
+
+25.3 Truy xuất và lưu trữ dữ liệu (Repository)
+25.3.1 IChargingRepository
+
+  Method signature                                                  Mô tả và điều kiện
+  save(session:ChargingSession)ChargingSession                      Ghi ChargingSession và intent fingerprint trong
+                                                                    transaction; idempotency bảo đảm không sinh phiên thứ
+                                                                    hai từ cùng ý định.
+  findById(sessionId:String)ChargingSession                         Đọc phiên đúng ID; không tự thay đổi trạng thái và để
+                                                                    application service thực hiện phân quyền.
+  findByIntentId(intentId:String)ChargingSession                    Truy kết quả phiên đã xác nhận hoặc pending theo intent,
+                                                                    phục vụ retry/reconciliation.
+  findByParkingRightId(rightId:String)List_ChargingSession          Tìm đúng phiên phụ thuộc quyền đỗ B, phân biệt phiên
+                                                                    độc lập hoặc đã bắt đầu để bảo vệ khi hủy B02.
+  findActiveByVehicle(vehicleId:String)List_ChargingSession         Đọc phiên chưa terminal để phát hiện trùng lịch trên cùng
+                                                                    xe và kiểm tra trước thuê/điều chuyển.
+  updateWithRevision(session:ChargingSession,revision:              Optimistic locking khi cập nhật phiên; từ chối ghi đè trạng
+  Integer)Boolean                                                   thái được xác minh mới hơn.
+  appendEffect(event:ChargingEvent)Boolean                          Ghi receipt một lần theo sourceId,eventId,effectKind và
+                                                                    revision, không nhân đôi tác động nghiệp vụ.
+  findEffect(sourceId:String,eventId:String)EventResultDTO          Đọc receipt hoặc trạng thái chờ của effect C phục vụ
+                                                                    reconcile và chống replay.
+
+
+
+
+                                                               39
+25.3.2 IScheduleRepository
+
+  Method signature                                                  Mô tả và điều kiện
+  saveDraft(plan:SchedulePlan)SchedulePlan                          Lưu phương án DRAFT và mọi allocation cùng snapshot
+                                                                    revision, không làm thay đổi lịch đang APPLIED.
+  findById(planId:String)SchedulePlan                               Đọc phương án theo ID, gồm lịch, unmet demand và lịch
+                                                                    sử quyết định.
+  getCurrentPlan()SchedulePlan                                      Đọc chính xác plan APPLIED hiện hành và revision.
+  applyAtomically(plan:SchedulePlan,expectedRevision:               So khớp revision, xác minh ràng buộc và thay các
+  Integer)Boolean                                                   allocation được phép cùng trạng thái APPLIED trong một
+                                                                    transaction.
+  rejectDraft(planId:String,expectedRevision:Integer)Boolean        Chỉ chuyển DRAFT sang REJECTED; không đụng lịch
+                                                                    đang thực thi.
+
+
+25.4 Các đối tượng nghiệp vụ (Domain)
+25.4.1 ChargingSession
+
+  Method signature                                                  Mô tả và điều kiện
+  markStartPending()void                                            BOOKED sang START_PENDING khi quyền bắt đầu
+                                                                    hợp lệ; không đồng nghĩa đã nối cáp hay cấp điện.
+  beginFromEvidence(eventId:String)void                             Chỉ START_PENDING sang CHARGING khi có bằng
+                                                                    chứng đã xác minh đúng cổng/xe/phiên.
+  markStopPending()void                                             CHARGING sang STOP_PENDING sau yêu cầu ngừng;
+                                                                    không suy ra điện đã ngắt chỉ từ yêu cầu.
+  completeFromEvidence(eventId:String)void                          Chỉ hoàn tất phần mềm khi có kết quả stop/finish hợp lệ;
+                                                                    không tự giải phóng cổng vật lý.
+  cancelUnused()void                                                Hủy phần cam kết chưa dùng của phiên BOOKED khi
+                                                                    không có dấu hiệu vật lý đang sạc; không xóa history.
+  expireUnused(now:DateTime)void                                    Chỉ BOOKED quá hạn hợp lệ mới EXPIRED; giữ pending
+                                                                    nếu kết quả start đang chờ đối soát.
+
+
+25.4.2 ChargingPort
+
+  Method signature                                                  Mô tả và điều kiện
+  isAvailableAt(range:TimeRangeDTO)Boolean                          Kiểm tra lịch giữ và quan sát đủ mới cùng tình trạng kỹ
+                                                                    thuật, kết nối, năng lực công suất; không dùng một cờ
+                                                                    AVAILABLE suy diễn.
+
+  applyVerifiedObservation(event:VerifiedEventDTO)void              Áp dụng quan sát mới hơn một cách idempotent; cập
+                                                                    nhật plug/power/health tách biệt, không theo trạng thái
+                                                                    phiên.
+  blockOnFault(eventId:String)void                                  Cô lập cổng khi lỗi được xác minh, không cấp mới; phiên
+                                                                    bị ảnh hưởng cần được xem xét lập lịch/sự cố.
+  canReleasePhysicalCapacity()Boolean                               Chỉ trả true với bằng chứng UNPLUGGED và trạng thái
+                                                                    nguồn/tài nguyên hợp lệ; COMPLETED không đủ điều
+                                                                    kiện.
+
+
+
+                                                               40
+25.4.3 ChargingEvent
+
+  Method signature                                                Mô tả và điều kiện
+  markApplied(revision:Integer)void                               Đánh dấu một effect C đã được commit cùng revision;
+                                                                  trùng event không được làm biến đổi thêm.
+  markPending(reason:String)void                                  Giữ event chưa áp dụng khi thiếu bằng chứng hoặc thứ
+                                                                  tự; ghi lý do và mã theo dõi.
+
+
+25.4.4 SchedulePlan
+
+  Method signature                                                Mô tả và điều kiện
+  confirm(operatorId:String)void                                  DRAFT sang CONFIRMED sau kiểm tra quyền; chỉ là
+                                                                  chấp thuận kế hoạch, chưa bằng chứng phần cứng đã
+                                                                  thực thi.
+  markApplied(expectedRevision:Integer)void                       Đổi CONFIRMED sang APPLIED khi allocation C đã
+                                                                  commit và revision đúng; không tự phát tín hiệu vật lý.
+  reject(operatorId:String)void                                   DRAFT sang REJECTED, giữ kế hoạch cũ.
+
+
+25.5 Giao diện tích hợp liên module
+25.5.1 IChargingOperations
+
+  Method signature                                                Mô tả và điều kiện
+  estimateBundle(vehicleId:String,hubId:String,range:             B01: Ước lượng khả năng đỗ kèm sạc và tính tương thích
+  TimeRangeDTO)ChargingEstimateDTO                                cổng/công suất, chưa tạo quyền giữ hay phiên.
+  reserveBundlePort(bundleId:String,rightId:String,portId:        B01: C kiểm tra lại và ghi một phiên BOOKED/giữ cổng
+  String,range:TimeRangeDTO,context:OperationContext)             trong cùng IUnitOfWork với ParkingRight(CONFIRMED)
+  OperationResultDTO                                              của B; thất bại làm rollback cả gói.
+  processDependentCancellation(rightId:String,context:            B02: Chỉ hủy phiên phụ thuộc chính xác rightId chưa
+  OperationContext)OperationResultDTO                             sử dụng; nếu cổng nối/sạc hoặc kết quả chưa rõ thì
+                                                                  PENDING, không giải phóng vật lý.
+  readPlugAndCharge(vehicleId:String)ChargingConstraintDTO        A/D: Trả tình trạng cắm, cấp điện, phiên giữ và
+                                                                  observedAt theo C để khóa thuê/điều chuyển khi không
+                                                                  đủ điều kiện.
+
+
+25.5.2 IParkingRightReader
+
+  Method signature                                                Mô tả và điều kiện
+  verifyRight(rightId:String,ownerId:String,vehicleId:            C01: Hỏi owner B về quyền đỗ đúng chủ/xe/Hub/khung
+  String,hubId:String,range:TimeRangeDTO)ParkingRightCheckDTO     giờ; không truy vấn hoặc ghi thẳng bảng B.
+  getHubCapacity(hubId:String,range:TimeRangeDTO)                 C03: Đọc snapshot C/O/X/H/observedAt/revision từ B
+  HubCapacitySnapshotDTO                                          để tính khả năng đáp ứng, không tự sửa số chỗ.
+
+
+
+
+                                                             41
+25.5.3 IVerifiedEventReader
+
+  Method signature                                                Mô tả và điều kiện
+  getVerifiedEvent(sourceId:String,eventId:String)                D07: Chỉ trả event đã kiểm chứng nguồn, thứ tự,
+  VerifiedEventDTO                                                payload/xe/cổng; C vẫn phải tự chống áp effect trùng.
+
+
+25.5.4 IVehicleObservationReader
+
+  Method signature                                                Mô tả và điều kiện
+  getVerifiedVehicleSnapshot(vehicleId:String)                    D: Nguồn SOC đo được, vị trí, timestamp và độ tin cậy;
+  VehicleObservationDTO                                           không gộp với lịch đặt xe của A.
+
+
+25.5.5 IUsageDemandReader
+
+  Method signature                                                Mô tả và điều kiện
+  getUsageDemand(vehicleId:String)UsageDemandDTO                  A: Nguồn thời điểm sử dụng tiếp theo và nhu cầu hành
+                                                                  trình từ A; không khẳng định đo được SOC.
+
+
+25.5.6 IIncidentOperations
+
+  Method signature                                                Mô tả và điều kiện
+  openOrLink(recordId:String,report:IncidentReportDTO,            D04: Ghi hoặc liên kết sự cố cổng lỗi, dữ liệu xung đột
+  context:OperationContext)IncidentReceiptDTO                     hoặc tác vụ chờ xác minh; D sở hữu phiếu sự cố.
+
+
+25.5.7 IUnitOfWork
+
+  Method signature                                                Mô tả và điều kiện
+  executeAtomic(command:CompositeCommandDTO)                      Hạ tầng SQLite cùng tiến trình: thực thi đồng bộ B-
+  OperationResultDTO                                              right/C-port hoặc sửa phân bổ C có kiểm tra điều kiện;
+                                                                  không bao gồm chờ IoT/mạng.
+
+
+25.5.8 IPolicyGateway
+
+  Method signature                                                Mô tả và điều kiện
+  canRegister(studentId:String,vehicleId:String)Boolean           Shared Auth: Xác minh tài khoản và quyền sử dụng xe;
+                                                                  studentId phải khớp identity máy chủ.
+  canManageSession(actorId:String,sessionId:String)Boolean        Shared Auth: Phân quyền đọc/thay đổi phiên; actorId
+                                                                  không được dùng như chứng cứ xác thực độc lập.
+  canManageSchedule(operatorId:String)Boolean                     Shared Auth: Chỉ operator phù hợp có quyền tạo/xác
+                                                                  nhận/reject kế hoạch C03.
+
+
+
+
+                                                             42
+25.5.9 IDeviceCommandPort
+
+  Method signature                                                Mô tả và điều kiện
+  requestStart(sessionId:String,portId:String,context:            Gửi lệnh bắt đầu qua outbox/adapter thiết bị; receipt
+  OperationContext)OperationResultDTO                             QUEUED không phải bằng chứng CHARGING.
+  requestStop(sessionId:String,portId:String,context:             Gửi lệnh ngừng qua outbox; giữ STOP_PENDING đến
+  OperationContext)OperationResultDTO                             khi D07 có ACK/quan sát tương ứng.
+
+
+25.5.10 IAuditGateway
+
+  Method signature                                                Mô tả và điều kiện
+  record(entry:AuditEntryDTO)void                                 Ghi actor/source, lý do, event, before/after, revision và
+                                                                  timestamp; không để người dùng sửa lịch sử.
+
+
+25.6 Các lớp hiện thực Repository
+Hai lớp ChargingRepositoryImpl và ScheduleRepositoryImpl lần lượt hiện thực các giao diện IChargingRepository và
+IScheduleRepository.
+Các phương thức công khai của hai lớp hiện thực tuân theo chữ ký và trách nhiệm đã được mô tả tại các bảng giao diện tương
+ứng.
+Trong phương án sử dụng SQLite, việc lưu trữ cần bảo đảm tính duy nhất của mã ý định (intentId) và biên nhận hiệu ứng.
+Các thao tác cập nhật phải kiểm tra xung đột khung giờ, giới hạn tài nguyên và phiên bản dữ liệu trước khi ghi nhận kết quả.
+
+
+26 Quan hệ UML và cấu trúc dữ liệu
+
+   Liên hệ                                     Ý nghĩa thiết kế
+   ChargingRegistrationController->            Tương tác UC-C01; Controller không tự tạo session.
+   RegistrationService
+
+   ChargingSessionController->                 Tương tác UC-C02; yêu cầu Start/Finish không đồng nghĩa hardware effect.
+   SessionService
+
+   ChargingScheduleController->                Tương tác UC-C03; chỉ operator được áp kế hoạch.
+   ChargingScheduleService
+
+   ChargingSession->ChargingPort               Một phiên được gắn một cổng ở thời điểm đã xác nhận; một cổng có thể
+                                               phục vụ nhiều phiên không chồng giờ.
+   ChargingSession->SchedulePlan               Phiên có thể xuất hiện trong các phương án nháp; chỉ một lịch APPLIED
+                                               được xem là lịch hiện hành tại revision tương ứng.
+   IChargingOperations                         Role B gọi C để estimate, cùng commit gói, hủy phần phụ thuộc, đọc ràng
+                                               buộc cắm/sạc. Tên và khái niệm trùng bản Role B tích hợp.
+   IParkingRightReader                         Adapter mới phía B phải cung cấp read-only right/Hub snapshot có version
+                                               và chủ sở hữu; việc B thực sự có adapter này chưa được chứng minh.
+   IVehicleObservationReader/                  SOC quan sát do D cung cấp; lịch dùng/ý định thuê do A cung cấp, không
+   IUsageDemandReader                          gộp lại thành một IVehicleGateway vừa đọc vừa ghi.
+
+
+27 Đối chiếu Use Case với phương thức
+
+
+
+                                                            43
+  UC               Class chủ đạo                                      Phụ thuộc / bảo đảm
+  C01              ChargingRegistrationController,                    B right; quyền xe; kiểm tra SOC/công suất; B01
+                   RegistrationService, ChargingResourceService       bundle khi cần; intent idempotency.
+  C02              ChargingSessionController,       SessionService,   D07 verified receipt; cổng vật lý riêng; hủy B02 chỉ
+                   ChargingEventService                               với phiên phụ thuộc.
+  C03              ChargingScheduleController,                        SOC D; nhu cầu A; occupancy B; revision và quyền
+                   ChargingScheduleService, ChargingScheduler         operator.
+
+
+28 Test Case Module C
+
+  Test          Kịch bản                                                Kết quả mong đợi
+  C-T01         Hai người xác nhận cùng một port và khung giờ           Một cam kết được tạo, yêu cầu còn lại CONFLICT.
+  C-T02         B01 đặt đỗ kèm sạc, C không còn port                    Rollback toàn bộ quyền đỗ và sạc, không nửa gói.
+  C-T03         Retry sau commit nhưng mất phản hồi                     Cùng intent trả receipt cũ, không tạo thêm phiên.
+  C-T04         C01 dùng quyền đỗ của người khác                        Từ chối, không rò dữ liệu hoặc tạo phiên.
+  C-T05         B02 hủy right có phiên BOOKED phụ thuộc                 Hủy đúng phiên đó và right nguyên tử, phiên độc
+                                                                        lập không đổi.
+  C-T06         B02 hủy right khi cổng vẫn CONNECTED                    Trả PENDING/CONFLICT, không xem cổng trống.
+  C-T07         Click Start nhưng D07 không có evidence                 Giữ START_PENDING, không CHARGING.
+  C-T08         D07 gửi cùng source/event hai lần                       C chỉ áp dụng một effect, không cộng đôi năng
+                                                                        lượng/trạng thái.
+  C-T09         Event đến trễ sau một event mới hơn                     Giữ revision mới, log sự kiện cũ.
+  C-T10         Session COMPLETED nhưng cáp chưa rút                    Port không available cho phiên mới.
+  C-T11         Đổi công suất Hub sau khi tạo plan DRAFT                Confirm trả CONFLICT, lịch hiện hành được giữ.
+  C-T12         Operator không có quyền confirm schedule                Từ chối và audit, không áp lịch.
+
+
+29 Mối liên hệ của Module C
+IChargingOperations là quan hệ do Module C cung cấp cho B và D; IParkingRightReader, IVehicleObservationReader,
+IUsageDemandReader và IVerifiedEventReader cung cấp các dữ liệu cần thiết cho C01–C03. Tên, tham số và kiểu kết quả của
+từng phương thức đã được mô tả trong các bảng Integration / Adapter Contracts ở phần Method Descriptions. Giao diện xử
+lý sự cố IIncidentOperations do Module D quản lý.
+
+
+
+
+                                                            44
+Phần IV
+Vận hành, điều chuyển và IoT (Module D)
+30 Sơ đồ lớp của Module D
+Module D phụ trách UC-D01 đến UC-D07, gồm giám sát trạng thái mạng lưới, điều chuyển xe, xử lý sự cố, mô phỏng What-if và
+tiếp nhận dữ liệu IoT. Sơ đồ lớp sử dụng bốn nhóm: DomainEntities, PresentationLayer, ApplicationLayer và DataAccessLayer.
+Các lớp sử dụng dữ liệu của A/B/C thông qua hợp đồng tích hợp; không tự nhận quyền sở hữu bản ghi của module khác. Các
+lớp MobilityHub, ParkingSpot, ChargingPoint và ElectricVehicle xuất hiện trong sơ đồ Module D nhằm biểu diễn thông tin tài
+nguyên cần thiết cho giám sát, điều chuyển và xử lý sự cố.
+Module D sử dụng các bản dữ liệu tham chiếu được cung cấp bởi những module có trách nhiệm quản lý tương ứng. Việc cập
+nhật quyền đỗ, sức chứa, phiên sạc và hành trình thuê xe vẫn được thực hiện thông qua các hợp đồng liên module, không ghi
+trực tiếp vào dữ liệu nghiệp vụ thuộc A, B hoặc C.
+
+
+
+
+                                                           45
+                             Hình 7: Sơ đồ lớp Module D: vận hành, điều chuyển, sự cố và IoT.
+
+
+30.1 Quan hệ giữa các lớp và bội số
+
+ Quan hệ                                      Loại và bội số            Ý nghĩa
+ Resource        với       ElectricVehicle,   Kế thừa                   Ba lớp con kế thừa định danh và trạng thái kỹ
+ ChargingPoint, ParkingSpot                                             thuật từ Resource.
+ MobilityHub với ParkingSpot, ChargingPoint   Composition: 1–0..*       Các ô đỗ/cổng sạc gắn cố định vào Hub; B/C
+                                                                        quản lý quyền cấp phát.
+
+
+
+
+                                                               46
+ Quan hệ                                       Loại và bội số               Ý nghĩa
+
+ MobilityHub với ElectricVehicle               Aggregation: 0..1–0..*       Xe có thể ở một Hub hoặc đang di chuyển, trên
+                                                                            xe tải hay tại xưởng.
+ RedistributionOrder với MobilityHub           Hai association              Mỗi lệnh đã phát hành tham chiếu một Hub nguồn
+                                                                            và một Hub đích.
+ RedistributionOrder với ElectricVehicle       Aggregation: 0..*–0..*       Một lệnh điều chuyển có thể chưa được gán xe khi
+                                                                            ở trạng thái nháp. Một phương tiện có thể xuất
+                                                                            hiện trong nhiều lệnh điều chuyển trong lịch sử.
+                                                                            Khi phát hành lệnh, hệ thống kiểm tra số lượng
+                                                                            xe theo giới hạn nghiệp vụ và bảo đảm mỗi xe chỉ
+                                                                            tham gia tối đa một lệnh đang hiệu lực thông qua
+                                                                            cơ chế claim độc quyền.
+ RedistributionOrder với Staff                 Association: 0..*–1          Lệnh đã phát hành phải có một nhân viên điều
+                                                                            chuyển hợp lệ.
+ IncidentTicket với Resource                   Association: 0..*–1          Một phiếu gắn với một tài nguyên; tài nguyên có
+                                                                            thể có lịch sử nhiều phiếu.
+ IncidentTicket với Staff                      Association: 0..*–0..1       Phiếu có thể chưa được phân công ngay, sau đó
+                                                                            gắn tối đa một kỹ thuật viên phụ trách.
+ TelemetryRecord với Resource                  Association: 0..*–1          Bản ghi telemetry hợp lệ thuộc một tài nguyên
+                                                                            được định danh.
+ SimulationScenario với RedistributionOrder    Association: 0..1–0..*       Mô phỏng có thể tạo nhiều bản thảo; bản thảo
+                                                                            chưa cấp phát tài nguyên.
+
+
+31 Quy tắc nghiệp vụ và quản lý trạng thái
+1. D02 (điều chuyển): trước khi phát hành, kiểm tra xe đang ở đúng Hub, không có claim thuê/điều chuyển xung đột, không
+   đang cắm sạc, nhân viên sẵn sàng và Hub đích còn đủ sức chứa. Số xe mỗi lệnh không vượt quá bốn.
+2. D03 (bàn giao): chỉ cập nhật tiến độ xe khi có bằng chứng đã xác minh và Module B ghi nhận tiếp nhận phù hợp; lệnh
+   bàn giao một phần giữ IN_PROGRESS, đủ xe mới COMPLETED.
+
+3. D04–D05 (sự cố): sự cố được ghi nhận ngay cả khi chưa có kỹ thuật viên. Chuyển xưởng vẫn giữ hạn chế kỹ thuật. Phiếu
+   RESOLVED không đồng nghĩa ô đỗ trống, cổng sạc sẵn sàng hay chuyến thuê đã kết thúc.
+
+4. D06 (mô phỏng): chỉ tính toán trên snapshot và trả phương án; bản thảo DRAFT không giữ xe, không thay đổi Hub và không
+   tự phát hành lệnh.
+
+5. D07 (IoT): phân biệt telemetry thô với dữ liệu đã xác minh; kiểm tra sourceId, eventId, độ mới và thứ tự. Sự kiện trùng/cũ
+   không được áp dụng hiệu ứng lần nữa.
+6. Phân quyền A/B/C/D: A ghi lượt giữ và chuyến thuê; B ghi quyền đỗ và C/O/X/H; C ghi phiên và lịch sạc; D ghi lệnh
+   điều chuyển, phiếu sự cố và quan sát kỹ thuật. Một dữ liệu thuộc module khác phải được cập nhật qua hợp đồng liên module.
+
+31.1 Trạng thái chính của Module D
+
+  Đối tượng                                Trạng thái và điều kiện
+  Lệnh điều chuyển                         ISSUED,IN_PROGRESS,COMPLETED,CANCELLED. DRAFT là bản thảo, chưa là lệnh đã phát
+                                           hành.
+  Phiếu sự cố                              OPEN,IN_PROGRESS,ESCALATED_WORKSHOP,RESOLVED,CLOSED_UNFULFILLED.   Không    giải
+                                           phóng quyền A/B/C chỉ vì trạng thái phiếu thay đổi.
+
+
+
+
+                                                                 47
+  Đối tượng                                Trạng thái và điều kiện
+
+  Quan sát IoT                             Nhận, xác minh, từ chối hoặc lưu chờ; mỗi sự kiện có khóa nguồn, định danh và
+                                           thời điểm để chống xử lý lặp.
+  Xe điều chuyển                           Tiến độ từng xe có thể đã/ chưa bàn giao; không tự gán AVAILABLE khi chưa đánh
+                                           giá các điều kiện sử dụng khác.
+
+
+32 Mô tả phương thức (Method Descriptions) — Module D
+Các bảng dưới đây trình bày phương thức theo đúng tên lớp và chữ ký xuất hiện trên Class Diagram Module D. Các kiểu DTO
+được giữ theo sơ đồ; tên interface liên module được liệt kê riêng ở mục tích hợp.
+
+32.1 Giao diện người dùng (Presentation Layer)
+
+  Phương thức trong sơ đồ                                       Mô tả và kết quả
+  OperationUI (UC-D01, D02, D03)
+  viewNetworkStatus():void                                      Yêu cầu xem trạng thái các Hub, phương tiện và tài nguyên
+                                                                trên mạng lưới.
+  selectHubDetail(hubId:String):void                            Chọn một Hub theo mã để xem thông tin và dữ liệu quan
+                                                                sát gần nhất.
+  manageResource(hubId:String,resourceId:String,action:         Gửi yêu cầu điều chỉnh cấu hình hay trạng thái khai thác
+  String,configData:Map):void                                   thiết bị; quyền cập nhật phải được kiểm tra.
+  requestBackToOverview():void                                  Quay lại màn hình giám sát toàn mạng lưới.
+  closeSession():void                                           Kết thúc phiên giám sát trên giao diện, không thay đổi
+                                                                trạng thái tài nguyên.
+  requestInitRedistribution():void                              Mở màn hình tạo lệnh điều chuyển, nạp dữ liệu Hub và nhân
+                                                                viên khả dụng.
+  submitDraftOrder(sourceHubId:String,destHubId:                Gửi Hub nguồn, Hub đích, danh sách xe và nhân viên để
+  String,vehicleIds:List,staffId:String):void                   kiểm tra, xem trước lệnh.
+  confirmIssueOrder(orderSummaryDTO:Map):void                   Xác nhận phát hành phương án đã xem trước; phía máy chủ
+                                                                phải kiểm tra lại điều kiện tại thời điểm ghi.
+  cancelRedistribution():void                                   Hủy thao tác lập lệnh chưa được phát hành.
+  requestOrderDetails(orderId:String):void                     Yêu cầu thông tin lệnh được phân công và các xe còn phải
+                                                               bàn giao.
+  confirmStartOrder(orderId:String):void                        Gửi yêu cầu bắt đầu thực hiện lệnh của nhân viên được
+                                                                phân công.
+  selectVehiclesToHandover(selectedVehicleIds:List):void        Chọn các xe được báo cáo bàn giao trong một đợt; không
+                                                                coi thao tác chọn là bằng chứng vật lý.
+  cancelHandoverBatch():void                                    Hủy đợt nhập liệu bàn giao chưa được xác nhận; các kết
+                                                                quả bàn giao đã ghi hợp lệ vẫn giữ nguyên.
+  IncidentUI (UC-D04, D05)
+  openCreateTicketForm(resourceId:String,alertId:String):       Mở biểu mẫu tạo phiếu sự cố từ tài nguyên hoặc cảnh báo;
+  void                                                          một trong hai mã có thể không được cung cấp.
+  submitIncidentTicket(resourceId:String,issueDesc:             Gửi yêu cầu lập phiếu cùng mô tả và kỹ thuật viên dự kiến;
+  String,techId:String):void                                    nếu chưa phân công được vẫn phải ghi nhận sự cố.
+  cancelCreateTicket():void                                    Đóng biểu mẫu chưa xác nhận, không tạo phiếu.
+
+
+
+                                                              48
+ Phương thức trong sơ đồ                                   Mô tả và kết quả
+
+ requestAssignedTicket(ticketId:String):void               Yêu cầu xem chi tiết phiếu xử lý được phân công.
+ submitWorkshopEscalation(ticketId:                        Gửi lý do chuyển phiếu sang xử lý tại xưởng.
+ String,escalationReason:String):void
+
+ submitResolution(ticketId:String,resolutionNote:          Gửi kết quả khắc phục và đánh giá an toàn; không tự giải
+ String,safetyChecksPassed:boolean):void                   phóng tài nguyên đã chiếm dụng.
+ cancelUpdate():void                                       Hủy thao tác chỉnh sửa kết quả chưa xác nhận; giữ nguyên
+                                                           trạng thái phiếu.
+ SimulationUI (UC-D06)
+ requestSimulationSetup():void                             Mở cấu hình mô phỏng và yêu cầu dữ liệu đầu vào hiện tại.
+ submitSimulationRequest(scenarioParams:Map):void          Gửi tham số kịch bản giả định cho bộ mô phỏng.
+ cancelSimulationSetup():void                              Thoát khỏi màn hình cấu hình; không ghi dữ liệu vận hành.
+ applyRecommendedPlan(recommendationId:String):void        Chuyển phương án đề xuất thành bản thảo lệnh để rà soát
+                                                           theo UC-D02; không tự phát hành.
+
+
+32.2 Lớp điều khiển và dịch vụ (Application Layer)
+
+ Phương thức trong sơ đồ                                   Mô tả và kết quả
+ OperationController (UC-D01, D02, D03)
+ getNetworkStatus():NetworkStatusDTO                       Tổng hợp snapshot quan sát của mạng lưới, sức chứa theo
+                                                           dữ liệu B và cảnh báo thiếu dữ liệu mới.
+ getHubDetail(hubId:String):HubDetailDTO                   Truy vấn dữ liệu Hub và tình trạng tài nguyên liên quan cho
+                                                           màn hình chi tiết.
+ updateResourceConfigOrState(hubId:String,resourceId:      Xác thực quyền, kiểm tra điều kiện và ủy quyền lưu cấu
+ String,action:String,configData:Map):HubDetailDTO         hình/trạng thái kỹ thuật thuộc D; thay đổi chiếm dụng phải
+                                                           qua B.
+ getRedistributionInitData():InitDataDTO                   Thu thập trạng thái Hub, xe có thể đề xuất và nhân viên
+                                                           phù hợp từ các nguồn dữ liệu liên quan.
+ validateAndPreviewOrder(sourceHubId:String,destHubId:     Kiểm tra dự kiến giới hạn xe tải, khả dụng xe, trạng thái
+ String,vehicleIds:List,staffId:String):OrderSummaryDTO    sạc, nhân viên và sức chứa Hub đích; chưa khóa tài nguyên.
+ processIssueOrder(orderSummaryDTO:Map):IssueResultDTO     Kiểm tra lại dữ liệu tại thời điểm xác nhận; lấy claim xe độc
+                                                           quyền, yêu cầu B giữ sức chứa đích và ghi lệnh ISSUED
+                                                           trong cùng UoW; từ chối hoặc rollback khi có xung đột.
+ getOrderDetails(orderId:String):OrderDetailsDTO           Truy xuất trạng thái lệnh, danh sách xe và tiến độ bàn giao.
+ startOrder(orderId:String):boolean                        Xác minh nhân viên được phân công và chuyển lệnh ISSUED
+                                                           sang IN_PROGRESS đúng một lần.
+ confirmHandover(orderId:String,selectedVehicleIds:        Chỉ chấp nhận xe thuộc lệnh và có bằng chứng D07 hợp lệ;
+ List,destHubId:String):HandoverResultDTO                  yêu cầu B ghi tiếp nhận, cập nhật tiến độ từng xe; chỉ
+                                                           COMPLETED khi giao đủ.
+ IncidentController (UC-D04, D05)
+ getIncidentFormData(resourceId:String,alertId:String):    Tổng hợp thông tin tài nguyên, cảnh báo và lựa chọn kỹ
+ IncidentFormDTO                                           thuật viên; chưa đổi trạng thái.
+
+
+
+
+                                                          49
+ Phương thức trong sơ đồ                                     Mô tả và kết quả
+
+ processTicketCreation(resourceId:String,issueDesc:          Tạo phiếu OPEN và cô lập kỹ thuật tài nguyên trong một
+ String,techId:String):CreationResultDTO                     thao tác nhất quán; chưa có kỹ thuật viên thì vẫn ghi nhận
+                                                             phiếu.
+ getTicketDetails(ticketId:String):TicketDetailDTO           Truy xuất phiếu, tài nguyên liên quan, bằng chứng và trạng
+                                                             thái xử lý.
+ escalateToWorkshop(ticketId:String,escalationReason:        Kiểm tra lý do, cập nhật trạng thái ESCALATED_WORKSHOP và
+ String):boolean                                             duy trì hạn chế an toàn.
+ processResolution(ticketId:String,resolutionNote:           Chỉ ghi nhận RESOLVED và trạng thái kỹ thuật sau khi
+ String,safetyChecksPassed:boolean):boolean                  bằng chứng an toàn hợp lệ; A/B/C vẫn phải tự đánh giá
+                                                             điều kiện mở lại.
+ SimulationController (UC-D06)
+ getSimulationParameters():ParameterConfigDTO                Trả bộ tham số được phép sử dụng và thông tin cần thiết để
+                                                             cấu hình kịch bản.
+ runWhatIfSimulation(scenarioParams:Map,baselineSnapshot:    Kiểm tra tham số và tính toán trên snapshot cố định, trả kết
+ Map):SimulationResultDTO                                    quả/khuyến nghị; không sửa dữ liệu vận hành.
+ createDraftOrderFromPlan(recommendationId:String):String    Lưu bản thảo lệnh có liên kết khuyến nghị; việc phát hành
+                                                             thực tế phải qua UC-D02 và kiểm tra lại.
+ TelemetryController (UC-D07)
+ sendTelemetryData(payload:Map):ResponseDTO                  Tiếp nhận telemetry, kiểm tra nguồn và cấu trúc, khóa
+                                                             sourceId/eventId, tính hợp lệ/thứ tự/độ mới; ghi quan sát
+                                                             đã xác minh hoặc lỗi, chuyển hiệu ứng đến module sở hữu.
+ NotificationService (Hỗ trợ D02, D04, D05 và cảnh báo)
+ dispatchOrderToStaff(staffId:String,orderId:String):        Đăng ký/gửi thông báo lệnh điều chuyển đến nhân viên;
+ boolean                                                     thông điệp được đưa vào Outbox cùng giao dịch và chỉ phát
+                                                             sau commit.
+ dispatchTicketToTechnician(techId:String,ticketId:          Đăng ký/gửi thông báo phiếu sự cố đến kỹ thuật viên theo
+ String,issueDesc:String):boolean                            Outbox.
+ notifyIncidentUpdate(ticketId:String,status:String):        Thông báo trạng thái mới của phiếu xử lý cho bên liên quan
+ boolean                                                     mà không thay thế cập nhật nghiệp vụ.
+ sendOperationalAlert(hubId:String,resourceId:               Phát cảnh báo sự cố hoặc trạng thái vận hành bất thường
+ String,details:String):boolean                              đã xác định được nguồn và đối tượng.
+
+
+32.3 Truy xuất dữ liệu (Data Access Layer)
+
+ Phương thức trong sơ đồ                                     Mô tả và kết quả
+ HubRepository (D01, D02, D03, D06)
+ findAllHubs():List<MobilityHub>                             Đọc danh sách Hub và dữ liệu cần thiết để hiển thị tình
+                                                             trạng mạng lưới.
+ findHubById(hubId:String):MobilityHub                       Đọc Hub theo mã; không tạo bản ghi Hub mới.
+ getHubsAndAvailableStaff():InitDataDTO                      Tổng hợp Hub, khả dụng phương tiện và nhân viên để lập
+                                                             lệnh điều chuyển.
+ checkAvailableCapacity(destHubId:String,count:int):         Kiểm tra sức chứa đích theo dữ liệu C/O/X/H do B cung
+ CapacityResult                                              cấp; kết quả đọc không thay cho bước giữ tài nguyên khi
+                                                             commit.
+
+
+
+                                                            50
+ Phương thức trong sơ đồ                                      Mô tả và kết quả
+
+ snapshotCurrentNetworkState():Map                            Tạo ảnh chụp trạng thái phục vụ mô phỏng; không khóa hay
+                                                              thay đổi tài nguyên thật.
+ RedistributionOrderRepository (D02, D03, D06)
+ createOrderAndLockVehicles(orderSummaryDTO:Map,status:       Lưu lệnh điều chuyển và phối hợp claim xe độc quyền cùng
+ String):IssueResult                                          phần giữ sức chứa B trong giao dịch; không tự ghi bảng
+                                                              quyền đỗ của B.
+ findOrderById(orderId:String):RedistributionOrder            Tìm lệnh theo mã, gồm danh sách xe còn phải bàn giao.
+ updateOrderStatus(orderId:String,newStatus:String):          Đổi trạng thái lệnh khi chuyển trạng thái hợp lệ và theo
+ boolean                                                      nguyên tắc idempotency.
+ executeHandoverBatch(orderId:String,selectedIds:List,        Ghi nhận một đợt bàn giao xe hợp lệ, tham chiếu kết quả
+ destHubId:String,isSufficient:boolean):HandoverResult        tiếp nhận của B và tránh xử lý hai lần cùng sự kiện.
+ saveDraftOrder(planParams:Map,status:String):String          Lưu bản thảo từ mô phỏng; không claim xe, không đặt H và
+                                                              không phát lệnh.
+ IncidentTicketRepository (D04, D05)
+ createTicketAndIsolateResource(resourceId:                   Ghi phiếu OPEN và hạn chế kỹ thuật tài nguyên; techId có
+ String,issueDesc:String,techId:String):CreationResult        thể trống khi chưa phân công.
+ findById(ticketId:String):IncidentTicket                     Truy xuất phiếu xử lý và thông tin liên kết.
+ updateTicketStatus(ticketId:String,status:String,reason:     Ghi nhận việc chuyển phiếu sang trạng thái phù hợp cùng lý
+ String):boolean                                              do.
+ resolveTicketAndRestoreResource(ticketId:String,             Ghi kết quả an toàn và trạng thái kỹ thuật; không tự giải
+ resourceId:String,status:String,note:String):boolean         phóng vị trí đỗ, phiên sạc hoặc trách nhiệm chuyến.
+ ResourceRepository (D01, D04, D05, D07)
+ saveResourceState(hubId:String,resourceId:String,action:     Lưu cấu hình/trạng thái kỹ thuật thuộc D sau kiểm tra
+ String,configData:Map):boolean                               quyền; không tự ghi chiếm dụng hoặc phiên sạc của B/C.
+ getResourceAndAvailableTechs(resourceId:String):FormData     Đọc thông tin tài nguyên và danh sách kỹ thuật viên để lập
+                                                              phiếu sự cố.
+ updateResourceStatus(resourceId:String,newStatus:String):    Ghi trạng thái kỹ thuật của tài nguyên sau kiểm tra và lưu
+ boolean                                                      vết.
+ logInvalidTelemetry(payload:Map,reason:String):void          Lưu sự kiện telemetry bị từ chối cùng nguyên nhân; không
+                                                              phát sinh hiệu ứng nghiệp vụ.
+ updateResourceStateAndLog(resourceId:String,payload:Map):    Ghi quan sát thiết bị đã xác minh và nhật ký vào D; thông
+ boolean                                                      tin SOC/chiếm chỗ/sạc được chuyển tới A/B/C qua hợp
+                                                              đồng owner tương ứng.
+
+
+32.4 Đối tượng nghiệp vụ (Domain Entities)
+
+ Phương thức trong sơ đồ                                      Mô tả và kết quả
+ MobilityHub (D01, D02, D03)
+ calculateOccupancyRate():double                              Tính tỷ lệ sử dụng sức chứa hiệu dụng theo công thức
+                                                              100(O + X + H)/C khi C > 0. Trường hợp C = 0, trả về
+                                                              100.0 theo quy ước và đánh dấu Hub không đủ điều kiện
+                                                              tiếp nhận trong bước đánh giá riêng. Dữ liệu C/O/X/H
+                                                              được lấy từ Module B.
+
+
+
+
+                                                             51
+  Phương thức trong sơ đồ                                       Mô tả và kết quả
+
+  checkAvailableCapacity(count:int):boolean                     Đánh giá sơ bộ số vị trí đủ điều kiện tiếp nhận dựa trên
+                                                                C/O/X/H; việc giữ sức chứa phải do B xác nhận.
+  updateCapacity(deltaOccupied:int,deltaHold:int):void          Cập nhật thông tin sức chứa trên đối tượng biểu diễn của
+                                                                Module D dựa trên kết quả đã được Module B xác nhận.
+                                                                Phương thức không trực tiếp cập nhật ParkingSpot,
+                                                                ParkingVisit hoặc các bộ đếm C/O/X/H do Module B quản lý.
+
+  Resource (D01, D04, D05, D07)
+  updateResourceStatus(state:String):void                       Thay đổi trạng thái kỹ thuật của đối tượng tài nguyên sau
+                                                                kiểm tra quyền và tính hợp lệ.
+  ElectricVehicle (D02, D03)
+  isEligibleForRedistribution():boolean                         Trả điều kiện sơ bộ của xe: hiện diện đúng Hub, kỹ thuật
+                                                                phù hợp, không có claim xung đột, không cắm sạc; phải tái
+                                                                kiểm tra khi phát lệnh.
+  RedistributionOrder (D03)
+  recordHandover(vehicleIds:List):int                           Ghi nhận các xe trong lệnh đã bàn giao hợp lệ, không đếm
+                                                                trùng; trả số xe còn lại.
+
+
+
+33 Hợp đồng phối hợp với Module A, B, C và Shared Core
+Phần D không truy cập trực tiếp repository nghiệp vụ của các module còn lại. Các phương thức trong sơ đồ được triển khai
+thông qua hợp đồng chung đã quy định trong Development/Implementation View:
+
+ Nghiệp vụ D                       Hợp đồng chung                               Trách nhiệm và dữ liệu trao đổi
+ D01, D02, D03                     IParkingOperations, dữ liệu sức chứa B       B cung cấp snapshot C/O/X/H, xác nhận giữ
+                                                                                sức chứa và ghi nhận xe tới/rời ô; D không
+                                                                                ghi trực tiếp B.
+ D02, D03                          Claim registry chung và dữ liệu xe A         Lệnh điều chuyển cạnh tranh claim độc quyền
+                                                                                với lượt giữ/chuyến thuê; phát hành phải kiểm
+                                                                                tra lại trạng thái và claim.
+ D02, D03                          IChargingOperations (C)                      C xác nhận xe không còn phiên sạc/cắm cáp
+                                                                                xung đột trước khi được điều chuyển.
+ D04, D05                          IIncidentOperations (do D cung cấp)          A/B/C mở hoặc liên kết vụ việc; D quản lý
+                                                                                phiếu, kết quả xử lý và phát thông báo.
+ D07                               IVerifiedEventReader                và       D xác minh và cung cấp sự kiện/quan sát
+                                   IVehicleObservationReader   (do D cung       cho A/B/C; mỗi owner tự áp hiệu ứng và lưu
+                                   cấp)                                         receipt chống lặp.
+ D02, D04, D05                     IUnitOfWork, Outbox                          Các bản ghi cần nguyên tử được lưu trong giao
+                                                                                dịch ngắn; thông báo được đưa vào Outbox
+                                                                                trong giao dịch và gửi sau commit.
+
+
+34 Đối chiếu Use Case với Class Diagram
+
+  UC               Lớp điều phối                                            Điểm kiểm tra chính
+  D01              OperationUI, OperationController, HubRepository          Hiển thị snapshot và cảnh báo dữ liệu cũ; không
+                                                                            ghi C/O/X/H.
+
+
+
+                                                               52
+  UC               Lớp điều phối                                          Điểm kiểm tra chính
+
+  D02              OperationController, RedistributionOrderRepository     Xe/claim, nhân viên, giới hạn xe tải, cổng sạc và
+                                                                          sức chứa đích.
+  D03              OperationController,            RedistributionOrder,   Bằng chứng D07, tiếp nhận B, bàn giao một
+                   RedistributionOrderRepository                          phần/đủ xe.
+  D04              IncidentController, IncidentTicketRepository           Tạo phiếu OPEN, hạn chế kỹ thuật và phân công.
+  D05              IncidentController, ResourceRepository                 Bằng chứng khắc phục, an toàn, trạng thái phiếu
+                                                                          và tài nguyên.
+  D06              SimulationUI, SimulationController                     Snapshot chỉ đọc, trả khuyến nghị, lưu bản thảo
+                                                                          không có hiệu ứng.
+  D07              TelemetryController, ResourceRepository                Nguồn hợp lệ, eventId, độ mới, chống trùng và lưu
+                                                                          sự kiện.
+
+
+35 Test case Module D
+Các test case dưới đây nêu kết quả mong đợi trong thiết kế, không phải kết quả chạy thực tế.
+
+Mã                UC               Tình huống / đầu vào                         Kết quả mong đợi
+TC-D01-01         D01              Hub H01 có O = 45, X = 2, H = 1, C =         H01 có tỷ lệ 96%, cảnh báo mức cao; H02
+                                   50; Hub H02 thiếu quan sát mới quá           được đánh dấu dữ liệu cũ, không được coi còn
+                                   ngưỡng.                                      chỗ chắc chắn.
+TC-D01-02         D01              Người vận hành chọn cổng CP-01 để            OperationController.
+                                   ngừng khai thác.                             updateResourceConfigOrState kiểm tra quyền,
+                                                                                lưu trạng thái hợp lệ và cập nhật giao diện;
+                                                                                không tự thay đổi phiên sạc C.
+TC-D02-01         D02              H01 có ba xe đủ điều kiện, H02 đủ sức        Hệ thống xác minh lại và giữ claim xe/sức
+                                   chứa, nhân viên DC-01 sẵn sàng.              chứa đích hợp lệ; lưu lệnh ISSUED và thông
+                                                                                báo qua Outbox.
+TC-D02-02         D02              Một xe bị báo hỏng sau khi xem trước         Từ chối phát hành, không tạo claim/lệnh nửa
+                                   nhưng trước lúc phát hành.                   chừng, trả lý do xe không đủ điều kiện.
+TC-D03-01         D03              Lệnh có bốn xe; bằng chứng bàn giao hợp      Ghi nhận đúng ba xe và tiếp nhận qua B; còn
+                                   lệ cho ba xe tại Hub đích.                   một xe nên lệnh là IN_PROGRESS.
+TC-D03-02         D03              Có bằng chứng hợp lệ cho xe cuối cùng        Số xe chưa giao còn không; lệnh thành
+                                   của lệnh.                                    COMPLETED, xe không tự được đánh dấu đủ điều
+                                                                                kiện thuê mới.
+TC-D04-01         D04              Cổng CP-02 gặp sự cố, kỹ thuật viên chưa     Phiếu OPEN vẫn được tạo, tài nguyên bị hạn
+                                   sẵn sàng.                                    chế khai thác; chờ phân công và không cấp
+                                                                                phát mới.
+TC-D05-01         D05              Kỹ thuật viên báo sự cố phải đưa về xưởng.   Phiếu thành ESCALATED_WORKSHOP, tài nguyên
+                                                                                vẫn bị hạn chế kỹ thuật, gửi thông báo.
+TC-D06-01         D06              Chạy SIM01 và chọn một phương án             Trả kết quả mô phỏng, tạo DRAFT; không thay
+                                   khuyến nghị.                                 đổi sức chứa, xe hay lịch vận hành hiện tại.
+TC-D07-01         D07              IoT gửi sự kiện cho resourceId không tồn     Ghi nhật ký từ chối qua logInvalidTelemetry,
+                                   tại.                                         trả kết quả lỗi, không áp hiệu ứng.
+TC-D07-02         D07              Gửi lại sự kiện có cùng sourceId,eventId     Trả kết quả xử lý trước hoặc trạng thái trùng,
+                                   đã xác minh.                                 không ghi hiệu ứng thứ hai.
+
+
+
+
+                                                             53
+Mã          UC    Tình huống / đầu vào                     Kết quả mong đợi
+
+TC-D07-03   D07   Nhận quan sát có observedAt cũ hơn bản   Không ghi đè quan sát mới, lưu vết sự kiện
+                  mới nhất.                                không đạt điều kiện độ mới.
+
+
+
+
+                                         54
+

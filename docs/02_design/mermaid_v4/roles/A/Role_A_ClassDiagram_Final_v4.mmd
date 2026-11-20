@@ -1,0 +1,284 @@
+classDiagram
+    direction TB
+
+    %% Integrated Role A: original methods preserved; new integration methods described in revised LaTeX.
+    %% No colors; B/C/D are represented by adapter contracts only.
+
+    %% Controllers - UC-A01 to UC-A07
+    class ResourceSearchController {
+        +searchResources(criteria: SearchCriteriaDTO) SearchResultDTO
+        +getResourceDetails(resourceId: String) ResourceDetailDTO
+    }
+
+    class VehicleReservationController {
+        +prepareReservation(vehicleId: String, intentId: String) ReservationPreviewDTO
+        +confirmReservation(vehicleId: String, intentId: String) ReservationResultDTO
+        +cancelReservation(holdId: String, intentId: String) OperationResultDTO
+    }
+
+    class HandoverController {
+        +requestPickup(holdId: String, vehicleId: String, hubId: String) HandoverResultDTO
+        +confirmPickup(evidence: HandoverEvidenceDTO) HandoverResultDTO
+        +requestReturn(tripId: String, hubId: String, parkingRightId: String) HandoverResultDTO
+        +confirmReturn(evidence: HandoverEvidenceDTO) HandoverResultDTO
+    }
+
+    class MyJourneyController {
+        +getMyRecords(trackingId: String) JourneyListDTO
+    }
+
+    class JourneySupportController {
+        +submitSupport(recordId: String, report: SupportReportDTO, intentId: String) SupportResultDTO
+        +getSupportStatus(supportId: String) SupportStatusDTO
+        +respondToPlan(supportId: String, response: PlanResponseDTO) SupportResultDTO
+    }
+
+    %% Application Services - UC-A01 to UC-A07
+    class ResourceDiscoveryService {
+        +search(criteria: SearchCriteriaDTO) SearchResultDTO
+        +getDetails(resourceId: String) ResourceDetailDTO
+    }
+
+    class VehicleReservationService {
+        +prepare(userId: String, vehicleId: String) ReservationPreviewDTO
+        +confirm(userId: String, vehicleId: String, intentId: String) ReservationResultDTO
+        +cancel(userId: String, holdId: String, intentId: String) OperationResultDTO
+        +expireDueHolds(now: DateTime) Integer
+        +reconcile(intentId: String) OperationResultDTO
+    }
+
+    class HandoverService {
+        +beginPickup(userId: String, holdId: String, vehicleId: String, hubId: String) HandoverResultDTO
+        +completePickup(evidence: HandoverEvidenceDTO) HandoverResultDTO
+        +beginReturn(userId: String, tripId: String, hubId: String, parkingRightId: String) HandoverResultDTO
+        +completeReturn(evidence: HandoverEvidenceDTO) HandoverResultDTO
+    }
+
+    class JourneyQueryService {
+        +listOwnedRecords(userId: String, trackingId: String) JourneyListDTO
+    }
+
+    class JourneySupportService {
+        +submit(userId: String, recordId: String, report: SupportReportDTO, intentId: String) SupportResultDTO
+        +getStatus(userId: String, supportId: String) SupportStatusDTO
+        +respondToPlan(userId: String, supportId: String, response: PlanResponseDTO) SupportResultDTO
+    }
+
+    class VehicleEligibilityPolicy {
+        +evaluate(state: VehicleStateDTO, now: DateTime) EligibilityResultDTO
+    }
+
+    %% Persistence
+    class IRentalRecordRepository {
+        <<interface>>
+        +findOutcomeByIntent(intentId: String) OperationResultDTO
+        +findVehicleHold(holdId: String) VehicleHold
+        +findOpenTripByUser(userId: String) RentalTrip
+        +atomicCreateHold(userId: String, vehicleId: String, intentId: String, expiresAt: DateTime) VehicleHold
+        +cancelHoldOnce(holdId: String, intentId: String) VehicleHold
+        +markHandoverPending(recordId: String) Boolean
+        +consumeHoldAndOpenTripOnce(holdId: String, eventId: String) RentalTrip
+        +closeTripOnce(tripId: String, eventId: String, soc: Integer, condition: String) RentalTrip
+        +findOwnedRecords(userId: String, trackingId: String) JourneyListDTO
+        +findUsageDemand(vehicleId: String) UsageDemandDTO
+        +expireEligibleHolds(now: DateTime) Integer
+    }
+
+    %% Domain entities and status
+    class VehicleHold {
+        -holdId: String
+        -userId: String
+        -vehicleId: String
+        -pickupHubId: String
+        -createdAt: DateTime
+        -expiresAt: DateTime
+        -status: HoldStatus
+        -intentId: String
+        +markPending() void
+        +consume(eventId: String) void
+        +cancel() void
+        +expire(now: DateTime) void
+    }
+
+    class RentalTrip {
+        -tripId: String
+        -userId: String
+        -vehicleId: String
+        -pickupHubId: String
+        -returnHubId: String
+        -status: TripStatus
+        -pickupEventId: String
+        -returnEventId: String
+        +markAssistancePending() void
+        +close(eventId: String) void
+    }
+
+    class SupportLink {
+        -recordId: String
+        -incidentId: String
+    }
+
+    class HoldStatus {
+        <<enumeration>>
+        ACTIVE
+        HANDOVER_PENDING
+        CONSUMED
+        CANCELLED
+        EXPIRED
+    }
+
+    class TripStatus {
+        <<enumeration>>
+        OPEN
+        HANDOVER_PENDING
+        ASSISTANCE_PENDING
+        CLOSED
+    }
+
+    %% Integration contracts - Role B, C, D
+    class IResourceSnapshotPort {
+        <<interface>>
+        +loadSearchSnapshot(criteria: SearchCriteriaDTO) ResourceSnapshotDTO
+        +loadVehicleState(vehicleId: String) VehicleStateDTO
+    }
+
+    class IParkingPort {
+        <<interface>>
+        +checkReturnReception(tripId: String, hubId: String, parkingRightId: String) ReceptionResultDTO
+        +recordDepartureOnce(event: VerifiedEventDTO, context: OperationContext) OperationResultDTO
+        +recordArrivalOnce(event: VerifiedEventDTO, rightId: String, context: OperationContext) OperationResultDTO
+        +cancelDependentRightOnce(holdId: String, context: OperationContext) OperationResultDTO
+        +resolveInsufficientCapacity(tripId: String, hubId: String) ReceptionResultDTO
+    }
+
+    class IEventVerificationPort {
+        <<interface>>
+        +verify(evidence: HandoverEvidenceDTO) EvidenceResultDTO
+    }
+
+    class IIncidentPort {
+        <<interface>>
+        +openOrLinkIncident(recordId: String, report: SupportReportDTO, intentId: String) SupportResultDTO
+        +getIncidentStatus(supportId: String) SupportStatusDTO
+        +recordPlanResponse(supportId: String, response: PlanResponseDTO) SupportResultDTO
+    }
+
+    %% Cross-module integration additions (Phase 2)
+    class IVehicleClaimPort {
+        <<interface>>
+        +reserve(vehicleId: String, kind: String, refId: String, context: OperationContext) OperationResultDTO
+        +transition(vehicleId: String, fromRef: String, toKind: String, toRef: String, context: OperationContext) OperationResultDTO
+        +release(vehicleId: String, expectedRef: String, context: OperationContext) OperationResultDTO
+    }
+
+    class IUnitOfWork {
+        <<interface>>
+        +executeAtomic(command: CompositeCommandDTO) OperationResultDTO
+    }
+
+    class IVehicleObservationReader {
+        <<interface>>
+        +getVerifiedVehicleSnapshot(vehicleId: String) VehicleObservationDTO
+    }
+
+    class IUsageDemandReader {
+        <<interface>>
+        +getUsageDemand(vehicleId: String) UsageDemandDTO
+    }
+
+    class UsageDemandAdapter {
+        +getUsageDemand(vehicleId: String) UsageDemandDTO
+    }
+
+    %% Supporting functions referenced by Role A
+    class IAutomationPort {
+        <<interface>>
+        +scheduleHoldExpiry(holdId: String, expiresAt: DateTime) void
+        +triggerPostReturnChecks(vehicleId: String) void
+    }
+
+
+    class IParkingOperations {
+        <<interface>>
+        +checkReception(tripId: String, hubId: String, rightId: String, asOf: DateTime) ReceptionDecisionDTO
+        +recordDeparture(event: VerifiedEventDTO, context: OperationContext) ParkingEffectDTO
+        +recordArrival(event: VerifiedEventDTO, rightId: String, context: OperationContext) ParkingEffectDTO
+        +cancelUnusedRight(rightId: String, context: OperationContext) ParkingOutcomeDTO
+        +reserveTransferCapacity(orderId: String, vehicleIds: List_String, hubId: String, context: OperationContext) ParkingEffectDTO
+        +cancelDependentByHold(holdId: String, context: OperationContext) ParkingOutcomeDTO
+    }
+
+
+    class IIncidentOperations {
+        <<interface>>
+        +openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO
+        +getIncidentStatus(ticketId: String) IncidentStatusDTO
+        +recordPlanResponse(ticketId: String, response: PlanResponseDTO, context: OperationContext) IncidentReceiptDTO
+    }
+
+
+    class ParkingPortAdapter {
+    }
+
+
+    class IncidentPortAdapter {
+    }
+
+
+    class ResourceSnapshotAdapter {
+    }
+
+
+    class IResourceSnapshotReader {
+        <<interface>>
+        +loadSnapshot(criteria: SearchCriteriaDTO) ResourceSnapshotDTO
+    }
+
+    %% Controller -> Service
+    ResourceSearchController ..> ResourceDiscoveryService : UC-A01
+    VehicleReservationController ..> VehicleReservationService : UC-A02/A03
+    HandoverController ..> HandoverService : UC-A04/A05
+    MyJourneyController ..> JourneyQueryService : UC-A06
+    JourneySupportController ..> JourneySupportService : UC-A07
+
+    %% Service -> domain policy, repository, and integration contracts
+    ResourceDiscoveryService ..> IResourceSnapshotPort : read
+    ResourceDiscoveryService ..> VehicleEligibilityPolicy : evaluate
+    VehicleReservationService ..> IRentalRecordRepository : read/write
+    VehicleReservationService ..> IResourceSnapshotPort : recheck
+    VehicleReservationService ..> VehicleEligibilityPolicy : evaluate
+    VehicleReservationService ..> IParkingPort : UC-B02
+    VehicleReservationService ..> IAutomationPort : hold expiry
+    HandoverService ..> IRentalRecordRepository : read/write
+    HandoverService ..> IResourceSnapshotPort : vehicle state
+    HandoverService ..> IParkingPort : UC-B03/B04/B05
+    HandoverService ..> IEventVerificationPort : UC-D07
+    HandoverService ..> IAutomationPort : post-return
+    JourneyQueryService ..> IRentalRecordRepository : read
+    JourneySupportService ..> IRentalRecordRepository : ownership
+    JourneySupportService ..> IIncidentPort : UC-D04
+
+    %% Repository -> persisted domain entities
+    IRentalRecordRepository ..> VehicleHold : persists
+    IRentalRecordRepository ..> RentalTrip : persists
+    VehicleHold "1" --> "0..1" RentalTrip : creates
+    VehicleHold --> HoldStatus : status
+    RentalTrip --> TripStatus : status
+    SupportLink ..> VehicleHold : record link
+    SupportLink ..> RentalTrip : record link
+
+    %% Phase 2/3 contract alignment
+    ResourceDiscoveryService ..> IVehicleObservationReader : verified SOC and location
+    VehicleReservationService ..> IVehicleClaimPort : exclusive rental hold
+    HandoverService ..> IVehicleClaimPort : hold-to-trip transition
+    HandoverService ..> IUnitOfWork : A/B/D atomic effect
+    VehicleReservationService ..> IUnitOfWork : claim and hold transaction
+    IResourceSnapshotPort ..> IVehicleObservationReader : read verified measurements
+    UsageDemandAdapter ..|> IUsageDemandReader : implements
+    UsageDemandAdapter ..> IRentalRecordRepository : planned usage
+    ParkingPortAdapter ..|> IParkingPort : implements
+    ParkingPortAdapter ..> IParkingOperations : B owner
+    IncidentPortAdapter ..|> IIncidentPort : implements
+    IncidentPortAdapter ..> IIncidentOperations : D owner
+    ResourceSnapshotAdapter ..|> IResourceSnapshotPort : implements
+    ResourceSnapshotAdapter ..> IResourceSnapshotReader : shared snapshot

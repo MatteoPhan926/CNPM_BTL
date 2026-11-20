@@ -1,0 +1,2225 @@
+ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH
+  TRƯỜNG ĐẠI HỌC BÁCH KHOA
+
+
+
+
+BÁO CÁO BÀI TẬP LỚN
+   CÔNG NGHỆ PHẦN MỀM
+   Thiết kế hệ thống Smart E-Mobility Hub
+
+
+
+             Sinh viên thực hiện
+
+         Họ và tên            MSSV
+         Phan Ngọc Xuân Lợi   2411969
+         Phan Kỳ Nhân         2412432
+         Phạm Gia Khang       2411471
+         Phạm Anh Tuấn        2413800
+LỜI MỞ ĐẦU
+Trong bối cảnh đô thị hóa nhanh chóng và xu hướng chuyển dịch mạnh mẽ sang giao thông xanh, việc tối ưu hóa cũng như
+điều phối nguồn lực cho các phương tiện giao thông điện tại các khu vực tập trung đông dân cư trở thành một bài toán cấp
+thiết. Tại Khu đô thị ĐHQG-HCM – nơi tập trung đông đảo sinh viên, cán bộ và kết nối trực tiếp với tuyến Metro số 1 – nhu
+cầu di chuyển nội khu bằng phương tiện điện dùng chung và cá nhân đòi hỏi phải có một giải pháp quản lý thông minh, linh
+hoạt và đồng bộ. Xuất phát từ thực tiễn đó, đồ án "Smart E-Mobility Hub - Hệ thống điều phối phương tiện điện trong Khu
+đô thị ĐHQG-HCM"được xây dựng nhằm nghiên cứu và phát triển giải pháp phần mềm quản lý toàn diện mạng lưới Mobility
+Hub. Hệ thống hỗ trợ sinh viên trong việc tìm kiếm phương tiện, đặt chỗ đỗ, lên lịch sạc; đồng thời cung cấp công cụ giám
+sát, điều phối tài nguyên và mô phỏng kịch bản vận hành (What-if Simulation) cho đơn vị quản lý.
+Báo cáo được thực hiện dựa trên tinh thần vận dụng nghiêm túc kiến thức thuộc môn Công nghệ Phần mềm. Dù đã cố gắng
+hoàn thiện, báo cáo khó tránh khỏi những hạn chế nhất định. Chúng em rất mong nhận được sự góp ý từ Giảng viên để tiếp
+tục hoàn thiện đề tài.
+
+
+
+
+                                                           1
+Mục lục
+
+Lời mở đầu                                                                                                                          1
+
+1 Thiết kế giao diện                                                                                                                4
+   1.1   Đường dẫn thiết kế giao diện . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     4
+   1.2   Giao diện vận hành . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     4
+   1.3   Giao diện sinh viên . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    5
+   1.4   Giao diện điều hành . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+   1.5   Các giao diện khác . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+2 SƠ ĐỒ ACTIVITY (ACTIVITY DIAGRAMS)                                                                                               15
+   2.1   Phần A: Hành trình thuê xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+         2.1.1   UC-A01: Tra cứu Hub và tài nguyên phù hợp . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+         2.1.2   UC-A02: Đặt xe dùng chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+         2.1.3   UC-A03: Hủy lượt đặt xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+         2.1.4   UC-A04: Nhận xe đã đặt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+         2.1.5   UC-A05: Trả xe dùng chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+         2.1.6   UC-A06: Xem lượt đặt và chuyến đi của mình . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+         2.1.7   UC-A07: Gửi và theo dõi yêu cầu hỗ trợ hành trình . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+   2.2   Phần B: Chỗ đỗ và sức chứa Hub . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+         2.2.1   UC-B01: Đặt chỗ đỗ xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+         2.2.2   UC-B02: Hủy quyền đặt chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+         2.2.3   UC-B03: Ghi nhận xe vào chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+         2.2.4   UC-B04: Ghi nhận xe rời chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+         2.2.5   UC-B05: Xử lý Hub thiếu khả năng tiếp nhận . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+   2.3   Phần C: Sạc và tài nguyên sạc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+         2.3.1   UC-C01: Đăng ký phiên sạc xe cá nhân . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+         2.3.2   UC-C02: Quản lý phiên sạc xe cá nhân . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+         2.3.3   UC-C03: Lập và điều chỉnh lịch sạc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+   2.4   Phần D: Vận hành điều chuyển và mô phỏng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+         2.4.1 UC-D01: Giám sát trạng thái mạng lưới . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+         2.4.2   UC-D02: Điều phối phương tiện giữa các Hub . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+         2.4.3   UC-D03: Xác nhận hoàn tất điều chuyển phương tiện . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+         2.4.4   UC-D04: Điều phối xử lý sự cố vận hành . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+         2.4.5   UC-D05: Cập nhật kết quả khắc phục sự cố . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+         2.4.6   UC-D06: Chạy mô phỏng kịch bản What-if . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+         2.4.7   UC-D07: Tiếp nhận dữ liệu và cảnh báo từ IoT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+
+3 SƠ ĐỒ SEQUENCE (SEQUENCE DIAGRAMS)                                                                                               35
+   3.1   Phần A: Hành trình thuê xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+         3.1.1   UC-A01: Tra cứu Hub và tài nguyên phù hợp . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+         3.1.2   UC-A02: Đặt xe dùng chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+         3.1.3   UC-A03: Hủy lượt đặt xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+         3.1.4   UC-A04: Nhận xe đã đặt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+         3.1.5   UC-A05: Trả xe dùng chung . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+         3.1.6   UC-A06: Xem lượt đặt và chuyến đi của mình . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+
+
+
+                                                                 2
+        3.1.7   UC-A07: Gửi và theo dõi yêu cầu hỗ trợ hành trình . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+  3.2   Phần B: Chỗ đỗ và sức chứa Hub . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+        3.2.1   UC-B01: Đặt chỗ đỗ xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+        3.2.2   UC-B02: Hủy quyền đặt chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+        3.2.3   UC-B03: Ghi nhận xe vào chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+        3.2.4   UC-B04: Ghi nhận xe rời chỗ đỗ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+        3.2.5   UC-B05: Xử lý Hub thiếu khả năng tiếp nhận . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+  3.3   Phần C: Sạc và tài nguyên sạc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+        3.3.1   UC-C01: Đăng ký phiên sạc xe cá nhân . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+        3.3.2   UC-C02: Quản lý phiên sạc xe cá nhân . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+        3.3.3   UC-C03: Lập và điều chỉnh lịch sạc . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+  3.4   Phần D: Vận hành điều chuyển và mô phỏng . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+        3.4.1   UC-D01: Giám sát trạng thái mạng lưới . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+        3.4.2   UC-D02: Điều phối phương tiện giữa các Hub . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+        3.4.3   UC-D03: Xác nhận hoàn tất điều chuyển phương tiện . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+        3.4.4   UC-D04: Điều phối xử lý sự cố vận hành . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+        3.4.5   UC-D05: Cập nhật kết quả khắc phục sự cố . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+        3.4.6   UC-D06: Chạy mô phỏng kịch bản What-if . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+        3.4.7   UC-D07: Tiếp nhận dữ liệu và cảnh báo từ IoT . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 56
+
+4 SƠ ĐỒ TRẠNG THÁI (STATE DIAGRAMS)                                                                                           57
+  4.1   Sơ đồ trạng thái 1: Vòng đời chuyến thuê xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+  4.2   Sơ đồ trạng thái 2: Vị trí đỗ và sức chứa Hub . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+  4.3   Sơ đồ trạng thái 3: Vòng đời phiên sạc xe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+
+
+
+                                                               3
+1 Thiết kế giao diện
+1.1 Đường dẫn thiết kế giao diện
+Chi tiết thiết kế giao diện (UI Mockup) cho các Use Case được nhóm thực hiện và lưu trữ tại Figma UI Design - BTL CNPM.
+
+1.2 Giao diện vận hành
+
+
+
+
+                                              Hình 1: Giao diện vận hành
+
+
+
+
+                                                          4
+1.3 Giao diện sinh viên
+
+
+
+
+                          Hình 2: Giao diện sinh viên: Tìm và đặt dịch vụ
+
+
+
+
+                                                5
+Hình 3: Giao diện sinh viên: Hoạt động của tôi
+
+
+
+
+                      6
+Hình 4: Giao diện sinh viên: Bàn giao phương tiện
+
+
+
+
+                       7
+Hình 5: Giao diện sinh viên: Phiên sạc
+
+
+
+
+                  8
+Hình 6: Giao diện sinh viên: Gửi yêu cầu hỗ trợ
+
+
+
+
+                      9
+1.4 Giao diện điều hành
+
+
+
+
+                          Hình 7: Giao diện điều hành: Tổng quan mạng lưới
+
+
+
+
+                            Hình 8: Giao diện điều hành: Điều phối chỗ đỗ
+
+
+
+
+                                                 10
+  Hình 9: Giao diện điều hành: Quản lý lịch sạc
+
+
+
+
+Hình 10: Giao diện điều hành: Điều chuyển sự cố
+
+
+
+
+                       11
+Hình 11: Giao diện điều hành: Phân tích kịch bản
+
+
+
+
+                      12
+1.5 Các giao diện khác
+
+
+
+
+                         Hình 12: Giao diện lệnh điều chuyển
+
+
+
+
+                                         13
+Hình 13: Giao diện khắc phục sự cố
+
+
+
+
+               14
+                                   Hình 14: Giao diện bộ giả lập IoT
+
+
+2 SƠ ĐỒ ACTIVITY (ACTIVITY DIAGRAMS)
+2.1 Phần A: Hành trình thuê xe
+2.1.1 UC-A01: Tra cứu Hub và tài nguyên phù hợp
+
+
+
+
+                                  Hình 15: Sơ đồ Activity — UC-A01
+
+
+
+
+                                                  15
+2.1.2 UC-A02: Đặt xe dùng chung
+
+
+
+
+                                  Hình 16: Sơ đồ Activity — UC-A02
+
+
+2.1.3 UC-A03: Hủy lượt đặt xe
+
+
+
+
+                                  Hình 17: Sơ đồ Activity — UC-A03
+
+
+
+
+                                                16
+2.1.4 UC-A04: Nhận xe đã đặt
+
+
+
+
+                               Hình 18: Sơ đồ Activity — UC-A04
+
+
+
+
+                                             17
+2.1.5 UC-A05: Trả xe dùng chung
+
+
+
+
+                                  Hình 19: Sơ đồ Activity — UC-A05
+
+
+
+
+                                                18
+2.1.6 UC-A06: Xem lượt đặt và chuyến đi của mình
+
+
+
+
+                                    Hình 20: Sơ đồ Activity — UC-A06
+
+2.1.7 UC-A07: Gửi và theo dõi yêu cầu hỗ trợ hành trình
+
+
+
+
+                                    Hình 21: Sơ đồ Activity — UC-A07
+
+
+                                                  19
+2.2 Phần B: Chỗ đỗ và sức chứa Hub
+2.2.1 UC-B01: Đặt chỗ đỗ xe
+
+
+
+
+                               Hình 22: Sơ đồ Activity — UC-B01
+
+
+
+
+                                             20
+2.2.2 UC-B02: Hủy quyền đặt chỗ đỗ
+
+
+
+
+                                     Hình 23: Sơ đồ Activity — UC-B02
+
+
+
+
+                                                   21
+2.2.3 UC-B03: Ghi nhận xe vào chỗ đỗ
+
+
+
+
+                                  Hình 24: Sơ đồ Activity — UC-B03
+
+
+
+
+                                                22
+2.2.4 UC-B04: Ghi nhận xe rời chỗ đỗ
+
+
+
+
+                                   Hình 25: Sơ đồ Activity — UC-B04
+
+
+
+
+                                                 23
+2.2.5 UC-B05: Xử lý Hub thiếu khả năng tiếp nhận
+
+
+
+
+                                   Hình 26: Sơ đồ Activity — UC-B05
+
+
+
+
+                                                   24
+2.3 Phần C: Sạc và tài nguyên sạc
+2.3.1 UC-C01: Đăng ký phiên sạc xe cá nhân
+
+
+
+
+                                    Hình 27: Sơ đồ Activity — UC-C01
+
+
+
+
+                                                  25
+2.3.2 UC-C02: Quản lý phiên sạc xe cá nhân
+
+
+
+
+                                   Hình 28: Sơ đồ Activity — UC-C02
+
+
+
+
+                                                 26
+2.3.3 UC-C03: Lập và điều chỉnh lịch sạc
+
+
+
+
+                                    Hình 29: Sơ đồ Activity — UC-C03
+
+
+
+
+                                                  27
+2.4 Phần D: Vận hành điều chuyển và mô phỏng
+2.4.1 UC-D01: Giám sát trạng thái mạng lưới
+
+
+
+
+                                   Hình 30: Sơ đồ Activity — UC-D01
+
+
+
+
+                                                 28
+2.4.2 UC-D02: Điều phối phương tiện giữa các Hub
+
+
+                                            Nhân viên ?i?u hành                                                           H? th?ng
+
+
+
+
+                                                                                                    Truy xu?t tr?ng thái Hub, xe
+                                                 Yêu c?u kh?i t?o
+                                                                                                     AVAILABLE, s?c ch?a và
+                                                l?nh ?i?u chuy?n
+                                                                                                      nhân viên ?i?u chuy?n
+
+
+
+
+                                                                                                                Có nhân
+                                                                                                           viên ?i?u chuy?n
+                                                                                                               s?n sàng?
+
+
+
+                                                                                                           [Có]           [Không]
+
+
+                                                                                             Hi?n th?tr?ng thái
+                                                                                                                           Thông báo không
+                                                                                              các Hub, xe, s?c
+                                                                                                                           có nhân viên ?i?u
+                                                                                             ch?a và nhân viên
+                                                                                                                           chuy?n kh? d?ng
+                                                                                                ?i?u chuy?n
+
+
+
+
+                                                                        H?y vi?c l?p l?nh
+
+
+
+
+                                                                 Ch?n Hub ngu?n,                                           Ki?m tra xe
+                                                                Hub ?ích, ph??ng                                          (BR- D02- 01),
+                                                               ti?n, nhân viên ?i?u                                      s? l??ng xe t?i
+                                                                chuy?n và yêu c?u                                        ngu?n và s?c
+                                                                      l?p l?nh                                              ch?a ?ích
+
+
+
+
+                                                                                                                             Thông
+                                                                                                      [H?p l?]            tin l?p l?nh             [Không h?p l?]
+                                                                                                                             h?p l??
+                                                                                                 Hi?n th?
+                                                                                              thông tin tóm
+                                                                                              l??c c?a l?nh                                      Thông báo l?i (xe
+                                                                                                                                                  không h?p l? /
+                                                                                                                                                  thi?u xe / ?ích
+                                                                                                                                                  không ?? ch?)
+                                                                     ? i?u ch?nh
+                                    Nhân viên
+                                                                    ph??ng ti?n /
+                                xác nh?n hay ?i?u
+                                                                     s? l??ng /
+                                     ch?nh?
+                                                                      Hub ?ích
+
+
+                               [? i?u                         Xác nh?n                                             Ph??ng
+                               ch?nh]
+                                                              phát hành                                       ti?n còn ?áp ?ng
+                                          [Xác nh?n]
+                                                              l?nh ?i?u                                    BR- D02- 01 t?i th?i ?i?m
+                                                               chuy?n                                            phát hành?                        [Không]
+
+
+
+                                                                                                                  [Có]
+                                                                                                                                             T? ch?i phát
+                                                                                                                                            hành và thông
+                                                                                             T?o l?nh ? tr?ng thái ISSUED                   báo xe không
+                                                                                                  và chuy?n xe sang                           còn h?p l?
+                                                                                             PENDING_REDISTRIBUTION
+
+
+
+
+                                                                                                         C?p
+                                                                                                   nh?t thành công                  [Th?t b?i]
+                                                                                                       c? hai?
+                                                                                                                                       H?y thay ??i
+                                                                                                                                      (rollback), gi?
+                                                                                                                                    nguyên tr?ng thái
+                                                                                                     [Thành công]
+                                                                                                                                     xe và thông báo
+                                                                                                                                          th?t b?i
+
+                                                                                                    Chuy?n giao
+                                                                                                      l?nh cho
+                                                                                                     Nhân viên
+                                                                                                    ?i?u chuy?n                            Chuy?n
+                                                                                                                                          giao thành
+                                                                                                                                            công?
+                                                                                                                     [Thành công]
+
+
+                                                                                                                                                                [Th?t b?i]
+                                                                                               Thông báo k?t qu?                    Thông báo vi?c
+                                                                                              phát hành và chuy?n                    chuy?n giao
+                                                                                              giao l?nh thành công                    l?nh không
+                                                                                                                                      thành công
+
+
+
+
+                                          Hình 31: Sơ đồ Activity — UC-D02
+
+
+
+
+                                                                                            29
+2.4.3 UC-D03: Xác nhận hoàn tất điều chuyển phương tiện
+
+
+
+
+                              Nhân viên ?i?u chuy?n xe                                                                                     H? th?ng
+
+
+
+
+                                                                                                                       Cung c?p thông tin l?nh
+                                               Yêu c?u thông tin
+                                                                                                                       (Hub ngu?n, Hub ?ích,
+                                               l?nh ?i?u chuy?n
+                                                                                                                              DS xe)
+
+
+
+
+                                                                                                                                    Ki?m
+                                                                                                                               tra tr?ng thái
+                                                                                                                                    l?nh?
+
+
+
+                                                  Xác nh?n
+                                                 b?t ??u th?c                                    [Tr?ng thái ISSUED]
+
+                                                  hi?n l?nh
+
+
+
+                                                                                                   Chuy?n tr?ng thái l?nh
+                                                                                                    sang IN_PROGRESS
+                                                                                                                                           [Tr?ng thái IN_PROGRESS]
+
+
+
+
+                                               Ch?n danh sách
+                                               ph??ng ti?n c?n
+                                                  bàn giao
+
+
+
+
+                                                                                                             Gi? l?nh
+                                                   Quy?t
+                                                                                                          IN_PROGRESS
+                                                ??nh c?a Nhân                   [H?y xác nh?n]
+                                                                                                          & H?y các thay
+                                                    viên?
+                                                                                                           ??i ch?a l?u
+
+
+
+
+                                                                                                        Ki?m tra xe thu?c
+                                                                                                         l?nh, tr?ng thái
+                                                          [Xác nh?n bàn giao]
+                                                                                                         PENDING & S?c
+                                                                                                         ch?a Hub ?ích
+
+
+
+
+                                                                                                                                                                          C?p nh?t xe sang
+                                              Nh?n thông báo                                                   H?p l?
+                                                                                                                                                                            AVAILABLE &
+                                              l?i & ? i?u ch?nh                 [Xe không thu?c l?nh]       v? xe & S?c                [Danh sách xe & S?c ch?a h?p l?]
+                                                                                                                                                                            C?p nh?t s?c
+                                               danh sách xe                                                    ch?a?
+                                                                                                                                                                           ch?a Hub ?ích
+
+
+                                               Xem tr?ng thái
+                                               hi?n t?i & Lo?i        [Xe không ph?i PENDING_REDISTRIBUTION]
+
+                                               b? xe kh?i DS
+
+
+                                                                                                                                                                                C?p
+                                              Nh?n s? l??ng t?i                                                                                                            nh?t DB thành
+                                              ?a & Gi?m b?t s?                   [V??t quá s?c ch?a Hub ?ích]                                                                 công?
+                                                xe bàn giao
+
+                                                                                                                                                    [Thành công]
+
+
+
+
+                                                                                                                                                                            [L?i c?p nh?t DB]
+                                               Nh?n thông báo                                                    ? ã bàn
+                                              c?p nh?t ??t & Gi?       [Còn xe ch?a bàn giao]                giao h?t xe c?a
+                                             l?nh IN_PROGRESS                                                     l?nh?
+
+                                                                                                                                                                           Rollback tr?ng
+                                                                                                            [Toàn b? xe ?ã bàn giao]
+                                                                                                                                                                           thái c? & Báo
+                                                                                                                                                                            l?i cho Actor
+
+                                                                                                                Chuy?n tr?ng
+                                                                                                                thái l?nh sang
+                                                                                                                 COMPLETED
+
+
+
+
+                                                                                                              G?i thông báo
+                                                         Xem thông
+                                                                                                              hoàn t?t ?i?u
+                                                        báo hoàn t?t
+                                                                                                             chuy?n toàn b?
+
+
+
+
+                                           Hình 32: Sơ đồ Activity — UC-D03
+
+
+
+
+                                                                                                                30
+2.4.4 UC-D04: Điều phối xử lý sự cố vận hành
+
+
+
+
+                                               Nhân viên ?i?u hành                                                                         H? th?ng
+
+
+
+
+                                                               Cách
+                                                            kh?i t?o yêu
+                                                               c?u?
+
+
+                                                                    [Ch?n t? c?nh báo s? c?
+                                       [T?o m?i th? công]
+                                                                             (A1a)]
+
+
+                                G?i yêu c?u                                        Ch?n c?nh báo                                                   Trích xu?t thông
+                                l?p phi?u x?                                       s? c? & Yêu c?u                                                  tin ban ??u t?
+                                  lý s? c?                                            l?p phi?u                                                        c?nh báo
+
+
+
+
+                                                                                                                                                Cung c?p thông tin
+                                                                                                                                                 tài nguyên & DS K?
+                                                                                                                                                thu?t viên kh? d?ng
+
+
+
+
+                                                                  Nh?p mô t? s? c?
+                                                                  & Ch?n K? thu?t
+                                                                    viên b?o trì
+
+
+
+
+                                                                       Hành                                                        H?y phiên thao
+                                                                   ??ng c?a Nhân                      [H?y l?p phi?u (A3a)]        tác & Không l?u
+                                                                       viên?                                                           thông tin
+
+
+
+
+                                                                                                                               Ki?m tra tính h?p l?
+                                                                                    [Xác nh?n l?p phi?u]                      c?a s? c?, tài nguyên
+                                                                                                                                 & K? thu?t viên
+
+
+
+
+                                                                                                                                       Ki?m                                                       Tr?ng
+                                                                                                                                   tra K? thu?t              [KTV h?p l?]                    thái tài nguyên
+                                                                                                                                       viên?                                                     h?p l??
+
+
+                                                                                                                                                                                                          [Tài nguyên không h?p l?
+                                                                                                                          [KTV b?n / không kh? d?ng (A4a)]
+                                                                                                                                                                                                          / ? ã b?cô l?p (E4a)]
+
+
+                                                                                                                                                                                     [Tài nguyên h?p
+                                                                                                                                  C?p nh?t l?i                                                                           Thông báo tr?ng
+                                                                                                                                                                                     l?]
+                                                                                                                                  DS K? thu?t                                                                            thái tài nguyên &
+                                                                                                                                    viên kh?                                                                             T? ch?i l?p phi?u
+                                                                                                                                  d?ng hi?n t?i
+
+                                                                                                                                                                   Chuy?n tài nguyên
+                                                                                                                                                                         sang
+                                                            Nh?n thông báo                                                             Còn
+                                                                                                                                                                   OUT_OF_SERVICE
+                                                            & Ch?n K? thu?t                   [Còn KTV kh? d?ng]                     KTV kh?
+                                                                                                                                                                   & L?u phi?u tr?ng
+                                                               viên khác                                                              d?ng?
+                                                                                                                                                                      thái OPEN
+
+
+                                                                                                                               [Không còn KTV kh? d?ng]
+
+
+
+                                                                                                                                  Thông báo                          T?o phi?u &
+                                                                                                                                không còn KTV                      Cô l?p tài nguyên
+                                                                                                                                kh? d?ng & K?t                       thành công?
+                                                                                                                                     thúc
+
+
+                                                                                                                                                                                           [L?i c?p nh?t DB (E5a)]
+
+
+                                                                                                                                                                            [Thành công]
+                                                                                                                                                                                                             Rollback tr?ng thái tài
+                                                                                                                                                                                                              nguyên & H?y phi?u
+                                                                                                                                                                    Chuy?n phi?u x?                              ch?a hoàn t?t
+                                                               Xem thông báo k?t                                               G?i thông báo k?t
+                                                                                                                                                                     lý s? c? ??n K?
+                                                               qu? l?p phi?u & Mã                                               qu? l?p phi?u
+                                                                                                                                                                    thu?t viên ???c
+                                                                  phi?u OPEN                                                      thành công
+                                                                                                                                                                        phân công
+
+
+
+
+                                                                            Nh?n thông
+                                                                           báo l?p phi?u
+                                                                             th?t b?i
+
+
+
+
+                                            Hình 33: Sơ đồ Activity — UC-D04
+
+
+
+
+                                                                                                                31
+2.4.5 UC-D05: Cập nhật kết quả khắc phục sự cố
+
+
+
+
+                                                                   K? thu?t viên b?o trì                                                                                               H? th?ng
+
+
+
+
+                                                                                                                                                           Cung c?p chi ti?t s? c?
+                                                                   Yêu c?u truy xu?t phi?u s?
+                                                                                                                                                           & Tài nguyên liên quan
+                                                                      c? ???c phân công
+                                                                                                                                                            (OUT_OF_SERVICE)
+
+
+
+
+                                                                                               L?a
+                                                                                            ch?n x? lý
+                                       [? ã kh?c ph?c hoàn toàn (Normal Flow)]
+                                                                                           c?a K? thu?t
+                                                                                              viên?
+
+
+
+
+                                                                                                     [Không th? s?a
+                                                                          [H?y thao tác (A3b)]
+                                                                                                     t?i ch? (A3a)]
+
+
+
+                                                                                                                                                                                   Chuy?n phi?u sang
+                         Nh?p k?t qu? x? lý,           Gi? nguyên phi?u                                   Nh?p lý do không              Ki?m tra tính h?p
+                                                                                                                                                                                ESCALATED_WORKSHOP &
+                         xác nh?n an toàn &           OPEN & Tài nguyên                                    s?a ???c & Yêu               l? & ? ?y ?? c?a
+                                                                                                                                                                                     Gi? tài nguyên
+                         G?i yêu c?u hoàn t?t         OUT_OF_SERVICE                                      c?u chuy?n x??ng                lý do báo cáo
+                                                                                                                                                                                   OUT_OF_SERVICE
+
+
+
+
+                                                                                                                                                                                        Thông báo k?t qu?
+                                                                                                                                                                                       cho K? thu?t viên &
+                                                                                                                                                                                       Nhân viên ?i?u hành
+
+
+
+
+                                                                                                                                        Ki?m tra thông tin
+                                                                                                                                       c?p nh?t & ? i?u ki?n
+                                                                                                                                         an toàn k? thu?t
+
+
+
+
+                                                                                                                                                 Thông
+                                                                                                                                            tin & ? i?u ki?n                  [? ?y ?? & An toàn k? thu?t]
+                                                                                                                                              an toàn ??t?
+
+
+
+                                                                                                                                  [Thông tin thi?u ho?c ch?a an toàn (A4a)]
+
+
+
+
+                                                                                                                                          Nh?n thông báo                                              C?p nh?t phi?u
+                                                                                                                                          lý do ch?a ??t,                                            sang RESOLVED &
+                                                                                                                                         b? sung thông tin                                              Khôi ph?c tài
+                                                                                                                                           / x? lý an toàn                                           nguyên sang tr?ng
+                                                                                                                                                                                                       thái ho?t ??ng
+
+
+
+
+                                                                                                                                                                                                       C?p nh?t DB
+                                                                                                                                                      [C?p nh?t không nh?t quán / DB
+                                                                                                                                                      Error (E5a)]
+                                                                                                                                                                                                  nh?t quán thành công?
+                                                                                                                                                                                                       (C? 2 b?ng)
+
+
+                                                                                                                                        Rollback giao d?ch,
+                                                                                                    Nh?n thông báo                      gi? phi?u OPEN &
+                                                                                                    c?p nh?t th?t b?i                       Tài nguyên
+                                                                                                                                        OUT_OF_SERVICE
+                                                                                                                                                                                                   [Giao d?ch c?p nh?t thành công]
+
+
+
+
+                                                                                                                                                                                                  G?i thông báo hoàn t?t
+                                                                                                  Xem thông báo k?t qu?                                                                            kh?c ph?c s? c? ??n
+                                                                                                   c?p nh?t thành công                                                                             K? thu?t viên & Nhân
+                                                                                                                                                                                                      viên ?i?u hành
+
+
+
+
+                                                                      Hình 34: Sơ đồ Activity — UC-D05
+
+
+
+
+                                                                                                                             32
+2.4.6 UC-D06: Chạy mô phỏng kịch bản What-if
+
+
+
+
+                                                    Nhân viên ?i?u hành                                                                                                 H? th?ng
+
+
+
+
+                                                                                   Yêu c?u th?c hi?n                                          Cung c?p các tham s? c?n
+                                                                                   mô ph?ng What- if                                           thi?t ?? thi?t l?p k?ch b?n
+
+
+
+
+                                                               Thi?t l?p tham s?
+                                                               gi? ??nh k?ch b?n
+
+
+
+
+                                                                      Quy?t
+                                                                                                                                            H?y phiên thi?t l?p &
+                                                                 ??nh c?a Nhân
+                                                                                                [H?y thi?t l?p (A3a)]                       Gi? nguyên tr?ng thái
+                                                                    viên ?i?u
+                                                                                                                                              v?n hành th?c t?
+                                                                      hành?
+
+
+
+
+                                                                [G?i yêu c?u mô ph?ng]
+
+
+
+
+                                                         Ki?m tra tính h?p l? & ? ?y
+                                                          ?? c?a tham s? ??u vào
+
+
+
+
+                                                                       Tham
+                                                                    s? h?p l? &
+                                                                     ? ?y ???                     [Tham s? h?p l?]
+                        [Tham s? không h?p l? / Thi?u (A4a)]
+
+
+
+                                                                                                Th?c hi?n mô
+                              Nh?n thông báo                                                                                                    Mô ph?ng
+                                                                                              ph?ng & ? ánh giá
+                               l?i & ? i?u ch?nh                                                                                              hoàn t?t thành            [Không th? hoàn t?t mô ph?ng (E5a)]
+                                                                                                 m?c ?? ?nh
+                              tham s? ??u vào                                                                                                    công?
+                                                                                              h??ng m?ng l??i                                                                              Thông báo l?i mô ph?ng
+                                                                                                                                                                                            & ? ?m b?o không thay
+                                                                                                                                               [Mô ph?ng hoàn t?t]
+                                                                                                                                                                                              ??i d? li?u th?c t?
+
+
+                                                                                                                                            Hi?n th?k?t qu? mô
+                                                                                                                                               ph?ng & Các
+                                                                                                                                              ph??ng án ?i?u
+                                                                                                                                             ph?i khuy?n ngh?
+
+                                                                              Xem k?t qu? mô ph?ng
+                                                                              & ? ánh giá ph??ng án
+                                                                                   khuy?n ngh?
+
+
+
+
+                                                                                      L?a                                                         T?o b?n th?o l?nh
+                                                                                  ch?n sau mô              [Ch?n áp d?ng ph??ng án (A6a)]          ?i?u chuy?n t?
+                                             [? óng / K?t thúc xem k?t qu?]
+                                                                                    ph?ng?                                                       thông s? ph??ng án
+
+
+
+
+                                                                                         Ti?p nh?n b?n th?o                                       Cung c?p b?n th?o
+                                                                                         l?nh ?i?u chuy?n &                                     l?nh ?i?u chuy?n cho
+                                                                                            Chuy?n sang                                         rà soát (chuy?n sang
+                                                                                              UC- D02                                                 UC- D02)
+
+
+
+
+                                                                       Hình 35: Sơ đồ Activity — UC-D06
+
+
+
+
+                                                                                                                              33
+2.4.7 UC-D07: Tiếp nhận dữ liệu và cảnh báo từ IoT
+
+
+
+
+                              H? th?ng IoT / C?m bi?n                                                     H? th?ng
+
+
+
+
+                                    G?i gói d? li?u                             Ti?p nh?n gói
+                                   vi?n tr?c ??nh k?                           d? li?u vi?n tr?c
+
+
+
+                                                                                    ? ??ng
+                                                                               truy?n k?t n?i ?n
+                                                                                    ??nh?
+                                                        [M?t k?t n?i / Gián ?o?n (E2a)]           [K?t n?i bình th??ng]
+
+
+
+
+                                                          Gi? nguyên tr?ng
+                                                                                                Ki?m tra tính h?p
+                                                           thái v?n hành &
+                                                                                                l? d? li?u & ? ?nh
+                                                          Ghi log thông báo
+                                                                                                danh tài nguyên
+                                                              gián ?o?n
+
+
+
+
+                                                                                                      D? li?u
+                                                                                                   h?p l? & Xác
+                                                                                                   ??nh ???c tài
+                                                                                                     nguyên?
+
+
+                                                                                                                 [D? li?u h?p l? & Nh?n di?n ?úng tài nguyên]
+                                                                [Không h?p l? / Không ??nh danh ???c (E2b)]
+
+
+
+
+                                                                       T? ch?i c?p nh?t, ghi                                   C?p nh?t tr?ng
+                                                                        log l?i d? li?u & Gi?                                   thái v?n hành
+                                                                         nguyên tr?ng thái                                     c?a tài nguyên
+
+
+
+
+                                                                                                                            Phân tích ng??ng
+                                                                                                                          c?nh báo, b?t th??ng
+                                                                                                                             & S?c ch?a Hub
+
+
+
+
+                                                                                                                                   Phát hi?n
+                                                                                                                               r?i ro / Nguy c?
+                                                                                                                                  v?n hành?
+                                                                                 [B?t th??ng / Nguy c? s? c? k? thu?t (A3a)]
+
+
+
+                                                                                                                                               [Chi?m d?ng ch? ?? ??t ng??ng C?nh báo/Quá t?i (A3b)]
+
+
+
+
+                                                                                                                               [Thông s? bình th??ng]
+
+                                                                                          Phát c?nh báo s? c?                                              Phát c?nh báo nguy
+                                                                                           k? thu?t ??n Nhân                                               c? quá t?i Hub ??n
+                                                                                            viên ?i?u hành                                                 Nhân viên ?i?u hành
+
+
+
+
+                                                                                                                         Ghi nh?n d? li?u
+                                                                                                                  vi?n tr?c vào h? th?ng ph?c
+                                                                                                                         v? giám sát
+
+
+
+
+                                           Hình 36: Sơ đồ Activity — UC-D07
+
+
+
+
+                                                                             34
+3 SƠ ĐỒ SEQUENCE (SEQUENCE DIAGRAMS)
+3.1 Phần A: Hành trình thuê xe
+3.1.1 UC-A01: Tra cứu Hub và tài nguyên phù hợp
+
+
+
+
+                                  Hình 37: Sơ đồ Sequence — UC-A01
+
+
+
+
+                                                  35
+3.1.2 UC-A02: Đặt xe dùng chung
+
+
+
+
+                                  Hình 38: Sơ đồ Sequence — UC-A02
+
+
+
+
+                                                36
+3.1.3 UC-A03: Hủy lượt đặt xe
+
+
+
+
+                                Hình 39: Sơ đồ Sequence — UC-A03
+
+
+
+
+                                              37
+3.1.4 UC-A04: Nhận xe đã đặt
+
+
+
+
+                               Hình 40: Sơ đồ Sequence — UC-A04
+
+
+
+
+                                             38
+3.1.5 UC-A05: Trả xe dùng chung
+
+
+
+
+                                  Hình 41: Sơ đồ Sequence — UC-A05
+
+
+
+
+                                                39
+3.1.6 UC-A06: Xem lượt đặt và chuyến đi của mình
+
+
+
+
+                                  Hình 42: Sơ đồ Sequence — UC-A06
+
+
+
+
+                                                40
+3.1.7 UC-A07: Gửi và theo dõi yêu cầu hỗ trợ hành trình
+
+
+
+
+                                   Hình 43: Sơ đồ Sequence — UC-A07
+
+
+
+
+                                                 41
+3.2 Phần B: Chỗ đỗ và sức chứa Hub
+3.2.1 UC-B01: Đặt chỗ đỗ xe
+
+
+
+
+                              Hình 44: Sơ đồ Sequence — UC-B01
+
+
+
+
+                                            42
+3.2.2 UC-B02: Hủy quyền đặt chỗ đỗ
+
+
+
+
+                                 Hình 45: Sơ đồ Sequence — UC-B02
+
+
+
+
+                                               43
+3.2.3 UC-B03: Ghi nhận xe vào chỗ đỗ
+
+
+
+
+                                  Hình 46: Sơ đồ Sequence — UC-B03
+
+
+
+
+                                                44
+3.2.4 UC-B04: Ghi nhận xe rời chỗ đỗ
+
+
+
+
+                                   Hình 47: Sơ đồ Sequence — UC-B04
+
+
+
+
+                                                 45
+3.2.5 UC-B05: Xử lý Hub thiếu khả năng tiếp nhận
+
+
+
+
+                                  Hình 48: Sơ đồ Sequence — UC-B05
+
+
+
+
+                                                   46
+3.3 Phần C: Sạc và tài nguyên sạc
+3.3.1 UC-C01: Đăng ký phiên sạc xe cá nhân
+
+
+
+
+                                  Hình 49: Sơ đồ Sequence — UC-C01
+
+
+
+
+                                                47
+3.3.2 UC-C02: Quản lý phiên sạc xe cá nhân
+
+
+
+
+                                  Hình 50: Sơ đồ Sequence — UC-C02
+
+
+
+
+                                                48
+3.3.3 UC-C03: Lập và điều chỉnh lịch sạc
+
+
+
+
+                                    Hình 51: Sơ đồ Sequence — UC-C03
+
+
+
+
+                                                  49
+3.4 Phần D: Vận hành điều chuyển và mô phỏng
+3.4.1 UC-D01: Giám sát trạng thái mạng lưới
+
+
+
+
+                                                                                 :NetworkMonotoringUI                                         :NetworkMonotoringController                                                       :HubRepository     h: MobilityHub
+
+         OP : operator
+
+
+                                            1: viewNetworkStatus()
+
+
+                                                                                                             2: getNetworkStatus()
+
+                                                                                                                                                                                            3: findAllHubs()
+
+
+                                                                                                                                                                                                  4: hubList
+
+
+
+         Alt1
+         [E2a: hubList is null or error]                                                           5: notifyError(" Không th? t?i d? li?u m?ng l??i" )
+
+
+                                6: displayError(" Không th? t?i d? li?u m?ng l??i" )
+
+
+
+
+         [Else]
+                                                                                                                                                         Loop
+                                                                                                                                                         [for each Hub h in hubList]
+                                                                                                                                                                                                                      7: calculateOccupancyRate()
+
+                                                                                                                                                                                                                                 8: occupancyRate
+
+
+
+
+                                                                                                                                                            opt
+                                                                                                                                                            [A2a: h.hasNoNewData == true]
+
+
+                                                                                                                                                                                                      9: determineAlertLevel(occupancyRate)
+                                                                                                                                                                        10: markHubDataStale(h)
+
+
+
+
+                                                                                                                11: networkStatusDTO
+
+                                    12: displayDashboard(networkStatusDTO)
+
+
+
+
+         Alt2
+         [A3a: Operator selects view hub detail]
+
+                                           13: selectHubDetail(hubId)
+
+                                                                                                            14: getHubDetail(hubId)
+
+                                                                                                                                                                                       15: findHubById(hubId)
+
+
+                                                                                                                                                                                                16: hubDetail
+
+                                                                                                                   17: hubDetailDTO
+
+                                       18: displayHubDetail(hubDetailDTO)
+
+
+
+         [Step 4: Operator ends session]
+                                       19: requestBackToOverview()
+
+
+                                   20: displayDashboard(networkStatusDTO)
+
+
+                                               21: closeSession()
+
+                                             21: displaySessionClosed()
+
+
+
+
+                                                                                                               Hình 52: Sơ đồ Sequence — UC-D01
+
+
+
+
+                                                                                                                                                                         50
+3.4.2 UC-D02: Điều phối phương tiện giữa các Hub
+
+                                                                                              :RedistributionUI                                                               :RedistributionController                                                  :HubRepository               :StaffRepository           :RedistributionOrderRepository   :VehicleRepository   :NotificationService
+             OP: Operator
+                                                    requestInitRedistribution()
+                         1
+
+                                                                                                                                   getRedistributionInitData()
+                                                                                                     2
+
+                                                                                                                                                                                                             getHubsWithAvailableVehicles()
+                                                                                                                                                                                         3
+
+                                                                                                                                                                                                                       hubDataList
+                                                                                                                                                                                                                                                                4
+
+                                                                                                                                                                                                                                getAvailableStaffList()
+                                                                                                                                                                                         5
+
+                                                                                                                                                                                                                                    availableStaffList
+                                                                                                                                                                                                                                                                                                6
+
+             alt                                                                                                                                                                       [A3a: Không có nhân viên điều chuyển khả dụng]
+
+                                                                                                                                     notifyNoAvailableStaff()
+                                                                                                                                                                                             7
+
+                                                      displayNoStaffWarning()
+                                                                                                         8
+
+                                                      cancelRedistribution()
+                         9
+
+                                                      displaySessionEnded()
+                                                                                                      10
+
+                                                                                                                                                                                        [Có nhân viên khả dụng (Đi tiếp Bước 3)]
+                                                                                                                        return initDataDTO(hubDataList, availableStaffList)
+                                                                                                                                                                                          11
+
+                                         displayInitScreen(hubDataList, availableStaffList)
+                                                                                                      12
+
+                                   submitDraftOrder(sourceHubId, destHubId, vehicleIds, staffId)
+                         13
+
+                                                                                                              validateAndPreviewOrder(sourceHubId, destHubId, vehicleIds, staffId)
+                                                                                                     14
+
+                                                                                                                                                                                                                                                              validateVehiclesCondition(vehicleIds)
+                                                                                                                                                                                        15
+
+                                                                                                                                                                                                                                                     BR-D02-01: AVAILABLE, pin đạt ngưỡng, không lỗi
+                                                                                                                                                                                                                                                                          invalidVehicleList
+                                                                                                                                                                                                                                                                                                                                                          16
+
+                                                                                                                                                                                                   checkSourceHubAvailability(sourceHubId, vehicleIds)
+                                                                                                                                                                                        17
+
+                                                                                                                                                                                                                   sourceAvailableCount
+                                                                                                                                                                                                                                                               18
+
+                                                                                                                                                                                                    checkDestHubCapacity(destHubId, vehicleCount)
+                                                                                                                                                                                        19
+
+                                                                                                                                                                                                                  destRemainingCapacity
+                                                                                                                                                                                                                                                               20
+
+              alt                                                                                                                                                                    [A4: Thông tin lập lệnh không hợp lệ (A4a / A4b / A4c)]
+
+                                                                                                                 notifyValidationError(invalidVehicles, sourceCount, destCapacity)
+                                                                                                                                                                                          21
+
+                                                      displayValidationError()
+                                                                                                      22
+
+                                      adjustOrderParameters(newVehicles, newDestHubId)
+                         23
+
+                                                                                                                                                                                             [Dữ liệu hợp lệ (Bước 4 thành công)]
+                                                                                                                                    return orderSummaryDTO
+                                                                                                                                                                                          24
+
+                                            displayOrderSummary(orderSummaryDTO)
+                                                                                                      25
+
+                   alt                                                                                                                                                                           [A5a: OP yêu cầu điều chỉnh thông tin]
+
+                                                       requestAdjustOrder()
+                         26
+
+                                                      displayEditOrderForm()
+                                                                                                      27
+
+                                                                                                                                                                                         [Bước 5: OP xác nhận phát hành lệnh]
+                                                       confirmIssueOrder()
+                         28
+
+                                                                                                                            processIssueOrder(orderSummaryDTO)
+                                                                                                     29
+
+                                                                                                                                                                                                                                                              recheckVehiclesCondition(vehicleIds)
+                                                                                                                                                                                        30
+
+                                                                                                                                                                                                                                                                             isStillValid
+                                                                                                                                                                                                                                                                                                                                                          31
+
+                    alt                                                                                                                                                                [E5a: Phương tiện không còn hợp lệ lúc phát hành]
+
+                                                                                                                      notifyIssueRejected("Phương tiện không còn hợp lệ")
+                                                                                                                                                                                          32
+
+                                                    displayIssueRejectedError()
+                                                                                                      33
+
+                                                                                                                                                                                         [Xe vẫn hợp lệ tại thời điểm phát hành]
+                                                                                                                                                                                                                                            createOrder(orderData, "ISSUED")
+                                                                                                                                                                                        34
+
+                                                                                                                                                                                                                                                    orderCreatedStatus
+                                                                                                                                                                                                                                                                                                                               35
+
+                                                                                                                                                                                                                                          updateVehiclesStatus(vehicleIds, "PENDING_REDISTRIBUTION", orderId)
+                                                                                                                                                                                        36
+
+                                                                                                                                                                                                                                                                      vehicleUpdatedStatus
+                                                                                                                                                                                                                                                                                                                                                          37
+
+                         alt                                                                                                                                                          [E6a: Không thể hoàn tất cả hai cập nhật (Rollback)]
+
+                                                                                                                                                                                                                                                  rollbackOrder(orderId)
+                                                                                                                                                                                        38
+
+                                                                                                                                                                                                                                                               rollbackVehiclesStatus(vehicleIds)
+                                                                                                                                                                                        39
+
+                                                                                                                  notifyIssueFailed("Phát hành thất bại, đã giữ nguyên dữ liệu")
+                                                                                                                                                                                          40
+
+                                                     displayIssueFailedError()
+                                                                                                      41
+
+                                                                                                                                                                                     [Bước 6 thành công: Cả hai cập nhật hoàn tất]
+                                                                                                                                                                                                                                                                              dispatchOrderToStaff(staffId, orderId)
+                                                                                                                                                                                        42
+
+                                                                                                                                                                                                                                                                                            dispatchSuccess
+                                                                                                                                                                                                                                                                                                                                                                                43
+
+                             alt                                                              [A7a: Không thể chuyển giao lệnh]
+
+                                                                                                                                  notifyDispatchFailed(orderId)
+                                                                                                                                                                                          44
+
+                                                  displayDispatchFailedWarning()
+                                                                                                      45
+
+                                                                                   [Bước 7 - 8: Hoàn tất chuyển giao và kết thúc]
+                                                                                                                                return issueSuccessDTO(orderId)
+                                                                                                                                                                                          46
+
+                                                displayIssueAndDispatchSuccess()
+                                                                                                         47
+
+
+
+
+                                                                                              :RedistributionUI                                                               :RedistributionController                                                  :HubRepository               :StaffRepository           :RedistributionOrderRepository   :VehicleRepository   :NotificationService
+             OP: Operator
+
+
+
+
+                                                                                                                                    Hình 53: Sơ đồ Sequence — UC-D02
+
+
+
+
+                                                                                                                                                                                                            51
+3.4.3 UC-D03: Xác nhận hoàn tất điều chuyển phương tiện
+
+                                                                                                                       ui: RedistributionUI                                                      ctrl: RedistributionController                                   orderRepo: RedistributionOrderRepo           vehicleRepo: VehicleRepo   hubRepo: HubRepo
+           op: Operator
+                                                             requestOrderDetails(orderId)
+                   1
+
+                                                                                                                                                             getOrderDetails(orderId)
+                                                                                                                                  2
+
+                                                                                                                                                                                                                                        findOrderById(orderId)
+                                                                                                                                                                                                              3
+
+                                                                                                                                                                                                                      orderData(status, vehicleList, sourceHubId, destHubId)
+                                                                                                                                                                                                                                                                                    4
+
+                                                                                                                                              orderDetails(status, vehicleList, sourceHubId, destHubId)
+                                                                                                                                                                                                                  5
+
+                                           displayOrderDetails(Thông tin lệnh: Hub nguồn, đích, danh sách xe)
+                                                                                                                                      6
+
+              alt                                                                                                                          [order.status == "ISSUED"]
+
+                                                              confirmStartOrder(orderId)
+                   7
+
+                                                                                                                                                                startOrder(orderId)
+                                                                                                                                  8
+
+                                                                                                                                                                                                                              updateStatus(orderId, "IN_PROGRESS")
+                                                                                                                                                                                                              9
+
+                                                                                                                                                                                                                                            isUpdated: true
+                                                                                                                                                                                                                                                                                   10
+
+                                                                                                                                                               notifyStartedSuccess()
+                                                                                                                                                                                                               11
+
+                                     showMessage("Lệnh đã chuyển sang IN_PROGRESS. Bắt đầu điều chuyển.")
+                                                                                                                                  12
+
+                                                                                                                              [order.status == "IN_PROGRESS" (A2a)]
+                                                                                                        Luồng A2a: Bỏ qua bước xác nhận bắt đầu, tiếp tục trực tiếp quy trình bàn giao
+
+           loop                                                                                                                                                      [while remainingVehicles > 0 && !isCancelled]
+
+                                                     selectVehiclesToHandover(selectedVehicleIds)
+                   13
+
+             alt                                                                                                                                                            [Operator selects cancel (A6d)]
+
+                                                                cancelHandoverBatch()
+                   14
+
+                                        showMessage("Đã hủy đợt bàn giao. Lệnh giữ nguyên IN_PROGRESS.")
+                                                                                                                                  15
+
+                                                                                                                                                                         [Operator confirms handover]
+                                                                                                                                              confirmHandover(orderId, selectedVehicleIds, destHubId)
+                                                                                                                                 16
+
+                                                                                                                                                                                                                                                 validateVehicles(selectedVehicleIds, orderId)
+                                                                                                                                                                                                              17
+
+                                                                                                                                                                                                                                          validationResult(invalidOrderVehicles, nonPendingVehicles)
+                                                                                                                                                                                                                                                                                                                          18
+
+                                                                                                                                                                                                                                                                 checkAvailableCapacity(destHubId, vehicleCount)
+                                                                                                                                                                                                              19
+
+                                                                                                                                                                                                                                                                 capacityResult(isSufficient, maxAcceptableCount)
+                                                                                                                                                                                                                                                                                                                                                 20
+
+              alt                                                                                                                                               [invalidOrderVehicles || nonPendingVehicles (A6a, A6b)]
+
+                                                                                                                                           notifyValidationError(invalidOrderVehicles, nonPendingVehicles)
+                                                                                                                                                                                                               21
+
+                             showError("Phát hiện xe không thuộc lệnh hoặc không ở trạng thái PENDING. Vui lòng chọn lại!")
+                                                                                                                                  22
+
+                                                                                                                                                                          [!isSufficientCapacity (A6c)]
+                                                                                                                                                   notifyCapacityExceeded(maxAcceptableCount)
+                                                                                                                                                                                                               23
+
+                                showError("Hub đích không đủ chỗ! Số lượng tối đa tiếp nhận: " + maxAcceptableCount)
+                                                                                                                                  24
+
+                                                                                                                                                                        [allValid && isSufficientCapacity]
+                                                                                                                                                                                                                                       batchUpdateStatus(selectedVehicleIds, "AVAILABLE", destHubId)
+                                                                                                                                                                                                              25
+
+                                                                                                                                                                                                                                                         vehicleUpdateResult: boolean
+                                                                                                                                                                                                                                                                                                                          26
+
+                                                                                                                                                                                                                                                              updateHubResources(destHubId, handedOverCount)
+                                                                                                                                                                                                              27
+
+                                                                                                                                                                                                                                                                            hubUpdateResult: boolean
+                                                                                                                                                                                                                                                                                                                                                 28
+
+                   alt                                                                                                        [!vehicleUpdateResult || !hubUpdateResult (E6a)]
+
+                                                                                                                                                                                                      rollbackTransaction()
+                                                                                                                                                                                                              29
+
+
+
+
+                                                                                                                                                             notifyTransactionFailure()
+                                                                                                                                                                                                               30
+
+                              showError("Lỗi hệ thống: Không thể hoàn tất cập nhật. Giữ nguyên trạng thái trước xác nhận!")
+                                                                                                                                  31
+
+                                                                                                                                          [dbTransactionSuccess]
+                                                                                                                                                                                                                                  getRemainingVehicleCount(orderId)
+                                                                                                                                                                                                              32
+
+                                                                                                                                                                                                                                       remainingCount: number
+                                                                                                                                                                                                                                                                                   33
+
+                       alt                                                                                                     [remainingCount > 0 (A5a: Partial Handover)]
+
+                                                                                                                                                   notifyPartialHandoverSuccess(remainingCount)
+                                                                                                                                                                                                               34
+
+                             showMessage("Bàn giao thành công một phần! Số xe còn lại cần bàn giao: " + remainingCount)
+                                                                                                                                  35
+
+                                                                                                                                [remainingCount == 0 (Normal Flow)]
+                                                                                                                                                                                                                              updateStatus(orderId, "COMPLETED")
+                                                                                                                                                                                                              36
+
+                                                                                                                                                                                                                                          isCompleted: true
+                                                                                                                                                                                                                                                                                   37
+
+                                                                                                                                                              notifyOrderCompletion()
+                                                                                                                                                                                                               38
+
+                                    showMessage("Toàn bộ phương tiện đã bàn giao. Lệnh điều chuyển HOÀN TẤT!")
+                                                                                                                                  39
+
+
+
+
+                                                                                                                       ui: RedistributionUI                                                      ctrl: RedistributionController                                   orderRepo: RedistributionOrderRepo           vehicleRepo: VehicleRepo   hubRepo: HubRepo
+           op: Operator
+
+
+
+
+                                                                                                                     Hình 54: Sơ đồ Sequence — UC-D03
+
+
+
+
+                                                                                                                                                                                        52
+3.4.4 UC-D04: Điều phối xử lý sự cố vận hành
+
+                                                                                                                                  ui: IncidentUI                                                      ctrl: IncidentController                                   resourceRepo: ResourceRepo                 techRepo: TechnicianRepo              ticketRepo: IncidentTicketRepo   notiService: NotificationService
+         op: Operator                                                                                                                                                                                                                                                                                                                                                                                                                                                    tech: Technician
+                     alt                                                                              [Manual Request (Normal Flow)]
+
+                                                              requestCreateTicket(resourceId)
+                 1
+
+                                                                                                      [From Alert Event (A1a)]
+                                                              selectAlertToCreateTicket(alertId)
+                 2
+
+                                                                                                                                                                   getAlertDetails(alertId)
+                                                                                                                                        3
+
+                                                                                                                                                            alertData(resourceId, initialIssueInfo)
+                                                                                                                                                                                                                    4
+
+
+                                                                                                                                                                 getFormData(resourceId)
+                                                                                                                                        5
+
+                                                                                                                                                                                                                                    getResourceInfo(resourceId)
+                                                                                                                                                                                                                6
+
+                                                                                                                                                                                                                                 resourceInfo(resourceId, status, type)
+                                                                                                                                                                                                                                                                                  7
+
+                                                                                                                                                                                                                                                         getAvailableTechnicians()
+                                                                                                                                                                                                                8
+
+                                                                                                                                                                                                                                                                technicianList
+                                                                                                                                                                                                                                                                                                                         9
+
+                                                                                                                                                           formData(resourceInfo, technicianList)
+                                                                                                                                                                                                                 10
+
+                                                       displayCreateForm(resourceInfo, technicianList)
+                                                                                                                                            11
+
+         loop                                                                                                                                                                                                                         [while technicianInvalid && hasAvailableTech]
+
+                                                         inputIncidentData(issueDesc, technicianId)
+                 12
+
+           alt                                                                                                                                                                                                                                   [Operator cancels (A3a)]
+
+                                                                    cancelCreateTicket()
+                 13
+
+                                               showMessage("Đã hủy thao tác lập phiếu. Không lưu thông tin.")
+                                                                                                                                            14
+
+                                                                                                                                                                                                                                                [Operator confirms]
+                                                 submitIncidentTicket(resourceId, issueDesc, technicianId)
+                 15
+
+                                                                                                                                                 processTicketCreation(resourceId, issueDesc, technicianId)
+                                                                                                                                       16
+
+                                                                                                                                                                                                                                                  checkTechnicianAvailability(technicianId)
+                                                                                                                                                                                                                17
+
+                                                                                                                                                                                                                                                             isAvailable: boolean
+                                                                                                                                                                                                                                                                                                                        18
+
+            alt                                                                                                                                                                                                                        [!isAvailable (Technician unavailable - A4a)]
+
+                                                                                                                                                                                                                                                         getAvailableTechnicians()
+                                                                                                                                                                                                                19
+
+                                                                                                                                                                                                                                                               updatedTechList
+                                                                                                                                                                                                                                                                                                                        20
+
+                     alt                                                                     [updatedTechList.isEmpty() (No technicians left)]
+
+                                                                                                                                                               notifyNoTechniciansAvailable()
+                                                                                                                                                                                                                 21
+
+                                           showError("Không còn Kỹ thuật viên nào khả dụng. Use Case kết thúc!")
+                                                                                                                                            22
+
+                                                                                      [!updatedTechList.isEmpty() (Has available technicians)]
+                                                                                                                                                        notifyTechnicianUnavailable(updatedTechList)
+                                                                                                                                                                                                                 23
+
+                                 showError("KTV đã chọn không còn khả dụng. Vui lòng chọn KTV khác từ danh sách mới!")
+                                                                                                                                            24
+
+
+                                                                                                                                                                                                                                          [isAvailable (Technician ready)]
+                                                                                                                                                                                                                                  checkResourceStatus(resourceId)
+                                                                                                                                                                                                                25
+
+                                                                                                                                                                                                                                             currentStatus
+                                                                                                                                                                                                                                                                                  26
+
+                 alt                                                                                                                                                                                                         [currentStatus == "OUT_OF_SERVICE" || isInvalid (E4a)]
+
+                                                                                                                                                         notifyInvalidResourceStatus(currentStatus)
+                                                                                                                                                                                                                 27
+
+                             showError("Tài nguyên đã ở trạng thái OUT_OF_SERVICE hoặc không hợp lệ. Từ chối lập phiếu!")
+                                                                                                                                            28
+
+                                                                                                                                                                                                                          [currentStatus != "OUT_OF_SERVICE" (Resource valid)]
+                                                                                                                                                                                                                        updateStatus(resourceId, "OUT_OF_SERVICE")
+                                                                                                                                                                                                                29
+
+                                                                                                                                                                                                                                      resourceUpdated: boolean
+                                                                                                                                                                                                                                                                                  30
+
+                                                                                                                                                                                                                                                             createTicket(resourceId, issueDesc, technicianId, "OPEN")
+                                                                                                                                                                                                                31
+
+                                                                                                                                                                                                                                                                             ticketCreated: boolean, ticketId
+                                                                                                                                                                                                                                                                                                                                                                32
+
+                     alt                                                                                                                                                                                                           [!resourceUpdated || !ticketCreated (E5a: DB Error)]
+
+                                                                                                                                                                                                       rollbackTransaction()
+                                                                                                                                                                                                                33
+
+
+
+
+                                                                                                                                                                  notifyTransactionFailure()
+                                                                                                                                                                                                                 34
+
+                           showError("Lỗi hệ thống: Không thể hoàn tất lập phiếu và cô lập tài nguyên. Đã khôi phục trạng thái cũ!")
+                                                                                                                                            35
+
+                                                                                                                                                                                                                             [resourceUpdated && ticketCreated (DB Success)]
+                                                                                                                                                                                                                                                                                  dispatchTicketToTechnician(technicianId, ticketId, issueDesc)
+                                                                                                                                                                                                                36
+
+                                                                                                                                                                                                                                                                                                                                                                                                       pushNotification("Phiếu xử lý sự cố mới được phân công: " + ticketId)
+                                                                                                                                                                                                                                                                                                                                                                                                 37
+
+                                                                                                                                                                                                                                                                                                    dispatchSuccess: boolean
+                                                                                                                                                                                                                                                                                                                                                                                                  38
+
+                                                                                                                                                            notifyTicketCreationSuccess(ticketId)
+                                                                                                                                                                                                                 39
+
+                               showMessage("Lập phiếu thành công! Mã phiếu: " + ticketId + " (OPEN). Tài nguyên đã cô lập.")
+                                                                                                                                            40
+
+
+
+
+                                                                                                                                  ui: IncidentUI                                                      ctrl: IncidentController                                   resourceRepo: ResourceRepo                 techRepo: TechnicianRepo              ticketRepo: IncidentTicketRepo   notiService: NotificationService
+         op: Operator                                                                                                                                                                                                                                                                                                                                                                                                                                                    tech: Technician
+
+
+
+
+                                                                                                                                                                 Hình 55: Sơ đồ Sequence — UC-D04
+
+
+
+
+                                                                                                                                                                                                                                                    53
+3.4.5 UC-D05: Cập nhật kết quả khắc phục sự cố
+
+                                                                                                                             ui: IncidentResolutionUI                                                ctrl: IncidentResolutionController                                                  ticketRepo: IncidentTicketRepo        resourceRepo: ResourceRepo   notiService: NotificationService
+         tech: Technician
+                                                                 requestAssignedTicket(ticketId)
+               1
+
+                                                                                                                                                                   getTicketDetails(ticketId)
+                                                                                                                                       2
+
+                                                                                                                                                                                                                                                       findById(ticketId)
+                                                                                                                                                                                                                      3
+
+                                                                                                                                                                                                                                            ticketData(ticketId, "OPEN", resourceId)
+                                                                                                                                                                                                                                                                                                         4
+
+                                                                                                                                                                                                                                                                    getResourceDetails(resourceId)
+                                                                                                                                                                                                                      5
+
+                                                                                                                                                                                                                                                         resourceData(resourceId, "OUT_OF_SERVICE", type)
+                                                                                                                                                                                                                                                                                                                                            6
+
+                                                                                                                                                        ticketAndResourceInfo(ticketData, resourceData)
+                                                                                                                                                                                                                          7
+
+                                               displayTicketDetails(Chi tiết sự cố & Tài nguyên OUT_OF_SERVICE)
+                                                                                                                                           8
+
+            loop                                                                                                                                                               [while safetyChecksNotMet && !isCancelled]
+
+                                                           selectAction(actionType, resolutionDetails)
+               9
+
+              alt                                                                                                                                                                      [Kỹ thuật viên hủy bỏ (A3b)]
+
+                                                                        cancelUpdate()
+               10
+
+                                     showMessage("Đã hủy bỏ thao tác. Phiếu giữ OPEN, tài nguyên giữ OUT_OF_SERVICE.")
+                                                                                                                                        11
+
+                                                                                                                                                                               [Không thể khắc phục tại chỗ (A3a)]
+                                                     submitWorkshopEscalation(ticketId, escalationReason)
+               12
+
+                                                                                                                                                        escalateToWorkshop(ticketId, escalationReason)
+                                                                                                                                       13
+
+                                                                                                                                                                                                                              updateStatus(ticketId, "ESCALATED_WORKSHOP", escalationReason)
+                                                                                                                                                                                                                      14
+
+                                                                                                                                                                                                                                                     escalateSuccess: true
+                                                                                                                                                                                                                                                                                                         15
+
+                                                                                                                                                                                                                                                                             notifyEscalation(ticketId, "ESCALATED_WORKSHOP")
+                                                                                                                                                                                                                      16
+
+                                                                                                                                                                                                                                                                                                   notified: true
+                                                                                                                                                                                                                                                                                                                                                                           17
+
+                                                                                                                                                                   notifyEscalationSuccess()
+                                                                                                                                                                                                                       18
+
+                             showMessage("Đã chuyển phiếu sang ESCALATED_WORKSHOP. Tài nguyên tiếp tục OUT_OF_SERVICE.")
+                                                                                                                                        19
+
+                                                                                                                                                                              [Khắc phục thành công (Normal Flow)]
+                                                 submitResolution(ticketId, resolutionNote, safetyChecksPassed)
+               20
+
+                                                                                                                                               processResolution(ticketId, resolutionNote, safetyChecksPassed)
+                                                                                                                                       21
+
+                                                                                                                                                                                        validateResolutionData(resolutionNote, safetyChecksPassed)
+                                                                                                                                                                                                                      22
+
+
+
+
+               alt                                                                                                                                                                [!isValid || !safetyChecksPassed (A4a)]
+
+                                                                                                                                                   notifyValidationFailed(missingFields, safetyFailedReason)
+                                                                                                                                                                                                                       23
+
+                                           showError("Thông tin chưa đầy đủ hoặc điều kiện an toàn kỹ thuật chưa đạt!")
+                                                                                                                                        24
+
+                                                                                                                                                                                 [isValid && safetyChecksPassed]
+                                                                                                                                                                                                                                      updateStatus(ticketId, "RESOLVED", resolutionNote)
+                                                                                                                                                                                                                      25
+
+                                                                                                                                                                                                                                                    ticketUpdated: boolean
+                                                                                                                                                                                                                                                                                                         26
+
+                                                                                                                                                                                                                                                                 restoreOperationalStatus(resourceId)
+                                                                                                                                                                                                                      27
+
+                                                                                                                                                                                                                                                                        resourceUpdated: boolean
+                                                                                                                                                                                                                                                                                                                                           28
+
+                    alt                                                                                                                                                         [!ticketUpdated || !resourceUpdated (E5a)]
+
+                                                                                                                                                                                                            rollbackTransaction()
+                                                                                                                                                                                                                      29
+
+
+
+
+                                                                                                                                                                   notifyTransactionFailure()
+                                                                                                                                                                                                                       30
+
+                          showError("Lỗi hệ thống: Không thể cập nhật đồng bộ. Giữ nguyên phiếu OPEN và tài nguyên OUT_OF_SERVICE!")
+                                                                                                                                        31
+
+                                                                                                                                                                               [ticketUpdated && resourceUpdated]
+                                                                                                                                                                                                                                                                             broadcastResolution(ticketId, resourceId, "RESOLVED")
+                                                                                                                                                                                                                      32
+
+                                                                                                                                                                                                                                                                                            broadcastSuccess: true
+                                                                                                                                                                                                                                                                                                                                                                           33
+
+                                                                                                                                                                   notifyResolutionSuccess()
+                                                                                                                                                                                                                       34
+
+                               showMessage("Khắc phục sự cố thành công! Phiếu đã RESOLVED, tài nguyên đã sẵn sàng hoạt động.")
+                                                                                                                                        35
+
+
+
+
+                                                                                                                             ui: IncidentResolutionUI                                                ctrl: IncidentResolutionController                                                  ticketRepo: IncidentTicketRepo        resourceRepo: ResourceRepo   notiService: NotificationService
+         tech: Technician
+
+
+
+
+                                                                                                                            Hình 56: Sơ đồ Sequence — UC-D05
+
+
+
+
+                                                                                                                                                                                                54
+3.4.6 UC-D06: Chạy mô phỏng kịch bản What-if
+
+                                                                                                                           ui: SimulationUI                                                       ctrl: SimulationController                                        simEngine: SimulationEngine            networkRepo: NetworkStateRepo   orderRepo: RedistributionOrderRepo
+         op: Operator
+                                                             requestSimulationSetup()
+              1
+
+                                                                                                                                                              getSimulationParameters()
+                                                                                                                                  2
+
+                                                                                                                                                                                                                                                        getNetworkBaselineData()
+                                                                                                                                                                                                             3
+
+                                                                                                                                                                                                                                   baselineData(currentNetworkState, hubCapacities, vehicleDistribution)
+                                                                                                                                                                                                                                                                                                                         4
+
+                                                                                                                                               parameterConfig(baselineData, allowedParamRanges)
+                                                                                                                                                                                                                 5
+
+                                          displaySimulationConfigForm(baselineData, allowedParamRanges)
+                                                                                                                                      6
+
+          loop                                                                                                                  [while paramInvalid && !isCancelled]
+
+                                                      configureScenarioParams(scenarioData)
+              7
+
+            alt                                                                                                                           [Operator cancels (A3a)]
+
+                                                              cancelSimulationSetup()
+              8
+
+                                showMessage("Đã hủy thiết lập kịch bản. Trạng thái vận hành thực tế không thay đổi.")
+                                                                                                                                      9
+
+                                                                                                                                [Operator submits simulation]
+                                                      submitSimulationRequest(scenarioData)
+             10
+
+                                                                                                                                                             runSimulation(scenarioData)
+                                                                                                                                  11
+
+                                                                                                                                                                                               validateParameters(scenarioData)
+                                                                                                                                                                                                             12
+
+
+
+
+             alt                                                                                                                   [!isValid || missingFields (A4a)]
+
+                                                                                                                                              notifyParamValidationError(invalidParams, missingFields)
+                                                                                                                                                                                                              13
+
+                                     showError("Tham số không hợp lệ hoặc thiếu thông tin. Vui lòng điều chỉnh!")
+                                                                                                                                   14
+
+                                                                                                                                          [isValidParams]
+                                                                                                                                                                                                                         executeWhatIfModel(scenarioData, baselineData)
+                                                                                                                                                                                                             15
+
+                                                                                                                                                                                                                     simOutcome(isSuccess, impactAnalysis, recommendations)
+                                                                                                                                                                                                                                                                                   16
+
+                  alt                                                                      [!isSuccess (E5a: Simulation Engine Error)]
+
+                                                                                                                                                          notifySimulationFailed(errorCode)
+                                                                                                                                                                                                              17
+
+                                  showError("Không thể hoàn tất mô phỏng. Trạng thái mạng lưới được giữ nguyên!")
+                                                                                                                                   18
+
+                                                                                                       [isSuccess]
+                                                                                                                                            displaySimulationResults(impactAnalysis, recommendations)
+                                                                                                                                                                                                              19
+
+                                        showResultsAndRecommendations(impactAnalysis, recommendations)
+                                                                                                                                   20
+
+
+
+
+                  opt                                                                                                                                                   [Operator chooses to apply recommended plan (A6a)]
+
+                                                applyRecommendedPlan(selectedRecommendationId)
+             21
+
+                                                                                                                                              createDraftOrderFromPlan(selectedRecommendationId)
+                                                                                                                                  22
+
+                                                                                                                                                                                                                                                                       createDraftOrder(orderDetails, "DRAFT")
+                                                                                                                                                                                                             23
+
+                                                                                                                                                                                                                                                                       draftOrderCreated: boolean, draftOrderId
+                                                                                                                                                                                                                                                                                                                                                           24
+
+                                                                                                                                                            notifyDraftCreated(draftOrderId)
+                                                                                                                                                                                                              25
+
+                        showMessage("Đã tạo bản thảo lệnh điều chuyển: " + draftOrderId + ". Chuyển sang UC-D02 để rà soát!")
+                                                                                                                                   26
+
+
+
+
+                                                                                                                           ui: SimulationUI                                                       ctrl: SimulationController                                        simEngine: SimulationEngine            networkRepo: NetworkStateRepo   orderRepo: RedistributionOrderRepo
+         op: Operator
+
+
+
+
+                                                                                                                            Hình 57: Sơ đồ Sequence — UC-D06
+
+
+
+
+                                                                                                                                                                                                55
+3.4.7 UC-D07: Tiếp nhận dữ liệu và cảnh báo từ IoT
+
+                                                                        receiver: TelemetryReceiver                     ctrl: TelemetryController                                       resourceRepo: ResourceRepo             telemetryRepo: TelemetryLogRepo   alertService: AlertService
+          iot: IoTGateway
+                                         sendTelemetryData(payload)
+                1
+
+                alt                                                                                                            [connectionLost or networkInterrupted (E2a)]
+
+                                                                          logConnectionError(E2a)
+                                                                                    2
+
+
+
+
+                          sendErrorResponse(503, "ERR_CONNECTION_INTERRUPTED")
+                                                                                        3
+
+                                                                                                                                          [connectionStable]
+                                                                                            processTelemetryPayload(payload)
+                                                                                    4
+
+                                                                                                                     validateTelemetryData(payload)
+                                                                                                                                    5
+
+
+
+
+                                                                                                                                                       identifyResource(resourceId)
+                                                                                                                                    6
+
+                                                                                                                                            resourceData(found, resourceId, currentStatus, hubId)
+                                                                                                                                                                                                       7
+
+                    alt                                                                                                          [not isValid or not resourceFound (E2b)]
+
+                                                                                                                                                          logInvalidDataError(payload, "E2b: Unrecognized or Invalid Data")
+                                                                                                                                    8
+
+                                                                                                                                                                                logRecorded: boolean
+                                                                                                                                                                                                                                              9
+
+                                                                                                notifyDataValidationError()
+                                                                                                                                     10
+
+                          sendErrorResponse(400, "ERR_INVALID_DATA_OR_RESOURCE")
+                                                                                     11
+
+                                                                                                                              [isValid and resourceFound (Valid Data)]
+                                                                                                                                              updateOperationalStatus(resourceId, newStatus)
+                                                                                                                                    12
+
+                                                                                                                                                           statusUpdated: boolean
+                                                                                                                                                                                                      13
+
+                                                                                                               evaluateRulesAndThresholds(payload, hubId)
+                                                                                                                                    14
+
+
+
+
+                                                                                                         alt                                                                  [hasAnomalies or technicalFaultDetected (A3a)]
+
+                                                                                                                                                                                        raiseAnomalyAlert(resourceId, anomalyDetails)
+                                                                                                                                    15
+
+                                                                                                                                                                                                    alertDispatched: boolean
+                                                                                                                                                                                                                                                                             16
+
+                                                                                                                                                                            [occupancyRate gte warningThreshold (A3b)]
+                                                                                                                                                                                      raiseCapacityAlert(hubId, occupancyRate, alertLevel)
+                                                                                                                                    17
+
+                                                                                                                                                                                                    alertDispatched: boolean
+                                                                                                                                                                                                                                                                             18
+
+                                                                                                                                                                                 [normalOperation (Normal Flow)]
+                                                                                                         Thông số bình thường, tiếp tục ghi dữ liệu viễn trắc
+
+                                                                                                                                                                saveTelemetryRecord(resourceId, payload, timestamp)
+                                                                                                                                    19
+
+                                                                                                                                                                                recordSaved: boolean
+                                                                                                                                                                                                                                              20
+
+                                                                                                notifyProcessingSuccess()
+                                                                                                                                     21
+
+                             sendSuccessResponse(200, "TELEMETRY_RECORDED")
+                                                                                     22
+
+
+
+
+                                                                        receiver: TelemetryReceiver                     ctrl: TelemetryController                                       resourceRepo: ResourceRepo             telemetryRepo: TelemetryLogRepo   alertService: AlertService
+          iot: IoTGateway
+
+
+
+
+                                                                                            Hình 58: Sơ đồ Sequence — UC-D07
+
+
+
+
+                                                                                                                                                56
+4 SƠ ĐỒ TRẠNG THÁI (STATE DIAGRAMS)
+4.1 Sơ đồ trạng thái 1: Vòng đời chuyến thuê xe
+
+
+
+
+                          Hình 59: Sơ đồ trạng thái — Vòng đời chuyến thuê xe
+
+
+
+
+                                                  57
+4.2 Sơ đồ trạng thái 2: Vị trí đỗ và sức chứa Hub
+
+
+
+
+                          Hình 60: Sơ đồ trạng thái — Vị trí đỗ và sức chứa Hub
+
+
+
+
+                                                   58
+4.3 Sơ đồ trạng thái 3: Vòng đời phiên sạc xe
+
+
+
+
+                           Hình 61: Sơ đồ trạng thái — Vòng đời phiên sạc xe
+
+
+
+
+                                                  59
+

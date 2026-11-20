@@ -1,0 +1,15 @@
+﻿ID,Severity,Affected,Finding,Decision,EvidenceStatus
+P0-01,P0,A/B/D,A parking adapter used eventId without sourceId,Use VerifiedEventDTO + OperationContext; owner B deduplicates sourceId/eventId/effect,DESIGN_PATCHED
+P0-02,P0,B/C,C expects IParkingRightReader absent from B,B adds read-only IParkingRightReader and adapter,DESIGN_PATCHED
+P0-03,P0,B/D,issueOrder(previewRevision) cannot identify a preview,Use previewId + expectedRevision and immutable stored preview TTL/fingerprint,DESIGN_PATCHED
+P0-04,P0,A/B/C/D,IIncidentOperations contract diverged (1 vs 3 methods),"D owner canonical 3 methods; B/C add, A adapter",DESIGN_PATCHED
+P0-05,P0,B/C/D,D included event ingestion on read-only IVerifiedEventReader,Separate IEventVerificationIngress and immutable verified reader,DESIGN_PATCHED
+P0-06,P0,C/D,"C requires device-command adapter, D missing","D declares IDeviceCommandPort, outbox command adapter; ACK requires D07",DESIGN_PATCHED
+P0-07,P0,A/B/D,No safe holdId to parkingRight dependency cancellation contract,B ParkingRight.originHoldId plus cancelDependentByHold with ambiguity refusal,DESIGN_PATCHED
+P0-08,P0,C/D,Context and event DTO schemas diverge,Unified shared DTO schemas and copied exact C/D definitions,DESIGN_PATCHED
+P1-01,P1,D,verifyOrGetReceipt method described but absent in EventVerificationService UML,Added service method; reader separated from ingress,DESIGN_PATCHED
+P1-02,P1,A/B/C/D,Cross-owner ACID & idempotency require implementation,One SQLite UnitOfWork with rechecks/receipts; no transaction over IoT wait,RUNTIME_UNVERIFIED
+P1-03,P1,A/B/C/D,Read model/health/source-of-truth needs runtime consistency,"D owns observation, B occupancy, C charge, A trip; snapshot carries freshness",RUNTIME_UNVERIFIED
+P1-04,P1,A/B/C/D,22 UC coverage vs public class methods,Trace matrix and exact 1:1 Mermaid-to-LaTeX signature audit,STATIC_CHECKED
+P2-01,P2,A/B/C/D,Mermaid visuals may be oversized and editor-dependent,"Split per-role Core/Data + shared views, export SVG and inspect",RENDER_PENDING
+P2-02,P2,A/B/C/D,Real product test evidence absent,"Proposed 12 acceptance scenarios, mark no live MVP test passed",RUNTIME_UNVERIFIED

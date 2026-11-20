@@ -1,0 +1,134 @@
+{
+  "IVehicleClaimPort": {
+    "roles": [
+      "A",
+      "D"
+    ],
+    "methods": [
+      "reserve(vehicleId: String, kind: String, refId: String, context: OperationContext) OperationResultDTO",
+      "transition(vehicleId: String, fromRef: String, toKind: String, toRef: String, context: OperationContext) OperationResultDTO",
+      "release(vehicleId: String, expectedRef: String, context: OperationContext) OperationResultDTO"
+    ]
+  },
+  "IUnitOfWork": {
+    "roles": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "methods": [
+      "executeAtomic(command: CompositeCommandDTO) OperationResultDTO"
+    ]
+  },
+  "IParkingOperations": {
+    "roles": [
+      "A",
+      "B",
+      "D"
+    ],
+    "methods": [
+      "checkReception(tripId: String, hubId: String, rightId: String, asOf: DateTime) ReceptionDecisionDTO",
+      "recordDeparture(event: VerifiedEventDTO, context: OperationContext) ParkingEffectDTO",
+      "recordArrival(event: VerifiedEventDTO, rightId: String, context: OperationContext) ParkingEffectDTO",
+      "cancelUnusedRight(rightId: String, context: OperationContext) ParkingOutcomeDTO",
+      "reserveTransferCapacity(orderId: String, vehicleIds: List_String, hubId: String, context: OperationContext) ParkingEffectDTO",
+      "cancelDependentByHold(holdId: String, context: OperationContext) ParkingOutcomeDTO"
+    ]
+  },
+  "IChargingOperations": {
+    "roles": [
+      "B",
+      "C",
+      "D"
+    ],
+    "methods": [
+      "estimateBundle(vehicleId: String, hubId: String, range: TimeRangeDTO) ChargingEstimateDTO",
+      "reserveBundlePort(bundleId: String, rightId: String, portId: String, range: TimeRangeDTO, context: OperationContext) OperationResultDTO",
+      "processDependentCancellation(rightId: String, context: OperationContext) OperationResultDTO",
+      "readPlugAndCharge(vehicleId: String) ChargingConstraintDTO"
+    ]
+  },
+  "IVehicleObservationReader": {
+    "roles": [
+      "A",
+      "C",
+      "D"
+    ],
+    "methods": [
+      "getVerifiedVehicleSnapshot(vehicleId: String) VehicleObservationDTO"
+    ]
+  },
+  "IUsageDemandReader": {
+    "roles": [
+      "A",
+      "C"
+    ],
+    "methods": [
+      "getUsageDemand(vehicleId: String) UsageDemandDTO"
+    ]
+  },
+  "IVerifiedEventReader": {
+    "roles": [
+      "B",
+      "C",
+      "D"
+    ],
+    "methods": [
+      "getVerifiedEvent(sourceId: String, eventId: String) VerifiedEventDTO"
+    ]
+  },
+  "IIncidentOperations": {
+    "roles": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "methods": [
+      "openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO",
+      "getIncidentStatus(ticketId: String) IncidentStatusDTO",
+      "recordPlanResponse(ticketId: String, response: PlanResponseDTO, context: OperationContext) IncidentReceiptDTO"
+    ]
+  },
+  "IRedistributionOperations": {
+    "roles": [
+      "B",
+      "D"
+    ],
+    "methods": [
+      "previewTransfer(sourceHubId: String, destHubId: String, vehicleIds: List_String) TransferPreviewDTO",
+      "issueOrder(previewId: String, expectedRevision: Integer, context: OperationContext) OperationResultDTO",
+      "confirmVehicleHandover(orderId: String, event: VerifiedEventDTO, context: OperationContext) HandoverOutcomeDTO"
+    ]
+  },
+  "IParkingRightReader": {
+    "roles": [
+      "B",
+      "C"
+    ],
+    "methods": [
+      "verifyRight(rightId: String, ownerId: String, vehicleId: String, hubId: String, range: TimeRangeDTO) ParkingRightCheckDTO",
+      "getHubCapacity(hubId: String, range: TimeRangeDTO) HubCapacitySnapshotDTO"
+    ]
+  },
+  "IResourceSnapshotReader": {
+    "roles": [
+      "A",
+      "D"
+    ],
+    "methods": [
+      "loadSnapshot(criteria: SearchCriteriaDTO) ResourceSnapshotDTO"
+    ]
+  },
+  "IDeviceCommandPort": {
+    "roles": [
+      "C",
+      "D"
+    ],
+    "methods": [
+      "requestStart(sessionId: String, portId: String, context: OperationContext) OperationResultDTO",
+      "requestStop(sessionId: String, portId: String, context: OperationContext) OperationResultDTO"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+sequenceDiagram
+    autonumber
+    actor Student
+    participant A as A Rental Owner
+    participant D as D07 Verified Event
+    participant B as B Parking Owner
+    participant U as Shared UnitOfWork
+    Student->>A: requestPickup(holdId)
+    A->>A: HANDOVER_PENDING, keep vehicle claim
+    Note over A,D: No database lock while waiting for physical evidence
+    D-->>A: verified departure event (sourceId,eventId)
+    A->>U: executeAtomic(pickup effect)
+    U->>B: recordDeparture(verifiedEvent,context)
+    U->>A: consume hold and open RentalTrip
+    U->>D: update verified vehicle location projection
+    U-->>A: committed effect or rollback
+    Student->>A: requestReturn(tripId,hubId)
+    A->>B: checkReception(tripId,hubId,rightId,asOf)
+    D-->>A: verified physical arrival event
+    A->>U: executeAtomic(return effect)
+    U->>B: recordArrival(event,rightId,context)
+    alt physical and authorized reception
+        U->>A: close trip, release rental claim
+    else unauthorized arrival or unknown
+        U->>A: remain ASSISTANCE_PENDING
+        U->>D: open or link incident
+    end
+    U-->>A: outcome with receipt

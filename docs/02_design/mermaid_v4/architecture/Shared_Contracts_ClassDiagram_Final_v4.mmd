@@ -1,0 +1,88 @@
+classDiagram
+    direction TB
+    %% Canonical cross-role public interfaces - normative for documentation
+
+    class IVehicleClaimPort {
+        <<interface>>
+        +reserve(vehicleId: String, kind: String, refId: String, context: OperationContext) OperationResultDTO
+        +transition(vehicleId: String, fromRef: String, toKind: String, toRef: String, context: OperationContext) OperationResultDTO
+        +release(vehicleId: String, expectedRef: String, context: OperationContext) OperationResultDTO
+    }
+
+    class IUnitOfWork {
+        <<interface>>
+        +executeAtomic(command: CompositeCommandDTO) OperationResultDTO
+    }
+
+    class IParkingOperations {
+        <<interface>>
+        +checkReception(tripId: String, hubId: String, rightId: String, asOf: DateTime) ReceptionDecisionDTO
+        +recordDeparture(event: VerifiedEventDTO, context: OperationContext) ParkingEffectDTO
+        +recordArrival(event: VerifiedEventDTO, rightId: String, context: OperationContext) ParkingEffectDTO
+        +cancelUnusedRight(rightId: String, context: OperationContext) ParkingOutcomeDTO
+        +reserveTransferCapacity(orderId: String, vehicleIds: List_String, hubId: String, context: OperationContext) ParkingEffectDTO
+        +cancelDependentByHold(holdId: String, context: OperationContext) ParkingOutcomeDTO
+    }
+
+    class IChargingOperations {
+        <<interface>>
+        +estimateBundle(vehicleId: String, hubId: String, range: TimeRangeDTO) ChargingEstimateDTO
+        +reserveBundlePort(bundleId: String, rightId: String, portId: String, range: TimeRangeDTO, context: OperationContext) OperationResultDTO
+        +processDependentCancellation(rightId: String, context: OperationContext) OperationResultDTO
+        +readPlugAndCharge(vehicleId: String) ChargingConstraintDTO
+    }
+
+    class IVehicleObservationReader {
+        <<interface>>
+        +getVerifiedVehicleSnapshot(vehicleId: String) VehicleObservationDTO
+    }
+
+    class IUsageDemandReader {
+        <<interface>>
+        +getUsageDemand(vehicleId: String) UsageDemandDTO
+    }
+
+    class IVerifiedEventReader {
+        <<interface>>
+        +getVerifiedEvent(sourceId: String, eventId: String) VerifiedEventDTO
+    }
+
+    class IIncidentOperations {
+        <<interface>>
+        +openOrLink(recordId: String, report: IncidentReportDTO, context: OperationContext) IncidentReceiptDTO
+        +getIncidentStatus(ticketId: String) IncidentStatusDTO
+        +recordPlanResponse(ticketId: String, response: PlanResponseDTO, context: OperationContext) IncidentReceiptDTO
+    }
+
+    class IRedistributionOperations {
+        <<interface>>
+        +previewTransfer(sourceHubId: String, destHubId: String, vehicleIds: List_String) TransferPreviewDTO
+        +issueOrder(previewId: String, expectedRevision: Integer, context: OperationContext) OperationResultDTO
+        +confirmVehicleHandover(orderId: String, event: VerifiedEventDTO, context: OperationContext) HandoverOutcomeDTO
+    }
+
+    class IParkingRightReader {
+        <<interface>>
+        +verifyRight(rightId: String, ownerId: String, vehicleId: String, hubId: String, range: TimeRangeDTO) ParkingRightCheckDTO
+        +getHubCapacity(hubId: String, range: TimeRangeDTO) HubCapacitySnapshotDTO
+    }
+
+    class IResourceSnapshotReader {
+        <<interface>>
+        +loadSnapshot(criteria: SearchCriteriaDTO) ResourceSnapshotDTO
+    }
+
+    class IDeviceCommandPort {
+        <<interface>>
+        +requestStart(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+        +requestStop(sessionId: String, portId: String, context: OperationContext) OperationResultDTO
+    }
+    IParkingOperations ..> IUnitOfWork : short transaction
+    IChargingOperations ..> IUnitOfWork : B/C bundle
+    IRedistributionOperations ..> IVehicleClaimPort : D02
+    IRedistributionOperations ..> IParkingOperations : destination capacity
+    IIncidentOperations ..> IVerifiedEventReader : evidence
+    IParkingRightReader ..> IParkingOperations : B read only
+    IResourceSnapshotReader ..> IVehicleObservationReader : verified position
+    IChargingOperations ..> IVerifiedEventReader : C02 evidence
+    IDeviceCommandPort ..> IVerifiedEventReader : async ACK

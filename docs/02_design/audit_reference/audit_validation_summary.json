@@ -1,0 +1,34 @@
+{
+  "status": "STATIC_PASS",
+  "roles": {
+    "A": {
+      "classes": 33,
+      "methods": 76,
+      "description_matches": 76,
+      "pdf_bytes": 113980
+    },
+    "B": {
+      "classes": 25,
+      "methods": 74,
+      "description_matches": 74,
+      "pdf_bytes": 126645
+    },
+    "C": {
+      "classes": 28,
+      "methods": 92,
+      "description_matches": 92,
+      "pdf_bytes": 124312
+    },
+    "D": {
+      "classes": 44,
+      "methods": 113,
+      "description_matches": 113,
+      "pdf_bytes": 132380
+    }
+  },
+  "shared_contracts": 12,
+  "uc_traces": 22,
+  "mermaid_files": 14,
+  "mvp_runtime": "NOT_VERIFIED",
+  "mermaid_render": "NOT_VERIFIED"
+}
