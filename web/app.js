@@ -93,6 +93,12 @@ async function command(action, payload, retry=false) {
 
 function renderLogin() {
   app.innerHTML = `<div class="login-shell"><section class="login-story"><div class="brand"><span class="brand-symbol">ϟ</span><div><strong>Smart E-Mobility</strong><small>VNU–HCM MOBILITY NETWORK</small></div></div><div><div class="eyebrow">A better way across campus</div><h1>Your next journey.<br>A little greener.</h1><p>Find a shared vehicle, reserve a place to park, and manage your charging in one connected workspace.</p></div><div class="login-story-footer">Campus mobility services · Local demonstration</div></section><main class="login-panel" id="main"><div class="login-card"><div class="eyebrow">Welcome to the hub</div><h2>Sign in to get moving</h2><p class="muted">Use a local demo account to explore the working journeys.</p><form id="login-form" class="form"><label>Username<input name="username" autocomplete="username" required value="alice"></label><label>Password<input name="password" type="password" autocomplete="current-password" required value="alice-demo"></label><button type="submit">Sign in →</button><p class="login-error" id="login-error" role="alert"></p></form><div class="demo-note"><strong>Local demo accounts</strong><p><code>alice / alice-demo</code><br><code>bob / bob-demo</code><br><code>operator / operator-demo</code><br><code>dispatcher / dispatcher-demo</code><br><code>technician / technician-demo</code></p><p>Passwords may be overridden by the server environment. Staff accounts open the fleet workspace. The simulator is enabled separately at server startup.</p></div></div></main></div>`;
+  if (location.hostname.endsWith('.onrender.com')) {
+    const input = app.querySelector('input[name="password"]');
+    if (input) input.value = '';
+    const notice = app.querySelector('.demo-note');
+    if (notice) notice.innerHTML = '<strong>Private academic demo</strong><p>Sign in with the temporary credentials shared by the project administrator. Device actions are simulated and data may reset on free hosting.</p>';
+  }
 }
 
 function render() {
