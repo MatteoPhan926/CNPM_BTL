@@ -1,4 +1,4 @@
-"""Loopback HTTP adapter for the A/B/C demonstration.
+"""Loopback HTTP adapter for the A/B/C/D demonstration.
 
 Run: python -m emobility.server --simulator
 The deliberately local demo accounts are not a production identity provider.
@@ -19,7 +19,7 @@ import threading
 import time
 from urllib.parse import urlsplit
 
-from .domain import DomainError, Service
+from .domain import ACTOR_ROLES, DomainError, Service
 
 
 WEB_ROOT = Path(__file__).resolve().parent.parent / "web"
@@ -37,7 +37,7 @@ class AppServer(ThreadingHTTPServer):
         self.auth_lock = threading.Lock()
         self.login_attempts = {}
         self.credentials = {}
-        for username in ("alice", "bob", "operator"):
+        for username in ACTOR_ROLES:
             password = os.environ.get(f"EMOBILITY_{username.upper()}_PASSWORD", f"{username}-demo")
             salt = secrets.token_bytes(16)
             digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
@@ -124,6 +124,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reject(500, "INTERNAL", "Unable to load current state.")
         resources = {"/": ("index.html", "text/html; charset=utf-8"),
                      "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+                     "/network.js": ("network.js", "text/javascript; charset=utf-8"),
                      "/styles.css": ("styles.css", "text/css; charset=utf-8")}
         resource = resources.get(path)
         if not resource:
@@ -196,7 +197,7 @@ class Handler(BaseHTTPRequestHandler):
         actual = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 100_000)
         if not credential or not hmac.compare_digest(actual, expected):
             return self.reject(401, "LOGIN", "Incorrect username or password.")
-        actor = {"id": username, "role": "operator" if username == "operator" else "student"}
+        actor = {"id": username, "role": ACTOR_ROLES[username]}
         token = secrets.token_urlsafe(32)
         with self.server.auth_lock:
             self.server.sessions = {key: value for key, value in self.server.sessions.items() if value[1] >= now}
@@ -230,7 +231,7 @@ def main():
     threading.Thread(target=maintain, daemon=True, name="expiry-maintenance").start()
     print(f"Smart E-Mobility: http://{args.host}:{server.server_port}", flush=True)
     print(f"Controlled simulator: {'ENABLED — synthetic evidence only' if args.simulator else 'disabled; physical actions remain pending'}", flush=True)
-    print("Local demo logins: alice / alice-demo, bob / bob-demo, operator / operator-demo (unless environment overrides).", flush=True)
+    print(f"Demo accounts: {', '.join(ACTOR_ROLES)} (default password: <username>-demo).", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

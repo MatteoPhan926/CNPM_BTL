@@ -1,1 +1,1 @@
-"""Smart E-Mobility A/B/C local MVP."""
+"""Smart E-Mobility Hub local application for roles A through D."""

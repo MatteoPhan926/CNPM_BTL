@@ -5,3 +5,13 @@
 @media(max-width:600px){.shell{display:block}.sidebar{height:auto;padding:13px 12px;position:static}.sidebar .brand{display:none}.nav{display:flex;overflow:auto;gap:3px}.nav button{padding:10px;flex:1;min-width:44px}.nav .icon{font-size:19px}.content{padding:22px 15px 90px}.topbar{height:62px;padding:0 15px}.grid,.grid.two{grid-template-columns:1fr}.page-title{display:block}.page-title .toolbar{margin-top:15px}h1{font-size:27px}.mode-banner{display:block}.mode-banner strong{display:block;margin-bottom:4px}.notice{left:12px;right:12px;bottom:12px;padding:12px;font-size:12px;display:block}.notice button{margin-top:9px}.form-row{grid-template-columns:1fr}.card-body{padding:18px}.account{font-size:12px}.account .avatar{display:none}.stat .number{font-size:26px}.record-main{display:block}.record-main>.chip{margin-top:8px}.login-story h1{font-size:28px}.login-story{padding:25px}.login-story>div:nth-child(2){margin-top:25px}}
 
 progress.meter{display:block;width:100%;border:0;appearance:none}progress.meter::-webkit-progress-bar{background:#e6ece6;border-radius:9px}progress.meter::-webkit-progress-value{background:#4c8b63;border-radius:9px}progress.meter.warn::-webkit-progress-value{background:#d49b3a}progress.meter::-moz-progress-bar{background:#4c8b63;border-radius:9px}
+
+.fleet-sections {display:flex; flex-wrap:wrap; gap:8px; margin:0 0 24px}
+#fleet-workspace .split section > .section-heading:first-child {margin-top:0}
+.vehicle-checks {border:1px solid var(--line); border-radius:8px; margin:0; padding:10px 12px; display:grid; gap:8px}
+.vehicle-checks legend {padding:0 4px; font-size:12px; font-weight:650; color:#345448}
+.vehicle-checks .check-label {display:flex; align-items:center; gap:8px}
+#fleet-workspace [hidden] {display:none}
+#fleet-workspace .record-actions > form {width:100%}
+#fleet-workspace .form {min-width:0}
+#fleet-workspace .form select {min-width:0}

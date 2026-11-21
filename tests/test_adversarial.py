@@ -460,6 +460,70 @@ class AdversarialDomainTests(unittest.TestCase):
         self.assertNotEqual(self.row("trips", trip["id"])["status"], "CLOSED")
         self.assertTrue(any(i["record_id"] == trip["id"] for i in self.rows("incidents")))
 
+    def test_pending_arrival_claim_outlives_original_window(self):
+        right = self.parking(spot_id='H2-S4', end=self.clock() + 900)
+        self.pending('arrive', {'right_id': right['id']})
+        self.clock.advance(2000)
+        self.command('sim_refresh', actor=OP)
+        with self.assertRaises(DomainError):
+            self.parking(BOB, 'P2', spot_id='H2-S4')
+        self.assertEqual(self.row('rights', right['id'])['status'], 'HANDOVER_PENDING')
+
+    def test_departed_parking_right_cannot_back_a_new_session(self):
+        right = self.parking(spot_id='H2-S1')
+        self.acknowledge(self.pending('arrive', {'right_id': right['id']}))
+        visit = next(v for v in self.rows('visits') if v['right_id'] == right['id'])
+        self.acknowledge(self.pending('depart', {'visit_id': visit['id']}))
+        with self.assertRaises(DomainError):
+            self.command('register_charge', {'right_id': right['id'], 'target_soc': 60})
+
+    def test_isolated_origin_blocks_pending_pickup_evidence(self):
+        hold = self.hold()
+        command = self.pending('pickup', {'hold_id': hold['id']})
+        self.command('sim_observe', {'resource_type': 'spots', 'resource_id': 'H1-S3',
+                                     'health': 'OUT_OF_SERVICE'}, OP)
+        self.assertEqual(self.acknowledge(command)['record']['status'], 'ANOMALY')
+        self.assertFalse(self.rows('trips'))
+        self.assertEqual(self.row('holds', hold['id'])['status'], 'HANDOVER_PENDING')
+
+    def test_seeded_fleet_charge_claim_blocks_rental_until_release(self):
+        session = self.create('sessions', 'fleet_charge', {'vehicle_id': 'V3', 'target_soc': 90}, OP)
+        with self.assertRaises(DomainError):
+            self.command('reserve_vehicle', {'vehicle_id': 'V3'})
+        self.command('cancel_charge', {'session_id': session['id']}, OP)
+        self.hold(vehicle='V3')
+
+    def test_disabled_charger_removes_empty_bay_from_available_capacity(self):
+        before = self.row('hubs', 'H2')['available']
+        self.command('d_resource_state', {'resource_id': 'H2-C1', 'active': False}, OP)
+        self.assertEqual(self.row('hubs', 'H2')['available'], before - 1)
+
+    def test_charging_cannot_start_during_pending_unplug(self):
+        _, session = self.charge_ready()
+        cmd = self.pending('unplug', {'session_id': session['id']})
+        with self.assertRaises(DomainError) as ex:
+            self.command('start_charge', {'session_id': session['id']})
+        self.assertEqual(ex.exception.code, 'UNPLUG_PENDING')
+        self.acknowledge(cmd)
+        self.assertEqual(self.row('ports', session['port_id'])['plug'], 'UNPLUGGED')
+
+    def test_isolating_vehicle_blocks_power_on(self):
+        _, session = self.charge_ready()
+        self.command('sim_observe', {'resource_type': 'vehicles', 'resource_id': 'P1',
+                                     'health': 'OUT_OF_SERVICE'}, OP)
+        with self.assertRaises(DomainError):
+            self.command('start_charge', {'session_id': session['id']})
+        self.assertEqual(self.row('ports', session['port_id'])['power'], 'OFF')
+
+    def test_field_staff_cannot_read_or_change_student_journeys(self):
+        hold = self.hold()
+        for role in ('dispatcher', 'technician'):
+            actor = dict(id=role, role=role)
+            self.assertFalse(self.rows('holds', actor))
+            with self.assertRaises(DomainError) as exc:
+                self.command('pickup', {'hold_id': hold['id']}, actor)
+            self.assertEqual(exc.exception.status, 403)
+
 
 if __name__ == "__main__":
     unittest.main()

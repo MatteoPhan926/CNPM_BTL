@@ -1,4 +1,4 @@
-"""Transactional A/B/C application, with an explicitly opt-in test evidence adapter.
+"""Transactional A/B/C/D application, with an explicitly opt-in test evidence adapter.
 
 All domain documents participate in one SQLite transaction. Receipt and event
 identities are separate: an intent retries a request; an event applies evidence.
@@ -7,51 +7,32 @@ No transaction remains open while a device/handover acknowledgement is pending.
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
-import math
 import sqlite3
 import time
 import uuid
 from contextlib import contextmanager
 from pathlib import Path
 
-POLICY = dict(freshness=90, hold_seconds=600, no_show=600, parking_buffer=900,
-              max_advance=86400, min_parking=900, max_parking=43200,
-              rental_soc=20, ordinary_capacity=.90, warning=.80, high=.95,
-              ack_timeout=60, unplug_reminder=900, efficiency=.90)
+from .monitoring import MonitoringMixin
+from .operations import OperationsMixin
+from .shared import DomainError, LIVE_RIGHT, LIVE_SESSION, POLICY, fingerprint, number, overlap, require
+
+ACTOR_ROLES = {'alice': 'student', 'bob': 'student', 'operator': 'operator',
+               'dispatcher': 'dispatcher', 'technician': 'technician'}
 COLLECTIONS = ('hubs', 'spots', 'ports', 'vehicles', 'holds', 'trips', 'rights',
-               'visits', 'sessions', 'commands', 'incidents', 'plans', 'audit')
-LIVE_RIGHT = {'CONFIRMED', 'HANDOVER_PENDING', 'OFFERED'}
-LIVE_SESSION = {'BOOKED', 'START_PENDING', 'CHARGING', 'STOP_PENDING'}
+               'visits', 'sessions', 'commands', 'incidents', 'plans', 'audit',
+               'orders', 'scenarios')
 
 
-class DomainError(Exception):
-    def __init__(self, code, message, status=409):
-        super().__init__(message)
-        self.code, self.message, self.status = code, message, status
+def authenticate_actor(actor):
+    actor_id = actor.get('id') if isinstance(actor, dict) else None
+    require(isinstance(actor_id, str) and actor_id in ACTOR_ROLES
+            and actor.get('role') == ACTOR_ROLES[actor_id],
+            'UNAUTHORIZED', 'Authenticated application actor required.', 401)
 
 
-def require(ok, code, message, status=409):
-    if not ok:
-        raise DomainError(code, message, status)
-
-
-def number(value, name, low=0, high=10**12):
-    require(type(value) in (int, float) and math.isfinite(value) and low <= value <= high,
-            'INVALID_INPUT', f'{name} must be a finite number from {low} to {high}.', 400)
-    return float(value)
-
-
-def fingerprint(data):
-    return hashlib.sha256(json.dumps(data, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
-
-
-def overlap(a, b, c, d):
-    return a < d and c < b
-
-
-class Service:
+class Service(OperationsMixin, MonitoringMixin):
     def __init__(self, db_path, simulator=False, clock=None):
         self.db_path, self.simulator = str(db_path), simulator
         self.clock = clock or time.time
@@ -99,7 +80,7 @@ class Service:
                         kw=3.7, plug='UNPLUGGED', power='OFF', health='OPERABLE', vehicle_id=None,
                         observed_at=observed, sequence=0, evidence='SIMULATED' if self.simulator else 'UNKNOWN')
         for vid, owner, hub, spot, soc in [('V1', None, 'H1', 'H1-S3', 75),
-                ('V2', None, 'H2', 'H2-S3', 45), ('P1', 'alice', None, None, 30),
+                ('V2', None, 'H2', 'H2-S3', 45), ('V3', None, 'H1', 'H1-S1', 68), ('P1', 'alice', None, None, 30),
                 ('P2', 'bob', None, None, 40)]:
             s['vehicles'][vid] = dict(id=vid, label=vid, owner_id=owner,
                 kind='personal' if owner else 'shared', hub_id=hub, spot_id=spot,
@@ -123,9 +104,9 @@ class Service:
             db.executemany('INSERT INTO documents VALUES(?,?,?) ON CONFLICT(kind,id) DO UPDATE SET body=excluded.body',
                 [(kind, rid, json.dumps(row, allow_nan=False)) for rid, row in s[kind].items()])
 
-    def new(self, s, kind, **fields):
+    def new(self, s, collection, **fields):
         row = dict(id=uuid.uuid4().hex[:16], **fields)
-        s[kind][row['id']] = row
+        s[collection][row['id']] = row
         return row
 
     def get(self, s, kind, rid):
@@ -152,9 +133,7 @@ class Service:
                         status='OPEN', response='', key=key, created_at=self.clock(), dependency='ROLE_D')
 
     def command(self, actor, action, payload, intent_id):
-        require(isinstance(actor, dict) and actor.get('id') in ('alice','bob','operator')
-                and actor.get('role') == ('operator' if actor['id'] == 'operator' else 'student'),
-                'UNAUTHORIZED', 'Authenticated application actor required.', 401)
+        authenticate_actor(actor)
         require(isinstance(payload, dict) and isinstance(action, str), 'INVALID_INPUT', 'Action and object payload required.', 400)
         require(isinstance(intent_id, str) and 1 <= len(intent_id) <= 128, 'INVALID_INTENT', 'An intent ID (1–128 characters) is required.', 400)
         try:
@@ -178,6 +157,10 @@ class Service:
             try:
                 handler = getattr(self, 'do_'+action, None)
                 require(handler is not None, 'UNKNOWN_ACTION', 'Unknown command.', 400)
+                if actor['role'] == 'dispatcher':
+                    require(action in ('transfer_start', 'transfer_handover'), 'FORBIDDEN', 'Dispatcher action required.', 403)
+                elif actor['role'] == 'technician':
+                    require(action == 'd_update_incident', 'FORBIDDEN', 'Technician action required.', 403)
                 if action.startswith('sim') or action in ('capacity_plan','schedule_preview','schedule_confirm','fleet_charge'):
                     require(actor['role'] == 'operator', 'FORBIDDEN', 'Operator role required.', 403)
                 result = handler(s, actor, payload, db, revision)
@@ -211,7 +194,7 @@ class Service:
                 db.execute('UPDATE meta SET revision=revision+1')
 
     def snapshot(self, actor):
-        require(actor.get('id') in ('alice','bob','operator') and actor.get('role') == ('operator' if actor['id']=='operator' else 'student'), 'UNAUTHORIZED','Authentication required.',401)
+        authenticate_actor(actor)
         self.tick()
         with self.connect() as db:
             db.execute('BEGIN')
@@ -225,28 +208,57 @@ class Service:
                 r['freshness'] = 'FRESH' if self.fresh(r,now) else ('UNKNOWN' if r['observed_at'] is None else 'STALE')
         for v in s['vehicles'].values():
             v['available'] = self.rentable(s,v,now)
-        if actor['role'] != 'operator':
-            for kind in ('holds','trips','rights','visits','sessions','incidents'):
-                s[kind] = {k:v for k,v in s[kind].items() if v['owner_id'] == actor['id']}
-            s['commands'] = {k:v for k,v in s['commands'].items() if v['owner_id']==actor['id']}
-            s['vehicles'] = {k:v for k,v in s['vehicles'].items() if v['owner_id'] in (None,actor['id'])}
-            # Resource overview never reveals other students' identifiers.
-            for kind in ('spots','ports'):
-                for r in s[kind].values():
-                    if r.get('vehicle_id') not in s['vehicles']:
-                        r['vehicle_id'] = None
+            if actor['role'] == 'operator':
+                v['transferable'] = bool(self._transferable(s, v, v['hub_id'], now))
+        role, actor_id = actor['role'], actor['id']
+        if role != 'operator':
+            for kind in ('holds', 'trips', 'rights', 'visits', 'sessions', 'commands'):
+                s[kind] = {k: v for k, v in s[kind].items() if v['owner_id'] == actor_id}
+            s['incidents'] = {
+                k: v for k, v in s['incidents'].items()
+                if v.get('owner_id') == actor_id or (role == 'technician' and v.get('technician_id') == actor_id)
+            }
+            s['orders'] = {k: v for k, v in s['orders'].items()
+                           if role == 'dispatcher' and v['staff_id'] == actor_id and v['status'] != 'DRAFT'}
             s['plans'] = {}
-            s['audit'] = {k:dict(id=v['id'],actor_id=v['actor_id'],action=v['action'],at=v['at'])
-                          for k,v in s['audit'].items() if v['actor_id']==actor['id']}
+            s['scenarios'] = {}
+            s['vehicles'] = {k: v for k, v in s['vehicles'].items()
+                             if v['owner_id'] in (None, actor_id)}
+            for v in s['vehicles'].values():
+                v.pop('last_telemetry', None)
+                if v.get('transfer_order_id') not in s['orders']:
+                    v.pop('transfer_order_id', None)
+            for kind in ('spots', 'ports'):
+                for row in s[kind].values():
+                    if row.get('vehicle_id') not in s['vehicles']:
+                        row['vehicle_id'] = None
+            for kind in ('vehicles', 'spots', 'ports'):
+                for row in s[kind].values():
+                    if row.get('maintenance_ticket_id') not in s['incidents']:
+                        row.pop('maintenance_ticket_id', None)
+            s['audit'] = {k: dict(id=v['id'], actor_id=v['actor_id'], action=v['action'], at=v['at'])
+                          for k, v in s['audit'].items() if v['actor_id'] == actor_id}
         return dict(actor=actor, revision=revision, now=now, simulator=self.simulator,
                     policy=POLICY, **{k:list(v.values()) for k,v in s.items()})
+
+    def right_blocks(self, right, start, end):
+        # The bay remains claimed until a pending physical handover is reconciled,
+        # even when another booking starts after its planned departure.
+        return right['status'] == 'HANDOVER_PENDING' or (
+            right['status'] in LIVE_RIGHT and overlap(start, end, right['start'], right['block_end'])
+        )
+
+    def bay_ports_clear(self, state, spot_id, now):
+        return all(port['health'] == 'OPERABLE' and self.fresh(port, now) and
+                   port['plug'] == 'UNPLUGGED' and port['power'] == 'OFF'
+                   for port in state['ports'].values() if port['spot_id'] == spot_id)
 
     def capacity(self,s,hub,start,end):
         spots = [p for p in s['spots'].values() if p['hub_id']==hub]
         occupied = {p['id'] for p in spots if p['state']=='OCCUPIED'}
-        unknown = {p['id'] for p in spots if p['id'] not in occupied and (p['state']=='UNKNOWN' or not self.fresh(p,self.clock()) or p['health']!='OPERABLE')}
-        held = {r['spot_id'] for r in s['rights'].values() if r['hub_id']==hub and r['status'] in LIVE_RIGHT
-                and overlap(start,end,r['start'],r['block_end'])} - occupied - unknown
+        unknown = {p['id'] for p in spots if p['id'] not in occupied and (p['state']=='UNKNOWN' or not self.fresh(p,self.clock()) or p['health']!='OPERABLE'
+                   or not self.bay_ports_clear(s,p['id'],self.clock()))}
+        held = {r['spot_id'] for r in s['rights'].values() if r['hub_id']==hub and self.right_blocks(r,start,end)} - occupied - unknown
         c = len(spots)
         used = len(occupied|unknown|held)
         ratio = used/c if c else 1
@@ -255,17 +267,23 @@ class Service:
                     level='HIGH' if ratio>=POLICY['high'] else 'RESTRICTED' if ratio>=POLICY['ordinary_capacity'] else 'WARNING' if ratio>=POLICY['warning'] else 'NORMAL')
 
     def vehicle_claimed(self,s,vid):
-        return any(h['vehicle_id']==vid and h['status'] in ('ACTIVE','HANDOVER_PENDING') for h in s['holds'].values()) or any(t['vehicle_id']==vid and t['status']!='CLOSED' for t in s['trips'].values())
+        return bool(s['vehicles'][vid].get('transfer_order_id')) or any(h['vehicle_id']==vid and h['status'] in ('ACTIVE','HANDOVER_PENDING') for h in s['holds'].values()) or any(t['vehicle_id']==vid and t['status']!='CLOSED' for t in s['trips'].values())
 
     def charge_blocked(self,s,vid):
         return any(p.get('vehicle_id')==vid and (p['plug']!='UNPLUGGED' or p['power']!='OFF' or not self.fresh(p,self.clock())) for p in s['ports'].values()) or any(c['vehicle_id']==vid and c['status'] in LIVE_SESSION for c in s['sessions'].values())
 
-    def rentable(self,s,v,now):
+    def pickup_ready(self, s, v, now, min_soc=POLICY['rental_soc']):
         spot = s['spots'].get(v.get('spot_id'))
-        return bool(v['kind']=='shared' and v['health']=='OPERABLE' and v['soc']>=POLICY['rental_soc']
-                    and self.fresh(v,now) and spot and self.fresh(spot,now) and spot['state']=='OCCUPIED'
-                    and spot['vehicle_id']==v['id'] and s['hubs'][spot['hub_id']]['open']
-                    and not self.vehicle_claimed(s,v['id']) and not self.charge_blocked(s,v['id']))
+        return bool(v['kind'] == 'shared' and v['health'] == 'OPERABLE'
+                    and v['soc'] >= min_soc and self.fresh(v, now)
+                    and spot and spot['health'] == 'OPERABLE' and self.fresh(spot, now)
+                    and spot['state'] == 'OCCUPIED' and spot['vehicle_id'] == v['id']
+                    and self.bay_ports_clear(s, spot['id'], now)
+                    and s['hubs'][spot['hub_id']]['open'] and not v.get('transfer_order_id')
+                    and not self.charge_blocked(s, v['id']))
+
+    def rentable(self, s, v, now):
+        return self.pickup_ready(s, v, now) and not self.vehicle_claimed(s, v['id'])
 
     def do_reserve_vehicle(self,s,a,p,db,rev):
         require(a['role']=='student','FORBIDDEN','Student role required.',403)
@@ -297,14 +315,14 @@ class Service:
         existing=next((c for c in s['commands'].values() if c['kind']==kind and c['record_id']==row['id'] and c['status']=='PENDING'),None)
         if existing: return existing
         return self.new(s,'commands',kind=kind,record_id=row['id'],owner_id=owner,status='PENDING',
-                        created_at=self.clock(),evidence='SIMULATOR_REQUIRED' if self.simulator else 'ROLE_D_REQUIRED',**details)
+                        created_at=self.clock(),evidence='SIMULATOR_REQUIRED' if self.simulator else 'DEVICE_EVIDENCE_REQUIRED',**details)
 
     def do_pickup(self,s,a,p,db,rev):
         h=self.get(s,'holds',p.get('hold_id')); self.own(h,a)
         if h['status']=='HANDOVER_PENDING': return h
         require(h['status']=='ACTIVE' and h['expires_at']>self.clock(),'HOLD_EXPIRED','Hold is not active.')
         v=self.get(s,'vehicles',h['vehicle_id'])
-        require(v['health']=='OPERABLE' and v['soc']>=POLICY['rental_soc'] and self.fresh(v,self.clock()) and not self.charge_blocked(s,v['id']), 'VEHICLE_UNAVAILABLE','Pickup prerequisites no longer hold.')
+        require(self.pickup_ready(s,v,self.clock()), 'VEHICLE_UNAVAILABLE','Pickup prerequisites no longer hold.')
         h['status']='HANDOVER_PENDING'
         self.request(s,'PICKUP',h,a['id'],vehicle_id=v['id'],spot_id=v['spot_id'])
         return h
@@ -336,7 +354,7 @@ class Service:
         block_end = end+POLICY['parking_buffer'] if v['kind']=='personal' else 10**12
         for r in s['rights'].values():
             if r['vehicle_id']==v['id'] and r['status'] in LIVE_RIGHT:
-                require(not overlap(start,block_end,r['start'],r['block_end']),'VEHICLE_PARKING_CONFLICT','Vehicle already has an overlapping parking right.')
+                require(not self.right_blocks(r,start,block_end),'VEHICLE_PARKING_CONFLICT','Vehicle already has an overlapping parking right.')
         cap=self.capacity(s,hub,start,block_end)
         require(cap['available']>0 and (recovery or cap['capacity']-cap['available']+1<=cap['capacity']*POLICY['ordinary_capacity']),
                 'HUB_CAPACITY','No ordinary reception capacity; request operator assistance.')
@@ -344,9 +362,9 @@ class Service:
         for spot in s['spots'].values():
             if spot['hub_id']!=hub or (spot_id and spot['id']!=spot_id): continue
             if spot['state']!='EMPTY' or spot['health']!='OPERABLE' or not self.fresh(spot,now): continue
-            if any(r['spot_id']==spot['id'] and r['status'] in LIVE_RIGHT and overlap(start,block_end,r['start'],r['block_end']) for r in s['rights'].values()): continue
+            if any(r['spot_id']==spot['id'] and self.right_blocks(r,start,block_end) for r in s['rights'].values()): continue
             ports=[x for x in s['ports'].values() if x['spot_id']==spot['id']]
-            if ports and any(x['plug']!='UNPLUGGED' or x['power']!='OFF' or x['health']!='OPERABLE' or not self.fresh(x,now) for x in ports): continue
+            if not self.bay_ports_clear(s, spot['id'], now): continue
             if charging and not any(x['connector']==v['connector'] for x in ports): continue
             candidates.append(spot)
         require(candidates,'NO_SPOT','No fresh, empty compatible spot is available.')
@@ -378,7 +396,7 @@ class Service:
         require(r['status'] in ('CONFIRMED','HANDOVER_PENDING'),'INVALID_RIGHT','Parking right is not valid for arrival.')
         require(now<=r['start']+POLICY['no_show'],'LATE_ARRIVAL','Arrival grace period has elapsed.')
         require(s['hubs'][r['hub_id']]['open'] and spot['health']=='OPERABLE' and spot['state']=='EMPTY' and self.fresh(spot,now),'RECEPTION_BLOCKED','Reception spot is occupied, closed or stale.')
-        require(not any(x['id']!=r['id'] and x['spot_id']==r['spot_id'] and x['status'] in LIVE_RIGHT and overlap(now,r['block_end'],x['start'],x['block_end']) for x in s['rights'].values()),'EARLY_CONFLICT','Early arrival conflicts with another right.')
+        require(not any(x['id']!=r['id'] and x['spot_id']==r['spot_id'] and self.right_blocks(x,now,r['block_end']) for x in s['rights'].values()),'EARLY_CONFLICT','Early arrival conflicts with another right.')
 
     def do_arrive(self,s,a,p,db,rev):
         r=self.get(s,'rights',p.get('right_id')); self.own(r,a)
@@ -426,6 +444,13 @@ class Service:
         port=s['ports'][c['port_id']]
         return port.get('vehicle_id')==c['vehicle_id'] and (port['plug']!='UNPLUGGED' or port['power']!='OFF') or any(x['record_id']==c['id'] and x['status']=='PENDING' for x in s['commands'].values())
 
+    def check_charge_resources(self, s, vehicle_id, port):
+        vehicle = s['vehicles'][vehicle_id]
+        spot = s['spots'][port['spot_id']]
+        require(all(row['health'] == 'OPERABLE' for row in (vehicle, spot, port)),
+                'RESOURCE_UNAVAILABLE', 'Vehicle, parking bay and charging port must be operational.')
+        require(not vehicle.get('transfer_order_id'), 'VEHICLE_CLAIMED', 'Vehicle is reserved for redistribution.')
+
     def create_charge(self,s,a,v,r,target):
         require(v['kind']=='personal' or a['role']=='operator','FORBIDDEN','Only operators schedule fleet charging.',403)
         target=number(target,'Target SOC',0,100)
@@ -433,6 +458,7 @@ class Service:
         ports=[p for p in s['ports'].values() if p['spot_id']==r['spot_id'] and p['connector']==v['connector']]
         require(ports,'NO_PORT','Parking spot has no compatible charging port.')
         port=ports[0]; now=self.clock()
+        self.check_charge_resources(s, v['id'], port)
         require(port['health']=='OPERABLE' and self.fresh(port,now) and port['power']=='OFF'
             and (port['plug']=='UNPLUGGED' or port.get('vehicle_id')==v['id']),'PORT_UNAVAILABLE','Port is faulty, connected to another vehicle or stale.')
         require(not any(c['vehicle_id']==v['id'] and c['status'] in LIVE_SESSION and overlap(r['start'],r['end'],c['start'],c['end']) for c in s['sessions'].values()),'CHARGE_CONFLICT','Vehicle has an overlapping charging session.')
@@ -444,7 +470,7 @@ class Service:
         require(end<=r['end'],'INSUFFICIENT_TIME','Requested SOC cannot be reached within parking window.')
         require(self.power_fits(s,port['hub_id'],start,end,kw),'POWER_CONFLICT','Hub power already committed during this time.')
         return self.new(s,'sessions',owner_id=a['id'],vehicle_id=v['id'],right_id=r['id'],port_id=port['id'],
-            status='BOOKED',target_soc=target,start=r['start'],end=r['end'],scheduled_start=start,scheduled_end=end,
+            status='BOOKED',target_soc=target,start=start,end=r['end'],scheduled_start=start,scheduled_end=end,
             kw=kw,duration=duration,created_at=now,created_parking=r.get('created_by_charge',False))
 
     def power_fits(self,s,hub,start,end,kw,exclude=None,allocations=None):
@@ -457,6 +483,10 @@ class Service:
     def do_register_charge(self,s,a,p,db,rev):
         r=self.get(s,'rights',p.get('right_id')); self.own(r,a)
         require(r['status'] in ('CONFIRMED','CONSUMED'),'INVALID_RIGHT','An active parking right is required.')
+        if r['status'] == 'CONSUMED':
+            require(any(visit['right_id'] == r['id'] and visit['status'] == 'PARKED'
+                        for visit in s['visits'].values()),
+                    'VISIT_ENDED', 'This parking visit has already ended or is departing.')
         v=self.authorized_vehicle(s,a,r['vehicle_id'])
         return self.create_charge(s,a,v,r,p.get('target_soc'))
 
@@ -466,6 +496,7 @@ class Service:
 
     def do_plug(self,s,a,p,db,rev):
         c,port=self.session(s,a,p)
+        self.check_charge_resources(s, c['vehicle_id'], port)
         require(c['status']=='BOOKED','INVALID_STATE','Only a booked session can prepare a connection.')
         require(c['start']-600<=self.clock()<c['end'],'OUTSIDE_SCHEDULE','Connection preparation opens ten minutes before the session.')
         require(s['vehicles'][c['vehicle_id']]['spot_id']==port['spot_id'],'NOT_PARKED','Vehicle must be verified at the charging spot.')
@@ -473,9 +504,16 @@ class Service:
         self.request(s,'PLUG',c,c['owner_id'],vehicle_id=c['vehicle_id'],port_id=port['id'],spot_id=port['spot_id'])
         return dict(c, status='PENDING')
 
+    def port_command_pending(self, state, port, kind):
+        return any(cmd.get('port_id') == port['id'] and cmd['kind'] == kind and cmd['status'] == 'PENDING'
+                   for cmd in state['commands'].values())
+
     def do_start_charge(self,s,a,p,db,rev):
         c,port=self.session(s,a,p)
+        self.check_charge_resources(s, c['vehicle_id'], port)
         if c['status']=='START_PENDING': return c
+        require(not self.port_command_pending(s, port, 'UNPLUG'), 'UNPLUG_PENDING',
+                'Wait for the outstanding disconnection before starting charging.')
         require(c['status']=='BOOKED','INVALID_STATE','Session must be booked.')
         require(c['scheduled_start']<=self.clock()<c['scheduled_end'],'OUTSIDE_SCHEDULE','Charging is outside its approved schedule.')
         running=sum(x['kw'] for x in s['sessions'].values() if x['status'] in ('START_PENDING','CHARGING','STOP_PENDING')
@@ -496,6 +534,10 @@ class Service:
 
     def do_unplug(self,s,a,p,db,rev):
         c,port=self.session(s,a,p)
+        require(not any(other['id'] != c['id'] and other['port_id'] == port['id'] and
+                        other['status'] in ('START_PENDING', 'CHARGING', 'STOP_PENDING')
+                        for other in s['sessions'].values()), 'PORT_IN_USE',
+                'Another charging session controls this port.')
         require(c['status'] in ('COMPLETED','CANCELLED','INTERRUPTED','EXPIRED','BOOKED') and port['power']=='OFF'
             and port['plug']=='CONNECTED' and port['vehicle_id']==c['vehicle_id'] and self.fresh(port,self.clock()),'POWER_NOT_OFF','Verified power off and connection required before unplug.')
         self.request(s,'UNPLUG',c,c['owner_id'],port_id=port['id'],vehicle_id=c['vehicle_id'])
@@ -573,7 +615,8 @@ class Service:
             port=s['ports'][c['port_id']]; v=s['vehicles'][c['vehicle_id']]
             hub=port['hub_id']
             reason=None
-            if port['health']!='OPERABLE' or not self.fresh(port,now): reason='Port faulty or stale; Role D reconciliation required.'
+            if any(row['health'] != 'OPERABLE' for row in (port, v, s['spots'][port['spot_id']])) or not self.fresh(port, now):
+                reason='Vehicle, bay or port is unavailable; review the commitment with Role D.'
             elif c['end']<=now: reason='Deadline passed; stop/reconcile before reallocating.'
             elif c['status']=='BOOKED' and not self.power_fits(s,hub,c['scheduled_start'],c['scheduled_end'],c['kw'],allocations=[x for x in allocations if x['hub_id']==hub]): reason='Hub power limit cannot serve this commitment.'
             if reason:
@@ -618,7 +661,7 @@ class Service:
         return self.create_charge(s,a,v,r,p.get('target_soc',80))
 
     def sim_guard(self):
-        require(self.simulator,'SIMULATOR_DISABLED','Simulator is disabled; Role D integration is required.',403)
+        require(self.simulator,'SIMULATOR_DISABLED','Synthetic evidence requires the local server to run with --simulator.',403)
 
     def do_sim_refresh(self,s,a,p,db,rev):
         self.sim_guard()
@@ -639,6 +682,9 @@ class Service:
                 and sequence>row['sequence'],'STALE_EVENT','Stale or out-of-order observation rejected.')
         if 'health' in p:
             require(p['health'] in ('OPERABLE','OUT_OF_SERVICE','INSPECTION_PENDING'),'INVALID_INPUT','Invalid health state.',400)
+            require(p['health'] == row['health'] or
+                    (not row.get('maintenance_ticket_id') and row['health'] != 'DEACTIVATED'),
+                    'MAINTENANCE_LOCK', 'Resource health is managed by Role D.')
             row['health']=p['health']
         if 'soc' in p:
             require(kind=='vehicles','INVALID_INPUT','SOC belongs to vehicles.',400)
@@ -676,7 +722,7 @@ class Service:
         require(outcome in ('ACK','REJECT','UNKNOWN'),'INVALID_INPUT','Outcome must be ACK, REJECT or UNKNOWN.',400)
         result=dict(status='ALREADY_APPLIED',command_id=command['id'],evidence='SIMULATED')
         if command['status']=='PENDING':
-            mismatch=any(k in p and p[k]!=command.get(k) for k in ('spot_id','port_id','vehicle_id'))
+            mismatch=any(k in p and p[k]!=command.get(k) for k in ('spot_id','source_spot_id','port_id','vehicle_id','order_id','right_id'))
             if mismatch:
                 self.incident(s,command['owner_id'],command['record_id'],'Wrong-resource simulated evidence: manual reconciliation required.','mismatch-'+command['id'])
                 result['status']='ANOMALY'
@@ -733,10 +779,12 @@ class Service:
 
     def apply_evidence(self,s,cmd,observed):
         kind=cmd['kind']
-        if kind=='PICKUP':
+        if kind=='TRANSFER':
+            self.apply_transfer(s,cmd,observed)
+        elif kind=='PICKUP':
             h=s['holds'][cmd['record_id']]; v=s['vehicles'][h['vehicle_id']]
             require(h['status']=='HANDOVER_PENDING','INVALID_STATE','Hold is not pending.')
-            require(v['health']=='OPERABLE' and v['soc']>=POLICY['rental_soc'],'UNSAFE_PICKUP','Vehicle no longer suitable for pickup.')
+            require(self.pickup_ready(s,v,self.clock()),'UNSAFE_PICKUP','Vehicle no longer suitable for pickup.')
             self.departure_effect(s,v['id'],cmd['spot_id'],observed)
             h['status']='CONSUMED'
             self.new(s,'trips',owner_id=h['owner_id'],vehicle_id=v['id'],hold_id=h['id'],status='OPEN',started_at=self.clock(),ended_at=None)
@@ -755,6 +803,8 @@ class Service:
             c=s['sessions'][cmd['record_id']]; port=s['ports'][c['port_id']]; v=s['vehicles'][c['vehicle_id']]
             self.stamp(port,observed)
             require(kind in ('PLUG','START','STOP','UNPLUG'),'UNKNOWN_EFFECT','Unrecognized device command.')
+            if kind in ('PLUG', 'START'):
+                self.check_charge_resources(s, v['id'], port)
             if kind=='PLUG':
                 require(c['status']=='BOOKED' and v['spot_id']==port['spot_id'] and port['plug']=='UNPLUGGED'
                         and port['power']=='OFF' and port['health']=='OPERABLE','INVALID_CONNECTION','Connection prerequisites changed.')
@@ -781,7 +831,8 @@ class Service:
 
     def reject_evidence(self,s,cmd):
         kind=cmd['kind']; rid=cmd['record_id']
-        if kind=='PICKUP': s['holds'][rid]['status']='ACTIVE'
+        if kind=='TRANSFER': self.reject_transfer(s,cmd)
+        elif kind=='PICKUP': s['holds'][rid]['status']='ACTIVE'
         elif kind=='ARRIVAL': s['rights'][rid]['status']='CONFIRMED'
         elif kind=='RETURN':
             s['trips'][rid]['status']='OPEN'; s['rights'][cmd['right_id']]['status']='CONFIRMED'
