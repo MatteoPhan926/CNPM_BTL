@@ -17,7 +17,7 @@ from pathlib import Path
 import secrets
 import threading
 import time
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from .domain import ACTOR_ROLES, DomainError, Service
 
@@ -122,9 +122,22 @@ class Handler(BaseHTTPRequestHandler):
             except Exception:
                 LOG.exception("Snapshot failed")
                 return self.reject(500, "INTERNAL", "Unable to load current state.")
+        if path == "/api/parking-qr":
+            actor = self.actor()
+            if not actor:
+                return self.reject(401, "AUTH_REQUIRED", "Sign in to continue.")
+            try:
+                right_id = parse_qs(urlsplit(self.path).query).get('right_id', [None])[0]
+                return self.respond(200, self.server.service.parking_qr(actor, right_id))
+            except DomainError as exc:
+                return self.reject(exc.status, exc.code, exc.message)
+            except Exception:
+                LOG.exception('Parking QR could not be rendered')
+                return self.reject(500, 'INTERNAL', 'Unable to load parking QR.')
         resources = {"/": ("index.html", "text/html; charset=utf-8"),
                      "/app.js": ("app.js", "text/javascript; charset=utf-8"),
                      "/network.js": ("network.js", "text/javascript; charset=utf-8"),
+                     "/parking-qr.js": ("parking-qr.js", "text/javascript; charset=utf-8"),
                      "/styles.css": ("styles.css", "text/css; charset=utf-8")}
         resource = resources.get(path)
         if not resource:

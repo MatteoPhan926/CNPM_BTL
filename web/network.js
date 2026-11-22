@@ -14,7 +14,7 @@ let transferSource = '';
 function fleetWorkspace() {
   const sections = fleetSections.filter(item => item.roles.includes(state.actor.role));
   const current = sections.find(item => item.id === fleetSection) || sections[0];
-  return heading('D · Fleet operations', 'Fleet operations',
+  return heading('Fleet operations', 'Fleet operations',
     {operator:'Monitor hub capacity, coordinate field staff and review vehicle observations.',
       dispatcher:'Collect your assigned vehicles and record their handover at the destination.',
       technician:'Review assigned maintenance tickets and record the outcome of each inspection.'}[state.actor.role]) +

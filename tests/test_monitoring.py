@@ -21,6 +21,8 @@ class MonitoringTests(unittest.TestCase):
         self.service = Service(self.path, simulator=True, clock=lambda: self.now)
 
     def run_command(self, action, actor=OP, **payload):
+        if action == 'arrive' and 'qr_token' not in payload:
+            payload['qr_token'] = self.rows('rights')[payload['right_id']]['qr']['token']
         return self.service.command(actor, action, payload, uuid.uuid4().hex)['record']
 
     def rows(self, kind, actor=OP):

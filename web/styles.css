@@ -15,3 +15,10 @@ progress.meter{display:block;width:100%;border:0;appearance:none}progress.meter:
 #fleet-workspace .record-actions > form {width:100%}
 #fleet-workspace .form {min-width:0}
 #fleet-workspace .form select {min-width:0}
+
+.parking-qr-image {display:block; width:260px; max-width:100%; height:auto; margin:18px auto; background:#fff}
+.parking-qr-details {display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:8px 16px; font-size:13px}
+.parking-qr-details dt {color:var(--muted)}
+.parking-qr-details dd {margin:0; overflow-wrap:anywhere}
+#parking-qr-token {font-family:Consolas,monospace; font-size:11px; min-width:0}
+#parking-qr-dialog {width:min(550px,calc(100% - 30px))}

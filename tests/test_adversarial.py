@@ -38,6 +38,8 @@ class AdversarialDomainTests(unittest.TestCase):
         self.service = Service(self.db, simulator=True, clock=self.clock)
 
     def command(self, action, payload=None, actor=ALICE, intent=None, service=None):
+        if action == 'arrive' and payload and 'qr_token' not in payload:
+            payload = dict(payload, qr_token=self.row('rights', payload['right_id'])['qr']['token'])
         return (service or self.service).command(
             actor, action, payload or {}, intent or uuid.uuid4().hex
         )
