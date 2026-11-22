@@ -8,9 +8,12 @@ from .shared import LIVE_SESSION
 
 def active_service_count(state, actor_id):
     def owned(kind):
-        return [row for row in state[kind].values() if row.get('owner_id') == actor_id]
+        return [row for row in state.get(kind, {}).values() if row.get('owner_id') == actor_id]
 
     services = set()
+    for request in owned('charge_requests'):
+        if request['status'] == 'PENDING':
+            services.add(('charge_request', request['id']))
     trips = owned('trips')
     rental_key = lambda trip: ('rental', trip.get('hold_id') or trip['id'])
     return_groups = {trip['return_right_id']: rental_key(trip)

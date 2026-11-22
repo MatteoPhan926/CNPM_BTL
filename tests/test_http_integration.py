@@ -99,6 +99,57 @@ class HttpIntegrationTests(unittest.TestCase):
         self.command('alice', 'arrive', dict(qr_token=qr['token']), 409)
         self.assertEqual(len(self.api('/api/state', 'alice')['visits']), 1)
 
+    def test_charging_only_approval_and_qr_http_contract(self):
+        self.api('/api/charging-qr?request_id=unknown', status=401)
+        for actor in ('alice', 'bob', 'operator'):
+            self.login(actor)
+        now = self.api('/api/state', 'alice')['now']
+        request = self.command('alice', 'submit_charge_request', dict(
+            vehicle_id='P1', hub_id='H1', declared_soc=20, target_soc=80, arrival_time=now))
+        self.assertEqual(request['status'], 'PENDING')
+        reference = dict(request_id=request['id'])
+        route = '/api/charging-qr?request_id=' + request['id']
+        self.api(route, 'alice', status=404)
+        self.command('alice', 'approve_charge_request', reference, 403)
+        booked = self.command('operator', 'approve_charge_request', reference)
+        self.assertEqual(booked['status'], 'BOOKED')
+        qr = self.api(route, 'alice')
+        self.assertIn('<svg', qr['svg'])
+        self.api(route, 'bob', status=403)
+        self.assertEqual(self.api('/api/state', 'bob')['charge_requests'], [])
+        payload = dict(reference, qr_token=qr['token'])
+        self.command('bob', 'scan_charge', payload, 403)
+        self.command('alice', 'scan_charge', payload)
+        self.command('alice', 'scan_charge', payload)
+        state = self.api('/api/state', 'operator')
+        commands = [c for c in state['commands'] if c['kind']=='ARRIVAL']
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(next(s for s in state['spots'] if s['id']==booked['spot_id'])['state'], 'EMPTY')
+        self.command('operator', 'simulate', dict(command_id=commands[0]['id']))
+        self.assertEqual(self.api(route, 'alice')['status'], 'CONSUMED')
+        self.assertEqual(len(self.api('/api/state', 'alice')['visits']), 1)
+
+    def test_rental_qr_http_contract(self):
+        self.api('/api/rental-qr?hold_id=unknown', status=401)
+        for actor in ('alice', 'bob', 'operator'):
+            self.login(actor)
+        hold = self.command('alice', 'reserve_vehicle', dict(vehicle_id='V1'))
+        route = '/api/rental-qr?hold_id=' + hold['id']
+        qr = self.api(route, 'alice')
+        self.assertTrue(qr['usable'])
+        self.api(route, 'bob', status=403)
+        payload = dict(hold_id=hold['id'], qr_token=qr['token'])
+        self.command('bob', 'scan_rental', payload, 403)
+        self.command('alice', 'scan_rental', payload)
+        self.command('alice', 'scan_rental', payload)
+        state = self.api('/api/state', 'operator')
+        commands = [c for c in state['commands'] if c['kind']=='PICKUP']
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(self.api('/api/state', 'alice')['trips'], [])
+        self.command('operator', 'simulate', dict(command_id=commands[0]['id']))
+        self.assertFalse(self.api(route, 'alice')['usable'])
+        self.assertEqual(len(self.api('/api/state', 'alice')['trips']), 1)
+
     def test_charger_ticket_changes_customer_booking_and_survives_restart(self):
         for actor in ("alice", "operator", "technician"):
             self.login(actor)

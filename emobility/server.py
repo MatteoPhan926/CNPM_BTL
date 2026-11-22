@@ -122,6 +122,30 @@ class Handler(BaseHTTPRequestHandler):
             except Exception:
                 LOG.exception("Snapshot failed")
                 return self.reject(500, "INTERNAL", "Unable to load current state.")
+        if path == "/api/rental-qr":
+            actor = self.actor()
+            if not actor:
+                return self.reject(401, "AUTH_REQUIRED", "Sign in to continue.")
+            try:
+                hold_id = parse_qs(urlsplit(self.path).query).get('hold_id', [None])[0]
+                return self.respond(200, self.server.service.rental_qr(actor, hold_id))
+            except DomainError as exc:
+                return self.reject(exc.status, exc.code, exc.message)
+            except Exception:
+                LOG.exception('Rental QR could not be rendered')
+                return self.reject(500, 'INTERNAL', 'Unable to load rental QR.')
+        if path == "/api/charging-qr":
+            actor = self.actor()
+            if not actor:
+                return self.reject(401, "AUTH_REQUIRED", "Sign in to continue.")
+            try:
+                request_id = parse_qs(urlsplit(self.path).query).get('request_id', [None])[0]
+                return self.respond(200, self.server.service.charging_qr(actor, request_id))
+            except DomainError as exc:
+                return self.reject(exc.status, exc.code, exc.message)
+            except Exception:
+                LOG.exception('Charging QR could not be rendered')
+                return self.reject(500, 'INTERNAL', 'Unable to load charging QR.')
         if path == "/api/parking-qr":
             actor = self.actor()
             if not actor:
@@ -138,6 +162,7 @@ class Handler(BaseHTTPRequestHandler):
                      "/app.js": ("app.js", "text/javascript; charset=utf-8"),
                      "/network.js": ("network.js", "text/javascript; charset=utf-8"),
                      "/parking-qr.js": ("parking-qr.js", "text/javascript; charset=utf-8"),
+                     "/service-bookings.js": ("service-bookings.js", "text/javascript; charset=utf-8"),
                      "/styles.css": ("styles.css", "text/css; charset=utf-8")}
         resource = resources.get(path)
         if not resource:

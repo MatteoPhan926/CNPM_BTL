@@ -2,6 +2,8 @@
 
 Run from project root: python -m tests.ui_button_audit (or python tests/ui_button_audit.py).
 Requires Python Playwright and Chrome. No production database or credentials used.
+Physical request regressions use explicitly labelled authenticated legacy API
+calls; they are not reported as student UI buttons. IoT UI is tested separately.
 """
 from __future__ import annotations
 
@@ -136,6 +138,29 @@ class Audit:
         RESULTS[-1]['actor'] = actor
         return data.get('record',data)
 
+    def legacy_api(self, actor, action, values=None, error=None, outcome=None):
+        """Exercise preserved HTTP request contracts, never fake a UI click."""
+        page = self.p(actor)
+        response = page.request.post(self.url+'/api/commands',
+            headers={'Origin':self.url}, data={'action':action,'payload':values or {},'intent_id':uuid.uuid4().hex})
+        data = response.json()
+        if error:
+            self.check(f'Legacy API {actor} {action} rejects {error}',
+                       response.status >= 400 and data.get('error',{}).get('code')==error, str(data))
+        else:
+            self.check(f'Legacy API {actor} {action}', response.status==200 and
+                       (outcome is None or data.get('record',{}).get('status')==outcome),str(data))
+        RESULTS[-1].update(action=action,actor=actor,interface='LEGACY_HTTP_API')
+        if not page.locator('dialog[open]').count():
+            self.refresh(actor)
+        return data.get('record',data)
+
+    def legacy_button(self, actor, action, key, value, **kw):
+        payload = {key:value}
+        if action == 'arrive':
+            payload['qr_token'] = self.row('rights',value)['qr']['token']
+        return self.legacy_api(actor,action,payload,**kw)
+
     def submit(self, actor, action, values=None, checks=None, **kw):
         page = self.p(actor)
         form = page.locator(f'form[data-command="{action}"]')
@@ -198,13 +223,13 @@ def rentals(a):
     a.button('alice','cancel_hold','hold_id',h['id'],outcome='CANCELLED')
     a.nav('bob','overview'); a.refresh('bob')
     h=a.button('bob','reserve_vehicle','vehicle_id','V1')
-    a.nav('bob','journeys'); a.button('bob','pickup','hold_id',h['id'])
+    a.nav('bob','journeys'); a.legacy_button('bob','pickup','hold_id',h['id'])
     a.ack('PICKUP','UNKNOWN'); a.ack('PICKUP','REJECT')
-    a.refresh('bob'); a.button('bob','pickup','hold_id',h['id']); a.ack('PICKUP')
+    a.refresh('bob'); a.legacy_button('bob','pickup','hold_id',h['id']); a.ack('PICKUP')
     trip=next(r for r in a.rows('trips') if r['owner_id']=='bob')
     a.check('Pickup creates OPEN trip and frees original bay',trip['status']=='OPEN' and a.row('spots','H1-S3')['state']=='EMPTY')
     a.nav('bob','journeys'); a.refresh('bob')
-    a.submit('bob','return_vehicle',{'trip_id':trip['id'],'hub_id':'H2'})
+    a.legacy_api('bob','return_vehicle',{'trip_id':trip['id'],'hub_id':'H2'})
     a.ack('RETURN'); a.refresh('bob')
     a.check('Walk-in return closes journey',a.row('trips',trip['id'])['status']=='CLOSED' and a.row('vehicles','V1')['hub_id']=='H2')
     a.nav('bob','history'); expect(bob.locator('table')).to_be_visible()
@@ -225,19 +250,19 @@ def parking_charging(a):
     a.nav('alice','charging'); a.button('alice','cancel_charge','session_id',session['id'],outcome='CANCELLED')
     a.check('Cancel charging bundle cancels associated right',a.row('rights',right['id'])['status']=='CANCELLED')
     right=a.booking(charging=True); session=next(c for c in a.rows('sessions') if c['right_id']==right['id'])
-    a.nav('alice','charging'); a.button('alice','plug','session_id',session['id'],error='NOT_PARKED')
-    a.button('alice','start_charge','session_id',session['id'],error='NOT_CONNECTED')
-    a.nav('alice','parking'); a.button('alice','arrive','right_id',right['id']); a.ack('ARRIVAL')
+    a.nav('alice','charging'); a.legacy_button('alice','plug','session_id',session['id'],error='NOT_PARKED')
+    a.legacy_button('alice','start_charge','session_id',session['id'],error='NOT_CONNECTED')
+    a.nav('alice','parking'); a.legacy_button('alice','arrive','right_id',right['id']); a.ack('ARRIVAL')
     visit=next(v for v in a.rows('visits') if v['right_id']==right['id'])
     a.check('Arrival marks correct bay occupied',a.row('spots',right['spot_id'])['state']=='OCCUPIED')
-    a.nav('alice','charging'); a.refresh('alice'); a.button('alice','plug','session_id',session['id']); a.ack('PLUG')
-    a.refresh('alice'); a.button('alice','start_charge','session_id',session['id']); a.ack('START')
+    a.nav('alice','charging'); a.refresh('alice'); a.legacy_button('alice','plug','session_id',session['id']); a.ack('PLUG')
+    a.refresh('alice'); a.legacy_button('alice','start_charge','session_id',session['id']); a.ack('START')
     a.check('Charging ON',a.row('ports',session['port_id'])['power']=='ON')
-    a.nav('alice','parking'); a.button('alice','depart','visit_id',visit['id'],error='CONNECTED')
+    a.nav('alice','parking'); a.legacy_button('alice','depart','visit_id',visit['id'],error='CONNECTED')
     a.nav('alice','charging'); a.refresh('alice'); a.button('alice','stop_charge','session_id',session['id']); a.ack('STOP')
     a.check('Stop does not free occupied bay',a.row('spots',right['spot_id'])['state']=='OCCUPIED' and a.row('ports',session['port_id'])['power']=='OFF')
-    a.refresh('alice'); a.button('alice','unplug','session_id',session['id']); a.ack('UNPLUG')
-    a.nav('alice','parking'); a.refresh('alice'); a.button('alice','depart','visit_id',visit['id']); a.ack('DEPARTURE')
+    a.refresh('alice'); a.legacy_button('alice','unplug','session_id',session['id']); a.ack('UNPLUG')
+    a.nav('alice','parking'); a.refresh('alice'); a.legacy_button('alice','depart','visit_id',visit['id']); a.ack('DEPARTURE')
     a.check('Departure frees parking',a.row('spots',right['spot_id'])['state']=='EMPTY')
 
 
@@ -284,8 +309,8 @@ def active_services_and_qr(a):
     a.refresh('alice')
     a.check('QR survives service restart with same DB', show_qr(right) == token)
     page.locator('#close-parking-qr').click()
-    a.submit('alice', 'arrive', {'qr_token':'emobility:parking:invalid'}, error='INVALID_QR')
-    a.submit('alice', 'arrive', {'qr_token':token}, outcome='HANDOVER_PENDING')
+    a.legacy_api('alice','arrive', {'qr_token':'emobility:parking:invalid'}, error='INVALID_QR')
+    a.legacy_api('alice','arrive', {'qr_token':token}, outcome='HANDOVER_PENDING')
     a.check('QR check does not occupy bay or create visit', a.row('spots',right['spot_id'])['state']=='EMPTY' and not any(v['right_id']==right['id'] for v in a.rows('visits')))
     show_qr(right)
     expect(page.locator('#parking-qr-status')).to_contain_text('awaiting reception evidence')
@@ -297,30 +322,30 @@ def active_services_and_qr(a):
     a.nav('alice','parking'); show_qr(right)
     expect(page.locator('#parking-qr-status')).to_contain_text('Already used')
     page.locator('#close-parking-qr').click()
-    a.submit('alice','arrive',{'qr_token':token},error='INVALID_RIGHT')
+    a.legacy_api('alice','arrive',{'qr_token':token},error='INVALID_RIGHT')
     visit = next(v for v in a.rows('visits') if v['right_id']==right['id'])
-    a.button('alice','depart','visit_id',visit['id']); a.counter('alice',1,'Checkout pending remains active')
+    a.legacy_button('alice','depart','visit_id',visit['id']); a.counter('alice',1,'Checkout pending remains active')
     a.ack('DEPARTURE'); a.refresh('alice'); a.counter('alice',0,'Verified checkout ends parking service')
     right = a.booking(); cancelled_token=right['qr']['token']
     a.button('alice','cancel_parking','right_id',right['id'])
     show_qr(right); expect(page.locator('#parking-qr-status')).to_contain_text('cancelled')
     page.locator('#close-parking-qr').click()
     a.counter('alice',0,'Cancelled parking is not active')
-    a.nav('alice','parking'); a.submit('alice','arrive',{'qr_token':cancelled_token},error='INVALID_RIGHT')
+    a.nav('alice','parking'); a.legacy_api('alice','arrive',{'qr_token':cancelled_token},error='INVALID_RIGHT')
     right = a.booking(); a.t += 601
     a.nav('operator','operations'); a.action('operator','sim_refresh'); a.refresh('alice')
     show_qr(right); expect(page.locator('#parking-qr-status')).to_contain_text('expired')
     page.locator('#close-parking-qr').click()
-    a.submit('alice','arrive',{'qr_token':right['qr']['token']},error='INVALID_RIGHT')
+    a.legacy_api('alice','arrive',{'qr_token':right['qr']['token']},error='INVALID_RIGHT')
     a.counter('alice',0,'Expired parking is not active')
     a.check('QR generation makes no external HTTP requests', not external_requests, repr(external_requests))
     hold = a.button('alice','reserve_vehicle','vehicle_id','V1')
     a.counter('alice',1,'Hold is one active rental')
-    a.nav('alice','journeys'); a.button('alice','pickup','hold_id',hold['id']); a.ack('PICKUP'); a.refresh('alice')
+    a.nav('alice','journeys'); a.legacy_button('alice','pickup','hold_id',hold['id']); a.ack('PICKUP'); a.refresh('alice')
     a.counter('alice',1,'Hold transitions to trip without double count')
     a.nav('alice','journeys')
     trip = next(t for t in a.rows('trips') if t['hold_id']==hold['id'])
-    a.submit('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H3'}); a.ack('RETURN'); a.refresh('alice')
+    a.legacy_api('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H3'}); a.ack('RETURN'); a.refresh('alice')
     a.counter('alice',0,'Returned fleet vehicle is not a remaining student service')
 
 
@@ -332,27 +357,34 @@ def bundle_service_counter(a):
     a.submit('operator','sim_observe',{'resource_ref':'spots:'+right['spot_id'],'health':'OUT_OF_SERVICE'})
     page = a.nav('alice','parking')
     page.locator(f'[data-parking-qr="{right["id"]}"]').click()
-    button = page.locator('#parking-qr-dialog button[data-action="arrive"]')
-    expect(button).to_be_visible()
-    a.action('alice','arrive',button,error='RECEPTION_BLOCKED')
-    expect(page.locator('#parking-qr-feedback')).to_contain_text('Reception spot is occupied, closed or stale.')
-    a.check('Arrival rejection is readable inside QR modal',page.locator('#parking-qr-feedback').is_visible())
+    a.check('Student QR is presentation only',page.locator('#parking-qr-dialog button[data-action="arrive"]').count()==0)
+    page.locator('#close-parking-qr').click()
+    a.legacy_api('alice','arrive',dict(right_id=right['id'],qr_token=right['qr']['token']),error='RECEPTION_BLOCKED')
+    # QR retrieval failures still need to be readable in the dialog now that
+    # student-facing physical request controls have been removed.
+    page.route('**/api/parking-qr?*',lambda route:route.fulfill(status=503,content_type='application/json',
+        body=json.dumps({'error':{'code':'TEST_UNAVAILABLE','message':'QR temporarily unavailable'}})))
+    page.locator(f'[data-parking-qr="{right["id"]}"]').click()
+    expect(page.locator('#parking-qr-content')).to_contain_text('QR temporarily unavailable')
+    a.check('QR retrieval error is readable inside modal',page.locator('#parking-qr-content').is_visible())
+    page.locator('#close-parking-qr').click()
+    page.unroute('**/api/parking-qr?*')
     a.submit('operator','sim_observe',{'resource_ref':'spots:'+right['spot_id'],'health':'OPERABLE'})
-    a.action('alice','arrive',button,outcome='HANDOVER_PENDING')
-    expect(page.locator('#parking-qr-feedback')).to_be_hidden()
+    a.legacy_api('alice','arrive',dict(right_id=right['id'],qr_token=right['qr']['token']),outcome='HANDOVER_PENDING')
+    page.locator(f'[data-parking-qr="{right["id"]}"]').click()
     expect(page.locator('#parking-qr-status')).to_contain_text('awaiting reception evidence')
     page.locator('#close-parking-qr').click()
     a.ack('ARRIVAL'); a.refresh('alice'); a.counter('alice',1,'Bundle stays one after arrival')
     session = next(s for s in a.rows('sessions') if s['right_id']==right['id'])
-    a.nav('alice','charging'); a.button('alice','plug','session_id',session['id']); a.ack('PLUG'); a.refresh('alice')
-    a.button('alice','start_charge','session_id',session['id']); a.ack('START'); a.refresh('alice')
+    a.nav('alice','charging'); a.legacy_button('alice','plug','session_id',session['id']); a.ack('PLUG'); a.refresh('alice')
+    a.legacy_button('alice','start_charge','session_id',session['id']); a.ack('START'); a.refresh('alice')
     a.counter('alice',1,'Running charge and parking stay one bundle')
     a.nav('alice','charging'); a.button('alice','stop_charge','session_id',session['id']); a.ack('STOP'); a.refresh('alice')
     a.counter('alice',1,'Completed charging does not end occupied parking bundle')
-    a.nav('alice','charging'); a.button('alice','unplug','session_id',session['id']); a.ack('UNPLUG'); a.refresh('alice')
+    a.nav('alice','charging'); a.legacy_button('alice','unplug','session_id',session['id']); a.ack('UNPLUG'); a.refresh('alice')
     a.counter('alice',1,'Unplugged bundle stays active until departure')
     a.nav('alice','parking'); visit=next(v for v in a.rows('visits') if v['right_id']==right['id'])
-    a.button('alice','depart','visit_id',visit['id']); a.ack('DEPARTURE'); a.refresh('alice')
+    a.legacy_button('alice','depart','visit_id',visit['id']); a.ack('DEPARTURE'); a.refresh('alice')
     a.counter('alice',0,'Bundle finishes after all obligations end')
     right=a.booking(charging=True); a.button('alice','cancel_parking','right_id',right['id'])
     a.counter('alice',0,'Cancelled unused bundle counts zero')
@@ -405,7 +437,7 @@ def fleet(a):
     a.button('operator','schedule_confirm','plan_id',plan['id'],outcome='APPLIED')
     a.nav('operator','charging'); a.refresh('operator')
     s=next(s for s in a.rows('sessions') if s['vehicle_id']=='V1')
-    a.button('operator','plug','session_id',s['id']); a.ack('PLUG'); a.refresh('operator'); a.nav('operator','charging'); a.button('operator','start_charge','session_id',s['id']); a.ack('START')
+    a.legacy_button('operator','plug','session_id',s['id']); a.ack('PLUG'); a.refresh('operator'); a.nav('operator','charging'); a.legacy_button('operator','start_charge','session_id',s['id']); a.ack('START')
 
 
 def maintenance_telemetry(a):
@@ -439,6 +471,8 @@ def roles_and_sessions(a):
         p=a.p(actor)
         tabs=set(p.locator('nav.nav button').evaluate_all('(els)=>els.map(e=>e.dataset.tab)'))
         expected={'overview','journeys','parking','charging','support','history'} if actor in ('alice','bob') else {'overview','network','history'} if actor in ('dispatcher','technician') else {'overview','journeys','parking','charging','support','operations','network','history'}
+        if actor=='operator' and a.server.service.simulator:
+            expected.add('technical')
         a.check(actor+' tab visibility',tabs==expected,str(tabs))
         a.nav(actor,'history'); a.refresh(actor)
         with p.expect_response(lambda r:r.url.endswith('/api/logout')) as response:
@@ -474,9 +508,9 @@ def existing_right_and_reserved_return(a):
     a.nav('alice','journeys'); p.get_by_role('button',name='Find a vehicle',exact=False).click(); a.check('Find a vehicle opens Explore hubs',p.locator('#hub-filter').is_visible())
     h=a.button('alice','reserve_vehicle','vehicle_id','V1')
     a.nav('alice','journeys'); p.get_by_role('button',name='Reserve parking',exact=False).click(); a.check('Reserve parking navigation',p.locator('form[data-command="reserve_parking"]').is_visible())
-    right=a.booking(vehicle='V1',hub='H3'); a.nav('alice','journeys'); a.button('alice','pickup','hold_id',h['id']); a.ack('PICKUP'); a.refresh('alice')
+    right=a.booking(vehicle='V1',hub='H3'); a.nav('alice','journeys'); a.legacy_button('alice','pickup','hold_id',h['id']); a.ack('PICKUP'); a.refresh('alice')
     trip=next(t for t in a.rows('trips') if t['vehicle_id']=='V1')
-    a.submit('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H3','right_id':right['id']}); a.ack('RETURN'); a.refresh('alice')
+    a.legacy_api('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H3','right_id':right['id']}); a.ack('RETURN'); a.refresh('alice')
     a.check('Reserved return consumes correct right and closes trip',a.row('rights',right['id'])['status']=='CONSUMED' and a.row('trips',trip['id'])['status']=='CLOSED')
 
 
@@ -525,9 +559,9 @@ def full_hub_and_operator_controls(a):
         if spot['hub_id']=='H2' and spot['state']=='EMPTY':
             a.service.command(OP,'sim_observe',{'resource_type':'spots','resource_id':spot['id'],'health':'OUT_OF_SERVICE'},uuid.uuid4().hex)
     student=a.nav('alice','overview'); a.refresh('alice')
-    h=a.button('alice','reserve_vehicle','vehicle_id','V1'); a.nav('alice','journeys'); a.button('alice','pickup','hold_id',h['id']); a.ack('PICKUP'); a.refresh('alice')
+    h=a.button('alice','reserve_vehicle','vehicle_id','V1'); a.nav('alice','journeys'); a.legacy_button('alice','pickup','hold_id',h['id']); a.ack('PICKUP'); a.refresh('alice')
     trip=next(t for t in a.rows('trips') if t['vehicle_id']=='V1')
-    a.submit('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H2'},outcome='ASSISTANCE_PENDING')
+    a.legacy_api('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H2'},outcome='ASSISTANCE_PENDING')
     a.check('Full hub preserves trip and creates incident',a.row('trips',trip['id'])['status']=='ASSISTANCE_PENDING' and any(i['record_id']==trip['id'] for i in a.rows('incidents')))
     a.booking(error='HUB_CAPACITY')
     a.finding('Full parking booking presents alternative hubs before confirmation',student.locator('form[data-command="reserve_parking"] [name=spot_id]').count()>0,'Server safely rejects HUB_CAPACITY but UI has no alternative-hub/availability preview')
@@ -537,7 +571,8 @@ def full_hub_and_operator_controls(a):
 def responsive_and_stale_ui(a):
     p=a.nav('alice','overview')
     a.t+=91
-    a.finding('Overview reflects expired observations without Refresh',p.locator('.stat .number').all_inner_texts()[1:3]==['0','0'],'After advancing the server clock, the loaded page keeps its previous snapshot; source has no Overview polling timer')
+    p.wait_for_function("()=>[...document.querySelectorAll('.stat .number')].slice(1,3).every(e=>e.textContent==='0')",timeout=15000)
+    a.check('Overview reflects expired observations through polling',p.locator('.stat .number').all_inner_texts()[1:3]==['0','0'])
     a.refresh('alice')
     a.check('Manual Refresh reflects current availability',p.locator('.stat .number').all_inner_texts()[1:3]==['0','0'])
     a.finding('Student dashboard explicitly explains stale-zero capacity',p.locator('.mode-banner').get_by_text('stale',exact=False).count()>0,'No distinct stale warning in mode banner; resource labels and footnotes still show STALE')

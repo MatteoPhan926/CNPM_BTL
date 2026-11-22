@@ -1,0 +1,719 @@
+{
+  "summary": {
+    "PASS": 110
+  },
+  "results": [
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "alice Sign in",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "alice navigation charging",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "alice navigation journeys",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "No redundant student physical controls in journeys",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "alice navigation parking",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "No redundant student physical controls in parking",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "alice navigation charging",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "No redundant student physical controls in charging",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student cannot access technical simulator navigation",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "alice Reserve charging",
+      "detail": "PENDING",
+      "action": "submit_charge_request",
+      "actor": "alice"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Sign in",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Confirm charging proposal",
+      "detail": "BOOKED",
+      "action": "approve_charge_request",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes charge_requests BOOKED",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "QR is presentation only with reader instructions",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Opening QR creates no physical command",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Simulate QR scan",
+      "detail": "HANDOVER_PENDING",
+      "action": "sim_iot_scan",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes rights HANDOVER_PENDING",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Polling preserves form draft",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Scan alone does not occupy bay",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes rights CONSUMED",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "ACKNOWLEDGED",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes sessions START_PENDING",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Connection initiates START but power awaits ACK",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes sessions CHARGING",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Legacy API operator sim_observe",
+      "detail": "{'status': 'CONFIRMED', 'code': 'OK', 'record': {'id': 'P1', 'label': 'P1', 'owner_id': 'alice', 'kind': 'personal', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'soc': 80.0, 'battery_kwh': 2.0, 'connector': 'TYPE2', 'health': 'OPERABLE', 'observed_at': 1795352583.2776296, 'sequence': 3, 'evidence': 'SIMULATED'}, 'revision': 8}",
+      "action": "sim_observe",
+      "actor": "operator",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes sessions STOP_PENDING",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes sessions COMPLETED",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Completion keeps bay and offers collection guidance",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "ACKNOWLEDGED",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "ACKNOWLEDGED",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student automatically observes visits DEPARTED",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Device departure frees bay",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "Student charging remains responsive",
+      "detail": ""
+    },
+    {
+      "case": "charging",
+      "status": "PASS",
+      "step": "No browser JavaScript exceptions",
+      "detail": "[]"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "alice Sign in",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "alice navigation overview",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "alice Reserve \u00b7 10 min",
+      "detail": "ACTIVE",
+      "action": "reserve_vehicle",
+      "actor": "alice"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "alice navigation journeys",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Sign in",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Simulate QR scan",
+      "detail": "HANDOVER_PENDING",
+      "action": "sim_iot_scan",
+      "actor": "operator"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "Student automatically observes holds CONSUMED",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "alice Save return destination",
+      "detail": "OPEN",
+      "action": "select_return_hub",
+      "actor": "alice"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "Saving destination does not start physical return",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "HANDOVER_PENDING",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "Student automatically observes trips HANDOVER_PENDING",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "ACKNOWLEDGED",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "Student automatically observes trips CLOSED",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "Return device evidence positions vehicle",
+      "detail": ""
+    },
+    {
+      "case": "rental",
+      "status": "PASS",
+      "step": "No browser JavaScript exceptions",
+      "detail": "[]"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice Sign in",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice navigation parking",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice navigation parking",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice Confirm reservation",
+      "detail": "CONFIRMED",
+      "action": "reserve_parking",
+      "actor": "alice"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Sign in",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Simulate QR scan",
+      "detail": "HANDOVER_PENDING",
+      "action": "sim_iot_scan",
+      "actor": "operator"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "Student automatically observes rights CONSUMED",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "ACKNOWLEDGED",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "Student automatically observes visits DEPARTED",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "Legacy API alice reserve_parking",
+      "detail": "{'status': 'CONFIRMED', 'code': 'OK', 'record': {'id': '2f506f41d4144a3c', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795352629.3325307, 'end': 1795356229.3325307, 'block_end': 1795357129.3325307, 'status': 'CONFIRMED', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795352629.3325307, 'qr': {'token': 'emobility:parking:-85oHAX3nGrG3qK5DcaWaWkxXDBOu_mqRIhNABEdF9M', 'issued_at': 1795352629.3325307, 'expires_at': 1795353229.3325307}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 6}",
+      "action": "reserve_parking",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Simulate QR scan",
+      "detail": "HANDOVER_PENDING",
+      "action": "sim_iot_scan",
+      "actor": "operator"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "Student automatically observes rights CONSUMED",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice navigation charging",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "alice Reserve charging",
+      "detail": "BOOKED",
+      "action": "register_charge",
+      "actor": "alice"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator navigation technical",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "operator Submit simulated event",
+      "detail": "ACKNOWLEDGED",
+      "action": "sim_iot_event",
+      "actor": "operator"
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "Student automatically observes sessions START_PENDING",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "Add charging requires no second arrival",
+      "detail": ""
+    },
+    {
+      "case": "parking_and_add",
+      "status": "PASS",
+      "step": "No browser JavaScript exceptions",
+      "detail": "[]"
+    }
+  ]
+}

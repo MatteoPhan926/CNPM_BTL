@@ -22,3 +22,5 @@ progress.meter{display:block;width:100%;border:0;appearance:none}progress.meter:
 .parking-qr-details dd {margin:0; overflow-wrap:anywhere}
 #parking-qr-token {font-family:Consolas,monospace; font-size:11px; min-width:0}
 #parking-qr-dialog {width:min(550px,calc(100% - 30px))}
+#service-qr-dialog {width:min(550px,calc(100% - 30px))}
+#service-qr-content input {min-width:0; font-family:Consolas,monospace; font-size:11px}
