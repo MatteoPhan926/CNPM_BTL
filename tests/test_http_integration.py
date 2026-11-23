@@ -77,6 +77,28 @@ class HttpIntegrationTests(unittest.TestCase):
         self.api("/api/logout", "dispatcher", {})
         self.api("/api/state", "dispatcher", status=401)
 
+    def test_parking_qr_authentication_and_checkin_boundary(self):
+        self.api('/api/parking-qr?right_id=unknown', status=401)
+        for actor in ('alice', 'bob', 'operator'):
+            self.login(actor)
+        now = self.api('/api/state', 'alice')['now']
+        right = self.command('alice', 'reserve_parking', dict(vehicle_id='P1', hub_id='H2', start=now, end=now+3600))
+        route = '/api/parking-qr?right_id=' + right['id']
+        self.api(route, 'bob', status=403)
+        qr = self.api(route, 'alice')
+        self.assertTrue(qr['usable'])
+        self.assertEqual(qr['token'], right['qr']['token'])
+        self.command('alice', 'arrive', dict(right_id=right['id']), 400)
+        self.command('alice', 'arrive', dict(qr_token=qr['token']))
+        pending = self.api('/api/state', 'alice')
+        self.assertEqual(next(s for s in pending['spots'] if s['id']==right['spot_id'])['state'], 'EMPTY')
+        self.assertFalse(self.api(route, 'alice')['usable'])
+        cmd = next(c for c in self.api('/api/state', 'operator')['commands'] if c['kind']=='ARRIVAL')
+        self.command('operator', 'simulate', dict(command_id=cmd['id']))
+        self.assertEqual(self.api(route, 'alice')['status'], 'CONSUMED')
+        self.command('alice', 'arrive', dict(qr_token=qr['token']), 409)
+        self.assertEqual(len(self.api('/api/state', 'alice')['visits']), 1)
+
     def test_charger_ticket_changes_customer_booking_and_survives_restart(self):
         for actor in ("alice", "operator", "technician"):
             self.login(actor)

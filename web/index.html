@@ -8,6 +8,7 @@
   <title>Smart E-Mobility Hub</title>
   <link rel="stylesheet" href="/styles.css">
   <script src="/network.js" defer></script>
+  <script src="/parking-qr.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -15,5 +16,6 @@
   <div id="app"></div>
   <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
   <dialog id="detail-dialog"><div id="detail-content"></div><button id="close-dialog" class="secondary">Close</button></dialog>
+  <dialog id="parking-qr-dialog" aria-labelledby="parking-qr-title"><div id="parking-qr-content"></div><p id="parking-qr-feedback" class="spaced" role="alert" hidden></p><button id="close-parking-qr" class="secondary">Close</button></dialog>
 </body>
 </html>

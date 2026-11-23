@@ -7,6 +7,7 @@ No transaction remains open while a device/handover acknowledgement is pending.
 from __future__ import annotations
 
 import copy
+import hmac
 import json
 import sqlite3
 import time
@@ -14,8 +15,10 @@ import uuid
 from contextlib import contextmanager
 from pathlib import Path
 
+from .active_services import active_service_count
 from .monitoring import MonitoringMixin
 from .operations import OperationsMixin
+from .parking_qr import issue_parking_qr, qr_details
 from .shared import DomainError, LIVE_RIGHT, LIVE_SESSION, POLICY, fingerprint, number, overlap, require
 
 ACTOR_ROLES = {'alice': 'student', 'bob': 'student', 'operator': 'operator',
@@ -52,6 +55,18 @@ class Service(OperationsMixin, MonitoringMixin):
             if not db.execute('SELECT 1 FROM meta').fetchone():
                 db.execute('INSERT INTO meta VALUES(1,0)')
                 self.save(db, self.seed())
+            # Additive migration: preserve existing reservations and receipts.
+            # BEGIN IMMEDIATE also prevents competing startups issuing two codes.
+            migrated = False
+            for rid, body in db.execute("SELECT id,body FROM documents WHERE kind='rights'").fetchall():
+                right = json.loads(body)
+                if 'qr' not in right and right['status'] in ('CONFIRMED', 'HANDOVER_PENDING', 'OFFERED'):
+                    right['qr'] = issue_parking_qr(right, self.clock())
+                    db.execute("UPDATE documents SET body=? WHERE kind='rights' AND id=?",
+                               (json.dumps(right), rid))
+                    migrated = True
+            if migrated:
+                db.execute('UPDATE meta SET revision=revision+1')
 
     @contextmanager
     def connect(self):
@@ -211,6 +226,7 @@ class Service(OperationsMixin, MonitoringMixin):
             if actor['role'] == 'operator':
                 v['transferable'] = bool(self._transferable(s, v, v['hub_id'], now))
         role, actor_id = actor['role'], actor['id']
+        active_services = active_service_count(s, actor_id)
         if role != 'operator':
             for kind in ('holds', 'trips', 'rights', 'visits', 'sessions', 'commands'):
                 s[kind] = {k: v for k, v in s[kind].items() if v['owner_id'] == actor_id}
@@ -239,7 +255,8 @@ class Service(OperationsMixin, MonitoringMixin):
             s['audit'] = {k: dict(id=v['id'], actor_id=v['actor_id'], action=v['action'], at=v['at'])
                           for k, v in s['audit'].items() if v['actor_id'] == actor_id}
         return dict(actor=actor, revision=revision, now=now, simulator=self.simulator,
-                    policy=POLICY, **{k:list(v.values()) for k,v in s.items()})
+                    policy=POLICY, active_services=active_services,
+                    **{k:list(v.values()) for k,v in s.items()})
 
     def right_blocks(self, right, start, end):
         # The bay remains claimed until a pending physical handover is reconciled,
@@ -370,9 +387,11 @@ class Service(OperationsMixin, MonitoringMixin):
         require(candidates,'NO_SPOT','No fresh, empty compatible spot is available.')
         # Charging bays remain selectable explicitly for independent-right reuse.
         candidates.sort(key=lambda x:(0 if charging else any(q['spot_id']==x['id'] for q in s['ports'].values()),x['id']))
-        return self.new(s,'rights',owner_id=owner,vehicle_id=v['id'],hub_id=hub,spot_id=candidates[0]['id'],
+        right = self.new(s,'rights',owner_id=owner,vehicle_id=v['id'],hub_id=hub,spot_id=candidates[0]['id'],
                         start=start,end=end,block_end=block_end,status='CONFIRMED',hold_id=hold_id,
                         created_by_charge=charging,recovery=recovery,created_at=now)
+        right['qr'] = issue_parking_qr(right, now)
+        return right
 
     def do_reserve_parking(self,s,a,p,db,rev):
         v=self.authorized_vehicle(s,a,p.get('vehicle_id'))
@@ -399,7 +418,20 @@ class Service(OperationsMixin, MonitoringMixin):
         require(not any(x['id']!=r['id'] and x['spot_id']==r['spot_id'] and self.right_blocks(x,now,r['block_end']) for x in s['rights'].values()),'EARLY_CONFLICT','Early arrival conflicts with another right.')
 
     def do_arrive(self,s,a,p,db,rev):
-        r=self.get(s,'rights',p.get('right_id')); self.own(r,a)
+        token = p.get('qr_token')
+        require(isinstance(token, str) and token.isascii() and 1 <= len(token) <= 128,
+                'INVALID_QR', 'A valid parking confirmation code is required.', 400)
+        if p.get('right_id'):
+            r = self.get(s, 'rights', p['right_id'])
+        else:
+            r = next((r for r in s['rights'].values()
+                      if hmac.compare_digest(r.get('qr', {}).get('token', ''), token)), None)
+            require(r is not None, 'INVALID_QR', 'Parking confirmation code is not recognized.', 400)
+        self.own(r,a)
+        require(hmac.compare_digest(r.get('qr', {}).get('token', ''), token),
+                'INVALID_QR', 'Confirmation code does not match this reservation.', 400)
+        require(r['status'] in ('CONFIRMED', 'HANDOVER_PENDING'),
+                'INVALID_RIGHT', 'Parking right is not valid for arrival.')
         require(s['vehicles'][r['vehicle_id']]['kind']=='personal','USE_RETURN','Shared vehicles must use return journey.')
         if r['status']=='HANDOVER_PENDING': return r
         self.reception(s,r)
@@ -407,6 +439,16 @@ class Service(OperationsMixin, MonitoringMixin):
         r['status']='HANDOVER_PENDING'
         self.request(s,'ARRIVAL',r,a['id'],vehicle_id=r['vehicle_id'],spot_id=r['spot_id'])
         return r
+
+    def parking_qr(self, actor, right_id):
+        authenticate_actor(actor)
+        self.tick()
+        with self.connect() as db:
+            s = self.load(db)
+        right = self.get(s, 'rights', right_id)
+        self.own(right, actor)
+        require('qr' in right, 'QR_UNAVAILABLE', 'This record has no parking confirmation code.', 404)
+        return qr_details(right, self.clock())
 
     def do_depart(self,s,a,p,db,rev):
         v=self.get(s,'visits',p.get('visit_id')); self.own(v,a)

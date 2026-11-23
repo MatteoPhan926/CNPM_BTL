@@ -7,6 +7,7 @@
 Cần Python 3.10 trở lên. Các lệnh sau chạy từ thư mục có tệp `README.md`. Trên Windows có thể dùng `py` thay cho `python`.
 
 ```sh
+python -m pip install -r requirements.txt
 python -m emobility.server --simulator
 ```
 
@@ -44,8 +45,24 @@ Công cụ cũng hỗ trợ `OVERSPEED`, `RAPID_DRAIN` và `INVALID_ID`. Máy ch
 ## Kiểm thử
 
 ```sh
+python -m pip install -r requirements-test.txt
 python -m unittest discover -s tests -v
+python tests/ui_button_audit.py --report tests/ui_audit_results.json
 ```
+
+Kiểm thử UI cần Chrome. Bộ test dùng database tạm và browser context riêng cho từng tài khoản; ảnh QR thực sự được giải mã trong test bằng `zxing-cpp`.
+
+## Bộ đếm dịch vụ và QR đỗ xe
+
+`Your active services` lấy trực tiếp từ `active_services` của `/api/state`, tính theo tài khoản đã xác thực. Giữ xe chuyển thành chuyến đi chỉ tính một lượt; quyền đỗ chuyển thành visit chỉ tính một lượt. Gói đỗ + sạc đặt chung tính một gói cho đến khi cả việc đỗ và các nghĩa vụ sạc/kết nối đã kết thúc. Sạc đăng ký riêng trên một quyền đỗ độc lập vẫn là dịch vụ riêng. Xe đội đã trả về Hub không còn là dịch vụ của sinh viên dù vẫn chiếm chỗ đỗ vật lý.
+
+Sau khi đặt chỗ, vào **Parking → Show parking QR** để xem QR, mã xác nhận, xe, Hub, bay, giờ đến và hạn check-in. QR được sinh cục bộ bằng thư viện [qrcode](https://pypi.org/project/qrcode/), không gửi mã tới dịch vụ bên ngoài. Có thể dùng **Request arrival** hoặc dán chuỗi đọc từ QR vào **Check in with a parking code**. QR chỉ xác nhận quyền yêu cầu tiếp nhận; vẫn cần **operator → Operations → Simulate ACK** cho ARRIVAL trước khi bay thành OCCUPIED. Sau đó, **Request departure** cũng cần ACK riêng.
+
+Mã ngẫu nhiên được lưu cùng quyền đỗ và không đổi sau refresh/restart. Hủy/hết hạn làm mã không còn hiệu lực; HANDOVER_PENDING giữ yêu cầu chờ đối soát; CONSUMED không thể tạo visit thứ hai. Hạn yêu cầu vào đỗ vẫn theo quy tắc hiện có: giờ đến + 10 phút; đến sớm được kiểm tra lại xung đột. Thời hạn này không tự giải phóng bay đã có xe hoặc yêu cầu bàn giao chưa rõ kết quả.
+
+Khi chạy phiên bản mới trên database cũ, ứng dụng bổ sung QR cho quyền chưa dùng/đang chờ, không xóa quyền, lịch sử, receipt hoặc sự kiện. Khởi động lại máy chủ để nạp mã mới; không cần xóa database. Các tính năng này áp dụng cho ứng dụng Python/SQLite tại localhost; `deploy-demo/index.html` là preview mô phỏng độc lập, không có backend cấp QR.
+
+Để kiểm chứng: đặt chỗ thường bằng `alice`, xem bộ đếm là 1, mở QR, gửi Request arrival và xác nhận ACK bằng `operator`; quay lại Alice và Refresh, bộ đếm vẫn 1. Sau Request departure + ACK, bộ đếm về 0. `bob` không thấy quyền hoặc dịch vụ của Alice. Nếu tài nguyên bị STALE, dùng **Refresh simulated observations** trước khi thử giao dịch; thao tác này không tạo ACK.
 
 Bộ kiểm thử tạo cơ sở dữ liệu tạm. Các ca bao gồm tranh chấp xe, giữ chỗ và sạc trong một giao dịch, bàn giao từng phần, sự cố và sửa chữa, phân quyền, gói lặp, mất phản hồi và khởi động lại. Các ca HTTP dùng cùng đường đăng nhập, truy vấn trạng thái và gửi lệnh với giao diện web.
 
