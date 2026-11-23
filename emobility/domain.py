@@ -16,16 +16,19 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .active_services import active_service_count
+from .charging_requests import ChargingRequestsMixin
+from .iot_workflow import IotWorkflowMixin
 from .monitoring import MonitoringMixin
 from .operations import OperationsMixin
 from .parking_qr import issue_parking_qr, qr_details
+from .rental_qr import issue_rental_qr, rental_qr_details
 from .shared import DomainError, LIVE_RIGHT, LIVE_SESSION, POLICY, fingerprint, number, overlap, require
 
 ACTOR_ROLES = {'alice': 'student', 'bob': 'student', 'operator': 'operator',
                'dispatcher': 'dispatcher', 'technician': 'technician'}
 COLLECTIONS = ('hubs', 'spots', 'ports', 'vehicles', 'holds', 'trips', 'rights',
                'visits', 'sessions', 'commands', 'incidents', 'plans', 'audit',
-               'orders', 'scenarios')
+               'orders', 'scenarios', 'charge_requests')
 
 
 def authenticate_actor(actor):
@@ -35,7 +38,7 @@ def authenticate_actor(actor):
             'UNAUTHORIZED', 'Authenticated application actor required.', 401)
 
 
-class Service(OperationsMixin, MonitoringMixin):
+class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, MonitoringMixin):
     def __init__(self, db_path, simulator=False, clock=None):
         self.db_path, self.simulator = str(db_path), simulator
         self.clock = clock or time.time
@@ -64,6 +67,17 @@ class Service(OperationsMixin, MonitoringMixin):
                     right['qr'] = issue_parking_qr(right, self.clock())
                     db.execute("UPDATE documents SET body=? WHERE kind='rights' AND id=?",
                                (json.dumps(right), rid))
+                    migrated = True
+            for hid, body in db.execute("SELECT id,body FROM documents WHERE kind='holds'").fetchall():
+                hold = json.loads(body)
+                if 'qr' not in hold and hold['status'] in ('ACTIVE', 'HANDOVER_PENDING'):
+                    vehicle_body = db.execute("SELECT body FROM documents WHERE kind='vehicles' AND id=?",
+                                              (hold['vehicle_id'],)).fetchone()
+                    if vehicle_body:
+                        hold['pickup_hub_id'] = json.loads(vehicle_body[0]).get('hub_id')
+                    hold['qr'] = issue_rental_qr(hold, self.clock())
+                    db.execute("UPDATE documents SET body=? WHERE kind='holds' AND id=?",
+                               (json.dumps(hold), hid))
                     migrated = True
             if migrated:
                 db.execute('UPDATE meta SET revision=revision+1')
@@ -179,6 +193,8 @@ class Service(OperationsMixin, MonitoringMixin):
                 if action.startswith('sim') or action in ('capacity_plan','schedule_preview','schedule_confirm','fleet_charge'):
                     require(actor['role'] == 'operator', 'FORBIDDEN', 'Operator role required.', 403)
                 result = handler(s, actor, payload, db, revision)
+                self.advance_iot_charging(s)
+                self.sync_charge_requests(s)
                 changes = [(kind,rid,baseline[kind].get(rid),row) for kind in COLLECTIONS if kind!='audit'
                            for rid,row in s[kind].items() if baseline[kind].get(rid)!=row]
                 self.log(s, actor['id'], action,
@@ -228,7 +244,7 @@ class Service(OperationsMixin, MonitoringMixin):
         role, actor_id = actor['role'], actor['id']
         active_services = active_service_count(s, actor_id)
         if role != 'operator':
-            for kind in ('holds', 'trips', 'rights', 'visits', 'sessions', 'commands'):
+            for kind in ('holds', 'trips', 'rights', 'visits', 'sessions', 'commands', 'charge_requests'):
                 s[kind] = {k: v for k, v in s[kind].items() if v['owner_id'] == actor_id}
             s['incidents'] = {
                 k: v for k, v in s['incidents'].items()
@@ -309,7 +325,10 @@ class Service(OperationsMixin, MonitoringMixin):
                 'ACTIVE_JOURNEY','You already have a hold or an unfinished journey.')
         v=self.get(s,'vehicles',p.get('vehicle_id'))
         require(self.rentable(s,v,self.clock()),'VEHICLE_UNAVAILABLE','Vehicle is claimed, stale, charging or unsuitable for rental.')
-        return self.new(s,'holds',owner_id=a['id'],vehicle_id=v['id'],status='ACTIVE',created_at=self.clock(),expires_at=self.clock()+POLICY['hold_seconds'])
+        hold = self.new(s,'holds',owner_id=a['id'],vehicle_id=v['id'],status='ACTIVE',created_at=self.clock(),expires_at=self.clock()+POLICY['hold_seconds'])
+        hold['pickup_hub_id'] = v['hub_id']
+        hold['qr'] = issue_rental_qr(hold, self.clock())
+        return hold
 
     def cancel_right(self,s,r,status='CANCELLED'):
         require(r['status']=='CONFIRMED','PARKING_IN_USE','Only an unused, unambiguous parking right can be cancelled.')
@@ -333,6 +352,31 @@ class Service(OperationsMixin, MonitoringMixin):
         if existing: return existing
         return self.new(s,'commands',kind=kind,record_id=row['id'],owner_id=owner,status='PENDING',
                         created_at=self.clock(),evidence='SIMULATOR_REQUIRED' if self.simulator else 'DEVICE_EVIDENCE_REQUIRED',**details)
+
+    def rental_qr(self, actor, hold_id):
+        authenticate_actor(actor)
+        self.tick()
+        with self.connect() as db:
+            s = self.load(db)
+        hold = self.get(s, 'holds', hold_id)
+        self.own(hold, actor)
+        require('qr' in hold, 'QR_UNAVAILABLE', 'This hold has no pickup confirmation code.', 404)
+        return rental_qr_details(hold, self.clock())
+
+    def do_scan_rental(self, s, a, p, db, rev):
+        token = p.get('qr_token')
+        require(isinstance(token, str) and token.isascii() and 1 <= len(token) <= 128,
+                'INVALID_QR', 'A valid rental pickup code is required.', 400)
+        if p.get('hold_id'):
+            hold = self.get(s, 'holds', p['hold_id'])
+        else:
+            hold = next((h for h in s['holds'].values()
+                         if hmac.compare_digest(h.get('qr', {}).get('token', ''), token)), None)
+            require(hold is not None, 'INVALID_QR', 'Rental pickup code is not recognized.', 400)
+        self.own(hold, a)
+        require(hmac.compare_digest(hold.get('qr', {}).get('token', ''), token),
+                'INVALID_QR', 'Pickup code does not match this hold.', 400)
+        return self.do_pickup(s, a, dict(hold_id=hold['id']), db, rev)
 
     def do_pickup(self,s,a,p,db,rev):
         h=self.get(s,'holds',p.get('hold_id')); self.own(h,a)
@@ -391,6 +435,7 @@ class Service(OperationsMixin, MonitoringMixin):
                         start=start,end=end,block_end=block_end,status='CONFIRMED',hold_id=hold_id,
                         created_by_charge=charging,recovery=recovery,created_at=now)
         right['qr'] = issue_parking_qr(right, now)
+        right['reservation_type'] = 'PARKING_AND_CHARGING' if charging else 'PARKING_ONLY'
         return right
 
     def do_reserve_parking(self,s,a,p,db,rev):
@@ -493,7 +538,7 @@ class Service(OperationsMixin, MonitoringMixin):
                 'RESOURCE_UNAVAILABLE', 'Vehicle, parking bay and charging port must be operational.')
         require(not vehicle.get('transfer_order_id'), 'VEHICLE_CLAIMED', 'Vehicle is reserved for redistribution.')
 
-    def create_charge(self,s,a,v,r,target):
+    def create_charge(self,s,a,v,r,target,scheduled_start=None):
         require(v['kind']=='personal' or a['role']=='operator','FORBIDDEN','Only operators schedule fleet charging.',403)
         target=number(target,'Target SOC',0,100)
         require(target>v['soc'],'INVALID_TARGET','Target SOC must exceed current SOC.')
@@ -508,10 +553,17 @@ class Service(OperationsMixin, MonitoringMixin):
         kw=min(port['kw'],s['hubs'][port['hub_id']]['power_kw'])
         require(kw>0,'NO_POWER','No power available at Hub.')
         duration=(target-v['soc'])/100*v['battery_kwh']/(kw*POLICY['efficiency'])*3600
-        start=max(now,r['start']); end=start+duration
+        # A charging-only allocation shares one time boundary with its parking
+        # right. Reading the wall clock again can otherwise add microseconds and
+        # incorrectly reject an exactly sized parking window.
+        start=max(now,r['start']) if scheduled_start is None else scheduled_start
+        require(start>=r['start'],'INVALID_WINDOW','Charging cannot precede its parking right.')
+        end=start+duration
         require(end<=r['end'],'INSUFFICIENT_TIME','Requested SOC cannot be reached within parking window.')
         require(self.power_fits(s,port['hub_id'],start,end,kw),'POWER_CONFLICT','Hub power already committed during this time.')
         return self.new(s,'sessions',owner_id=a['id'],vehicle_id=v['id'],right_id=r['id'],port_id=port['id'],
+            reservation_type='PARKING_AND_CHARGING' if r.get('created_by_charge') else 'ADD_CHARGING',
+            iot_managed=r.get('iot_managed',False),
             status='BOOKED',target_soc=target,start=start,end=r['end'],scheduled_start=start,scheduled_end=end,
             kw=kw,duration=duration,created_at=now,created_parking=r.get('created_by_charge',False))
 
@@ -926,6 +978,8 @@ class Service(OperationsMixin, MonitoringMixin):
                 self.incident(s,cmd['owner_id'],cmd['record_id'],'No evidence after 60 seconds; claim retained for reconciliation.','pending-'+cmd['id'])
         for i in s['incidents'].values():
             if i['status']=='OPEN' and now-i['created_at']>300: i['escalated']=True
+        self.advance_iot_charging(s)
+        self.sync_charge_requests(s)
         after=s_without_audit(s)
         if before!=after:
             changed=[(k,rid,before[k].get(rid),r) for k in before for rid,r in after[k].items() if before[k].get(rid)!=r]

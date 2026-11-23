@@ -1,0 +1,573 @@
+{
+  "summary": {
+    "PASS": 86
+  },
+  "results": [
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Sign in",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice navigation charging",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Charging only asks exactly the five specified fields",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Vehicle dropdown contains only Alice personal vehicles",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Reserve charging",
+      "detail": "PENDING",
+      "action": "submit_charge_request",
+      "actor": "alice"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Pending request allocates no right or session and shows no QR",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Sign in",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Operator sees calculated energy duration and collection estimate",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Confirm charging proposal",
+      "detail": "BOOKED",
+      "action": "approve_charge_request",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Student sees confirmed allocation and estimates",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "charging actual QR decodes to durable backend token",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "charging mobile QR readable without horizontal overflow",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Charging QR has no student scan action",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Legacy API alice scan_charge",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f426782dc4d842ea', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H1', 'spot_id': 'H1-S2', 'start': 1795352304.5893767, 'end': 1795353601.886674, 'block_end': 1795354501.886674, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795352304.5893767, 'qr': {'token': 'emobility:parking:uyoBmUv7pNBh5ZbWeAreXXehOnnVTZs5KRlSoBXtrYk', 'issued_at': 1795352304.5893767, 'expires_at': 1795352904.5893767}, 'reservation_type': 'CHARGING_ONLY', 'charge_request_id': 'e041b11d50684fd1'}, 'revision': 4}",
+      "action": "scan_charge",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "QR scan requests reception without claiming physical arrival",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Legacy API alice plug",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '492e64efc4004edc', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'f426782dc4d842ea', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 80.0, 'start': 1795352304.5893767, 'end': 1795353601.886674, 'scheduled_start': 1795352304.5893767, 'scheduled_end': 1795353601.886674, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795352304.5893767, 'created_parking': True, 'charge_request_id': 'e041b11d50684fd1', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED'}, 'revision': 6}",
+      "action": "plug",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Legacy API alice start_charge",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '492e64efc4004edc', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'f426782dc4d842ea', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 80.0, 'start': 1795352304.5893767, 'end': 1795353601.886674, 'scheduled_start': 1795352304.5893767, 'scheduled_end': 1795353601.886674, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795352304.5893767, 'created_parking': True, 'charge_request_id': 'e041b11d50684fd1', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED'}, 'revision': 8}",
+      "action": "start_charge",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Stop charging",
+      "detail": "STOP_PENDING",
+      "action": "stop_charge",
+      "actor": "alice"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Completed charging still occupies the bay and prompts collection",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Legacy API alice unplug",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '492e64efc4004edc', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'f426782dc4d842ea', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 80.0, 'start': 1795352304.5893767, 'end': 1795353601.886674, 'scheduled_start': 1795352304.5893767, 'scheduled_end': 1795353601.886674, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795352304.5893767, 'created_parking': True, 'charge_request_id': 'e041b11d50684fd1', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED', 'started_at': 1795352304.5893767, 'completed_at': 1795352304.5893767}, 'revision': 12}",
+      "action": "unplug",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Legacy API alice depart",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'bf91f3a8beba489a', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H1-S2', 'right_id': 'f426782dc4d842ea', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795352304.5893767}, 'revision': 14}",
+      "action": "depart",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Departure request keeps bay until ACK",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Departure evidence frees bay",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "Charging page responsive at 390px",
+      "detail": ""
+    },
+    {
+      "case": "charging_only",
+      "status": "PASS",
+      "step": "No browser JavaScript exceptions",
+      "detail": "[]"
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice Sign in",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice navigation charging",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice Reserve charging",
+      "detail": "PENDING",
+      "action": "submit_charge_request",
+      "actor": "alice"
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "operator Sign in",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "operator Reject charging request",
+      "detail": "REJECTED",
+      "action": "reject_charge_request",
+      "actor": "operator"
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "Student sees rejection reason",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice Reserve charging",
+      "detail": "PENDING",
+      "action": "submit_charge_request",
+      "actor": "alice"
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "operator Confirm charging proposal",
+      "detail": "BOOKED",
+      "action": "approve_charge_request",
+      "actor": "operator"
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "alice Cancel charging reservation",
+      "detail": "CANCELLED",
+      "action": "cancel_charge_request",
+      "actor": "alice"
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "Cancelled charging booking releases both allocations",
+      "detail": ""
+    },
+    {
+      "case": "rejection_and_cancellation",
+      "status": "PASS",
+      "step": "No browser JavaScript exceptions",
+      "detail": "[]"
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "alice Sign in",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "alice navigation overview",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "alice Reserve \u00b7 10 min",
+      "detail": "ACTIVE",
+      "action": "reserve_vehicle",
+      "actor": "alice"
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "alice navigation journeys",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "rental actual QR decodes to durable backend token",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "rental mobile QR readable without horizontal overflow",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "Rental QR has no student scan action",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "Legacy API alice scan_rental",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '08c33cfb865c4ba9', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795352313.3404315, 'expires_at': 1795352913.3404315, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:Fd8oMFfUnA0D8ion0kLfeWwgNi6tGKtUF1BHqueZeCY', 'issued_at': 1795352313.3404315, 'expires_at': 1795352913.3404315}}, 'revision': 3}",
+      "action": "scan_rental",
+      "actor": "alice",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "Rental QR waits for physical pickup evidence",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "operator Sign in",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "operator navigation operations",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "operator Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "operator Simulate ACK",
+      "detail": "ACKNOWLEDGED",
+      "action": "simulate",
+      "actor": "operator"
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "alice Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "Pickup ACK creates exactly one journey",
+      "detail": ""
+    },
+    {
+      "case": "rental_confirmation",
+      "status": "PASS",
+      "step": "No browser JavaScript exceptions",
+      "detail": "[]"
+    }
+  ]
+}
