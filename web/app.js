@@ -190,7 +190,11 @@ function receptionOffer(incident) {
 function support() {
   const records=[...list('holds'),...list('trips'),...list('rights'),...list('visits'),...list('sessions')];
   return heading('Journey assistance', 'Support that stays with you', 'Keep a traceable record of an issue or reception problem. Operator proposals require your response and never close a trip by themselves.')+
-    `<div class="split"><section><div class="section-heading"><h2>Support records</h2></div><div class="records">${list('incidents').length?list('incidents').slice().reverse().map(i=>`<article class="record"><div class="record-main"><div><h3>${esc(i.message||'Reception assistance')}</h3><div class="record-meta"><span class="record-id">${esc(i.id)}</span><span>Related record ${esc(i.record_id)}</span></div></div>${chip(i.status)}</div>${i.response?`<div class="record-note">${esc(typeof i.response==='string'?i.response:JSON.stringify(i.response))}</div>`:''}${i.status==='OFFERED' ? receptionOffer(i) : ''}${state.actor.role==='student'&&i.status==='OFFERED'?`<div class="record-actions">${actionButton('Accept proposed reception','accept_capacity',{incident_id:i.id,accept:true},'small')}${actionButton('Decline proposal','accept_capacity',{incident_id:i.id,accept:false},'danger small')}</div>`:''}</article>`).join(''):empty('No support records','You can report an issue against one of your own service records.')}</div></section><aside><div class="card"><div class="card-body"><h2>Request support</h2><form class="form spaced" data-command="support"><label>Related service<select name="record_id" required>${option('','Select a service record')}${records.map(r=>option(r.id,`${r.id} · ${r.vehicle_id||r.status}`)).join('')}</select></label><label>What happened?<textarea name="message" required minlength="5" maxlength="1000" placeholder="Describe the problem and where you are."></textarea></label><button type="submit">Send support request</button><p class="form-help">An operator can use this report to open a maintenance ticket for the affected resource.</p></form></div></div></aside></div>`;
+    `<div class="split"><section><div class="section-heading"><h2>Support records</h2></div><div class="records">${list('incidents').length?list('incidents').slice().reverse().map(i=>`<article class="record"><div class="record-main"><div><h3>${esc(i.message||'Reception assistance')}</h3><div class="record-meta"><span class="record-id">${esc(i.id)}</span><span>Related record ${esc(i.record_id)}</span></div></div>${chip(i.status)}</div>${i.response?`<div class="record-note">${
+  typeof i.response === 'string'
+    ? esc(i.response)
+    : detailValue(i.response)
+}</div>`:''}${i.status==='OFFERED' ? receptionOffer(i) : ''}${state.actor.role==='student'&&i.status==='OFFERED'?`<div class="record-actions">${actionButton('Accept proposed reception','accept_capacity',{incident_id:i.id,accept:true},'small')}${actionButton('Decline proposal','accept_capacity',{incident_id:i.id,accept:false},'danger small')}</div>`:''}</article>`).join(''):empty('No support records','You can report an issue against one of your own service records.')}</div></section><aside><div class="card"><div class="card-body"><h2>Request support</h2><form class="form spaced" data-command="support"><label>Related service<select name="record_id" required>${option('','Select a service record')}${records.map(r=>option(r.id,`${r.id} · ${r.vehicle_id||r.status}`)).join('')}</select></label><label>What happened?<textarea name="message" required minlength="5" maxlength="1000" placeholder="Describe the problem and where you are."></textarea></label><button type="submit">Send support request</button><p class="form-help">An operator can use this report to open a maintenance ticket for the affected resource.</p></form></div></div></aside></div>`;
 }
 
 function operations() {
@@ -214,10 +218,281 @@ function operations() {
     (state.simulator?`<section class="sim-area spaced"><div class="row-spread"><div><div class="eyebrow">Controlled test environment</div><h2>Synthetic observation controls</h2></div>${actionButton('Refresh simulated observations','sim_refresh',{},'secondary small')}</div><p class="muted small-text spaced">Refresh renews only simulated observations. Fault controls exercise eligibility and failure handling. These controls are disabled unless the server starts with --simulator.</p><form class="form spaced" data-command="sim_observe"><div class="form-row"><label>Resource<select name="resource_ref">${['ports','vehicles','spots'].flatMap(key=>list(key).map(r=>option(`${key}:${r.id}`,`${title(key)} · ${r.id}`))).join('')}</select></label><label>Technical condition<select name="health">${option('OUT_OF_SERVICE','Out of service')}${option('OPERABLE','Operable')}</select></label></div><button type="submit" class="secondary">Submit synthetic observation</button></form></section>`:'')+
     `<div class="section-heading"><h2>Unresolved assistance</h2><button class="link" data-tab="support">View support records →</button></div><p class="muted">${list('incidents').filter(i=>!['RESOLVED','CLOSED'].includes(i.status)).length} support records need review. <button class="link" data-tab="network">Open fleet operations →</button></p>`;
 }
+// ==========================================
+// STRUCTURED DETAIL & AUDIT RENDERER
+// ==========================================
 
+const detailHidden = new Set([
+  'token',
+  'qr_token',
+  'password',
+  'secret',
+  'access_token',
+  'refresh_token',
+  'input_fingerprint'
+]);
+
+const detailFields = record =>
+  Object.entries(record || {})
+    .filter(([key]) => !detailHidden.has(key));
+
+function detailValue(value, key = '') {
+  if (value == null || value === '') {
+    return '—';
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+
+  if (Array.isArray(value)) {
+    return value.length
+      ? `<ol class="detail-items">
+          ${value.map(item =>
+            `<li>${detailValue(item)}</li>`
+          ).join('')}
+        </ol>`
+      : '<span class="muted">None</span>';
+  }
+
+  if (typeof value === 'object') {
+    return detailRecord(value);
+  }
+
+  if (typeof value === 'number') {
+    if (
+      /(_at$|^at$|^start$|^end$|_start$|_end$)/.test(key)
+      && value > 1e9
+    ) {
+      return esc(
+        new Date(value * 1000).toLocaleString()
+      );
+    }
+
+    if (['soc', 'target_soc', 'declared_soc'].includes(key)) {
+      return `${esc(value)}%`;
+    }
+  }
+
+  if (
+    [
+      'status',
+      'health',
+      'state',
+      'freshness',
+      'plug',
+      'power'
+    ].includes(key)
+  ) {
+    return chip(value);
+  }
+
+  return esc(value);
+}
+
+function detailRecord(record) {
+  const rows = detailFields(record);
+
+  return rows.length
+    ? `<dl class="detail-grid">
+        ${rows.map(([key, value]) => `
+          <div class="detail-field">
+            <dt>${esc(title(key))}</dt>
+            <dd>${detailValue(value, key)}</dd>
+          </div>
+        `).join('')}
+      </dl>`
+    : '<p class="muted">No additional data.</p>';
+}
+
+function auditChanges(audit) {
+  const records = new Map();
+
+  for (const side of ['before', 'after']) {
+    const items = Array.isArray(audit[side])
+      ? audit[side]
+      : [];
+
+    for (const item of items) {
+      const key = `${item.kind}:${item.id}`;
+
+      if (!records.has(key)) {
+        records.set(key, {
+          kind: item.kind,
+          id: item.id,
+          before: null,
+          after: null
+        });
+      }
+
+      records.get(key)[side] = item.value;
+    }
+  }
+
+  return [...records.values()];
+}
+
+function auditDetail(audit) {
+  const changes = auditChanges(audit);
+
+  return changes.length
+    ? changes.map(change => {
+
+        const before = Object.fromEntries(
+          detailFields(change.before)
+        );
+
+        const after = Object.fromEntries(
+          detailFields(change.after)
+        );
+
+        const keys = [
+          ...new Set([
+            ...Object.keys(before),
+            ...Object.keys(after)
+          ])
+        ];
+
+        const rows = keys
+          .map(key => ({
+            key,
+            old: detailValue(before[key], key),
+            next: detailValue(after[key], key)
+          }))
+          .filter(row => row.old !== row.next);
+
+        const record =
+          change.after || change.before || {};
+
+        const operation =
+          change.before == null
+            ? 'Created'
+            : change.after == null
+              ? 'Removed'
+              : 'Updated';
+
+        return `
+          <section class="detail-change">
+            <div class="row-spread">
+              <h3>${esc(title(change.kind))}</h3>
+              <span class="chip neutral">
+                ${operation}
+              </span>
+            </div>
+
+            <p class="record-id">
+              ${esc(change.id)}
+            </p>
+
+            ${
+              record.vehicle_id
+                ? `<p class="small-text">
+                     Vehicle: ${esc(record.vehicle_id)}
+                   </p>`
+                : ''
+            }
+
+            ${
+              rows.length
+                ? `<div class="table-wrap spaced">
+                    <table class="detail-diff">
+                      <thead>
+                        <tr>
+                          <th>Field</th>
+                          <th>Before</th>
+                          <th>After</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        ${rows.map(row => `
+                          <tr>
+                            <th scope="row">
+                              ${esc(title(row.key))}
+                            </th>
+                            <td>${row.old}</td>
+                            <td>${row.next}</td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>`
+                : `<p class="muted">
+                     No visible field changes.
+                   </p>`
+            }
+          </section>
+        `;
+      }).join('')
+    : '<p class="muted">No recorded field changes.</p>';
+}
 function activityHistory() {
-  return heading('Evidence and history', 'Every change leaves a trace', 'Recorded actions, outcomes and revisions from persisted state. Synthetic observations remain explicitly identified.')+
-    (list('audit').length?`<div class="table-wrap"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead><tbody>${list('audit').slice().reverse().map(a=>`<tr><td>${date(a.at)}</td><td>${esc(a.actor_id||a.actor||'system')}</td><td>${esc(title(a.action||a.kind))}</td><td class="history-detail">${esc(JSON.stringify(Object.fromEntries(Object.entries(a).filter(([key])=>!['id','at','actor_id','actor','action','kind'].includes(key)))))}</td></tr>`).join('')}</tbody></table></div>`:empty('No activity recorded yet','Complete a reservation or request to begin your history.'));
+  const records = list('audit').slice().reverse();
+
+  return heading(
+    'Evidence and history',
+    'Activity History',
+    'Review recorded actions and changes across the system.'
+  ) + (
+    records.length
+      ? `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${records.map(a => `
+                <tr>
+                  <td>${date(a.at)}</td>
+
+                  <td>
+                    ${esc(a.actor_id || a.actor || 'system')}
+                  </td>
+
+                  <td>
+                    ${esc(title(a.action || a.kind))}
+                  </td>
+
+                  <td class="history-detail">
+                    ${
+                      auditChanges(a).length
+                        ? `
+                          <span class="small-text muted">
+                            ${auditChanges(a).length} record(s)
+                          </span>
+
+                          <br>
+
+                          <button
+                            type="button"
+                            class="secondary small"
+                            data-detail="audit"
+                            data-id="${esc(a.id)}"
+                          >
+                            View changes
+                          </button>
+                        `
+                        : '<span class="muted">—</span>'
+                    }
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>  
+      `
+      : empty(
+          'No activity recorded yet',
+          'Complete a reservation or request to begin your history.'
+        )
+  );
 }
 
 app.addEventListener('click', async event => {
@@ -235,7 +510,53 @@ app.addEventListener('click', async event => {
   else if (button.dataset.parkingQr) await showParkingQr(button.dataset.parkingQr);
   else if (button.id==='refresh') await refresh();
   else if (button.id==='logout') {refreshVersion++;try {await request('/api/logout',{});refreshVersion++;state=null;notice.hidden=true;window.history.replaceState(null,'',location.pathname);renderLogin();}catch(error){showNotice(error.message,true);}}
-  else if (button.dataset.detail) {const record=find(button.dataset.detail,button.dataset.id);document.querySelector('#detail-content').innerHTML=`<h2>Review ${esc(record?.id)}</h2><p class="muted spaced">Review the proposed allocations before confirming. Confirmation rechecks this plan against current state.</p><pre>${esc(JSON.stringify(record,null,2))}</pre>`;document.querySelector('#detail-dialog').showModal();}
+  else if (button.dataset.detail) {
+    const record = find(
+      button.dataset.detail,
+      button.dataset.id
+    );
+
+    const content = document.querySelector(
+      '#detail-content'
+    );
+
+    if (!record) {
+      return showNotice('Record not found.', true);
+    }
+
+    content.innerHTML =
+      button.dataset.detail === 'audit'
+        ? `
+          <h2>
+            Activity detail —
+            ${esc(title(record.action || record.kind))}
+          </h2>
+
+          <p class="muted spaced">
+            ${esc(
+              record.actor_id ||
+              record.actor ||
+              'system'
+            )}
+            · ${esc(date(record.at))}
+          </p>
+
+          ${auditDetail(record)}
+        `
+        : `
+          <h2>Review allocation</h2>
+
+          <p class="muted spaced">
+            ${esc(record.id)}
+          </p>
+
+          ${detailRecord(record)}
+        `;
+
+    document
+      .querySelector('#detail-dialog')
+      .showModal();
+  }
 });
 
 app.addEventListener('change', event => {

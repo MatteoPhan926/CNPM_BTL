@@ -255,14 +255,43 @@ def main():
     parser.add_argument("--host", choices=("127.0.0.1", "localhost"), default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--simulator", action="store_true", help="Enable explicit operator-only synthetic evidence controls; no real IoT.")
+    parser.add_argument(
+        "--auto-refresh",
+        action="store_true",
+        help="Refresh simulated sensor observations every 30 seconds."
+    )
+
     args = parser.parse_args()
+
+    if args.auto_refresh and not args.simulator:
+        parser.error("--auto-refresh requires --simulator")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     server = create_server(args.db, args.simulator, args.host, args.port)
 
+    if args.auto_refresh:
+        server.service.tick(refresh_simulated=True)
+
+        LOG.info(
+            "Automatic simulated heartbeat enabled (30 seconds)"
+        )
+
     def maintain():
+        next_heartbeat = time.monotonic() + 30
+
         while not server.stopping.wait(5):
             try:
-                server.service.tick()
+                due = (
+                    args.auto_refresh
+                    and time.monotonic() >= next_heartbeat
+                )
+
+                server.service.tick(
+                    refresh_simulated=due
+                )
+
+                if due:
+                    next_heartbeat = time.monotonic() + 30
+
             except Exception:
                 LOG.exception("Maintenance tick failed")
 

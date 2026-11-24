@@ -214,15 +214,43 @@ class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, Monitori
             raise error
         return result
 
-    def tick(self):
+    def tick(self, *, refresh_simulated=False):
+        if refresh_simulated:
+            self.sim_guard()
+
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             s = self.load(db)
             before = fingerprint(s)
+
+            if refresh_simulated:
+                now = self.clock()
+
+                for kind in ('spots', 'ports', 'vehicles'):
+                    for row in s[kind].values():
+                        observed = row.get('observed_at')
+
+                        if (
+                            row.get('evidence') != 'SIMULATED'
+                            or (
+                                observed is not None
+                                and observed >= now
+                            )
+                        ):
+                            continue
+
+                        row.update(
+                            observed_at=now,
+                            sequence=row.get('sequence', 0) + 1
+                        )
+
             self.expire(s)
+
             if fingerprint(s) != before:
                 self.save(db, s)
-                db.execute('UPDATE meta SET revision=revision+1')
+                db.execute(
+                    'UPDATE meta SET revision=revision+1'
+                )
 
     def snapshot(self, actor):
         authenticate_actor(actor)
@@ -697,8 +725,37 @@ class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, Monitori
         i.update(status='WAITING_FOR_RECEPTION',response='Customer accepted; physical reception is still required.')
         return i
 
-    def schedule_inputs(self,s):
-        return fingerprint({k:s[k] for k in ('hubs','spots','ports','vehicles','rights','sessions','holds','trips')})
+    def schedule_inputs(self, s):
+        now = self.clock()
+
+        inputs = {
+            k: s[k]
+            for k in (
+                'hubs',
+                'rights',
+                'sessions',
+                'holds',
+                'trips'
+            )
+        }
+
+        for kind in ('spots', 'ports', 'vehicles'):
+            inputs[kind] = {
+                rid: dict(
+                    {
+                        k: v
+                        for k, v in row.items()
+                        if k not in (
+                            'observed_at',
+                            'sequence'
+                        )
+                    },
+                    freshness_ok=self.fresh(row, now)
+                )
+                for rid, row in s[kind].items()
+            }
+
+        return fingerprint(inputs)
 
     def build_schedule(self,s):
         allocations=[]; unmet=[]; now=self.clock()

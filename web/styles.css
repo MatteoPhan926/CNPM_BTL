@@ -24,3 +24,177 @@ progress.meter{display:block;width:100%;border:0;appearance:none}progress.meter:
 #parking-qr-dialog {width:min(550px,calc(100% - 30px))}
 #service-qr-dialog {width:min(550px,calc(100% - 30px))}
 #service-qr-content input {min-width:0; font-family:Consolas,monospace; font-size:11px}
+/* =========================================
+   STRUCTURED DETAIL & AUDIT HISTORY
+   ========================================= */
+
+#detail-dialog {
+  width: min(960px, calc(100vw - 30px));
+  max-height: 88vh;
+  overflow: auto;
+  padding: 24px;
+}
+
+#detail-content {
+  min-width: 0;
+}
+
+#detail-content > h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+/* Structured information */
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.detail-field {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: #f8faf7;
+  border-radius: 8px;
+}
+
+.detail-field dt {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  margin-bottom: 6px;
+}
+
+.detail-field dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+/* Nested records */
+
+.detail-field .detail-grid,
+.detail-diff .detail-grid {
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.detail-field .detail-field {
+  background: #fff;
+}
+
+/* Array values */
+
+.detail-items {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.detail-items > li {
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+
+.detail-items > li:last-child {
+  margin-bottom: 0;
+}
+
+/* Audit history column */
+
+.history-detail {
+  min-width: 150px;
+  max-width: 220px;
+  white-space: normal;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.history-detail button {
+  margin-top: 6px;
+}
+
+/* Before/After comparison */
+
+.detail-change {
+  padding: 16px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.detail-change h3 {
+  color: var(--green);
+  font-size: 16px;
+}
+
+.detail-change .record-id {
+  margin: 6px 0;
+  overflow-wrap: anywhere;
+}
+
+.detail-diff {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.detail-diff th,
+.detail-diff td {
+  padding: 12px;
+  white-space: normal;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+.detail-diff th:first-child {
+  width: 24%;
+}
+
+.detail-diff tbody th {
+  background: #f5f8f4;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.detail-diff tbody td:nth-child(2) {
+  background: #fff8f3;
+}
+
+.detail-diff tbody td:nth-child(3) {
+  background: #f0f8f2;
+}
+
+/* Responsive */
+
+@media (max-width: 650px) {
+  #detail-dialog {
+    padding: 14px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-change {
+    padding: 10px;
+  }
+
+  .detail-diff {
+    min-width: 440px;
+  }
+
+  .detail-diff th,
+  .detail-diff td {
+    padding: 8px;
+  }
+}
