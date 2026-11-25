@@ -529,8 +529,20 @@ def uncertain_response_and_login(a):
         p.get_by_role('button',name='Retry same request').click()
     p.wait_for_function('() => !busy')
     a.check('Retry same request retrieves receipt without duplicate hold',reply.value.status==200 and len(a.rows('holds'))==1)
-    p.get_by_role('button',name='Dismiss',exact=True).click()
-    a.check('Dismiss hides notification',not p.locator('#notice').is_visible())
+    p.get_by_role(
+        'button',
+        name='Dismiss',
+        exact=True
+    ).click()
+
+    expect(
+        p.locator('#notice')
+    ).to_be_hidden(timeout=2000)
+
+    a.check(
+        'Dismiss hides notification',
+        not p.locator('#notice').is_visible()
+    )
     with p.expect_response(lambda r:r.url.endswith('/api/logout')):
         p.locator('#logout').click()
     expect(p.locator('#login-form')).to_be_visible()

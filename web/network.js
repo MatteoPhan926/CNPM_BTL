@@ -40,8 +40,8 @@ function networkStatus() {
       <button class="link spaced" data-resource-hub="${esc(h.id)}">Inspect resources →</button></article>`;
   }).join('')}</div>
   <div class="section-heading"><h2>Resources</h2><label>Location<select data-resource-filter>${option('all','All locations',selected==='all')}${list('hubs').map(h=>option(h.id,h.name,h.id===selected)).join('')}</select></label></div>
-  <div class="table-wrap"><table><thead><tr><th>Resource</th><th>Location</th><th>Condition</th><th>Observation</th><th>Availability control</th></tr></thead><tbody>${filtered.map(r=>
-    `<tr><td><strong>${esc(r.id)}</strong><br>${esc(r.type)}</td><td>${esc(hubName(r.hub_id))}</td><td>${chip(r.health)}</td><td>${chip(r.freshness)}<br>${date(r.observed_at)}</td><td>${['OPERABLE','DEACTIVATED'].includes(r.health) && !r.maintenance_ticket_id ?
+  <div class="table-wrap"><table><thead><tr><th>Resource</th><th>Location / Bay</th><th>Battery</th><th>Condition</th><th>Observation</th><th>Availability control</th></tr></thead><tbody>${filtered.map(r=>
+    `<tr><td><strong>${esc(r.id)}</strong><br>${esc(r.type)}</td><td>${resourceLocation(r)}</td><td>${resourceBattery(r)}</td><td>${chip(r.health)}</td><td>${chip(r.freshness)}<br>${date(r.observed_at)}</td><td>${['OPERABLE','DEACTIVATED'].includes(r.health) && !r.maintenance_ticket_id ?
       actionButton(r.health==='DEACTIVATED'?'Reactivate':'Deactivate','d_resource_state',{resource_id:r.id,active:r.health==='DEACTIVATED'},'secondary small') : 'Under maintenance'}</td></tr>`
   ).join('')}</tbody></table></div>`;
 }
@@ -228,3 +228,32 @@ setInterval(async () => {
     readingTelemetry = false;
   }
 }, 5000);
+
+function resourceLocation(resource) {
+    const spotId = resource.type === 'Parking bay'
+        ? resource.id
+        : resource.spot_id;
+
+    return `
+        ${esc(hubName(resource.hub_id))}
+        <br>
+        <span class="muted small-text">
+            ${spotId ? esc(spotId) : 'No assigned bay'}
+        </span>
+    `;
+}
+
+function resourceBattery(resource) {
+    if (
+        resource.type !== 'Vehicle' ||
+        resource.soc == null
+    ) {
+        return '—';
+    }
+
+    return `
+        <span class="battery">
+            ▰ ${esc(resource.soc)}%
+        </span>
+    `;
+}

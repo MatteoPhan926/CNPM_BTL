@@ -106,7 +106,7 @@
       "case": "rentals",
       "status": "PASS",
       "step": "Legacy API bob pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'aead2fb4b8394259', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795352624.8547962, 'expires_at': 1795353224.8547962, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:gCIS3ccDj2oPCc8cTkGBNez-tTT5lYF2VS0zZu8BPts', 'issued_at': 1795352624.8547962, 'expires_at': 1795353224.8547962}}, 'revision': 6}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f543fd58999b4c27', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612821.0889363, 'expires_at': 1795613421.0889363, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:bkl8FrNHMcFC9zqMZnI3X7bmYbfIB86KNQlathls-MQ', 'issued_at': 1795612821.0889363, 'expires_at': 1795613421.0889363}}, 'revision': 6}",
       "action": "pickup",
       "actor": "bob",
       "interface": "LEGACY_HTTP_API"
@@ -173,7 +173,7 @@
       "case": "rentals",
       "status": "PASS",
       "step": "Legacy API bob pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'aead2fb4b8394259', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795352624.8547962, 'expires_at': 1795353224.8547962, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:gCIS3ccDj2oPCc8cTkGBNez-tTT5lYF2VS0zZu8BPts', 'issued_at': 1795352624.8547962, 'expires_at': 1795353224.8547962}}, 'revision': 9}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f543fd58999b4c27', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612821.0889363, 'expires_at': 1795613421.0889363, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:bkl8FrNHMcFC9zqMZnI3X7bmYbfIB86KNQlathls-MQ', 'issued_at': 1795612821.0889363, 'expires_at': 1795613421.0889363}}, 'revision': 9}",
       "action": "pickup",
       "actor": "bob",
       "interface": "LEGACY_HTTP_API"
@@ -226,7 +226,7 @@
       "case": "rentals",
       "status": "PASS",
       "step": "Legacy API bob return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c0cba5368fdf41ff', 'owner_id': 'bob', 'vehicle_id': 'V1', 'hold_id': 'aead2fb4b8394259', 'status': 'HANDOVER_PENDING', 'started_at': 1795352624.8547962, 'ended_at': None, 'return_right_id': '9677d4ded0ba493e'}, 'revision': 11}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '18aac94af49a4800', 'owner_id': 'bob', 'vehicle_id': 'V1', 'hold_id': 'f543fd58999b4c27', 'status': 'HANDOVER_PENDING', 'started_at': 1795612821.0889363, 'ended_at': None, 'return_right_id': 'fcf0110e71ca4dab'}, 'revision': 11}",
       "action": "return_vehicle",
       "actor": "bob",
       "interface": "LEGACY_HTTP_API"
@@ -471,7 +471,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice arrive",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'd76f3baecbca495f', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795352580.0, 'end': 1795356180.0, 'block_end': 1795357080.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795352629.651368, 'qr': {'token': 'emobility:parking:NrXvUvRPzqwMe7Vhal_lsJZJktJT8poM5CO-WwqumZk', 'issued_at': 1795352629.651368, 'expires_at': 1795353180.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 10}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'cc3c6f5353244b66', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795612800.0, 'end': 1795616400.0, 'block_end': 1795617300.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795612840.547522, 'qr': {'token': 'emobility:parking:mwOmCoqOCtRbmY--74nB85uSxmdSIJ3ODC-OdNnuucI', 'issued_at': 1795612840.547522, 'expires_at': 1795613400.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 10}",
       "action": "arrive",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -530,7 +530,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'fda38d17b87149e6', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'd76f3baecbca495f', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795352629.651368, 'end': 1795356180.0, 'scheduled_start': 1795352629.651368, 'scheduled_end': 1795353494.5162327, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795352629.651368, 'created_parking': True}, 'revision': 12}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'e4e7b0a533614dfb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'cc3c6f5353244b66', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612840.547522, 'end': 1795616400.0, 'scheduled_start': 1795612840.547522, 'scheduled_end': 1795613705.412387, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612840.547522, 'created_parking': True}, 'revision': 12}",
       "action": "plug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -571,7 +571,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'fda38d17b87149e6', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'd76f3baecbca495f', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795352629.651368, 'end': 1795356180.0, 'scheduled_start': 1795352629.651368, 'scheduled_end': 1795353494.5162327, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795352629.651368, 'created_parking': True}, 'revision': 14}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'e4e7b0a533614dfb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'cc3c6f5353244b66', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795612840.547522, 'end': 1795616400.0, 'scheduled_start': 1795612840.547522, 'scheduled_end': 1795613705.412387, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612840.547522, 'created_parking': True}, 'revision': 14}",
       "action": "start_charge",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -685,7 +685,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice unplug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'fda38d17b87149e6', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'd76f3baecbca495f', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795352629.651368, 'end': 1795356180.0, 'scheduled_start': 1795352629.651368, 'scheduled_end': 1795353494.5162327, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795352629.651368, 'created_parking': True, 'started_at': 1795352629.651368, 'completed_at': 1795352629.651368}, 'revision': 19}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'e4e7b0a533614dfb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'cc3c6f5353244b66', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612840.547522, 'end': 1795616400.0, 'scheduled_start': 1795612840.547522, 'scheduled_end': 1795613705.412387, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612840.547522, 'created_parking': True, 'started_at': 1795612840.547522, 'completed_at': 1795612840.547522}, 'revision': 19}",
       "action": "unplug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -732,7 +732,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'ccc8de2410c34481', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': 'd76f3baecbca495f', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795352629.651368}, 'revision': 21}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '86357b2e805c4d6a', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': 'cc3c6f5353244b66', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612840.547522}, 'revision': 21}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -922,7 +922,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice arrive",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c62c67c9b10549cf', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S10', 'start': 1795352580.0, 'end': 1795356180.0, 'block_end': 1795357080.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795352635.991294, 'qr': {'token': 'emobility:parking:yiafS7mQcpXc-DjcRdIeGLlIz2Lm4q1iFpZw0HVy9E4', 'issued_at': 1795352635.991294, 'expires_at': 1795353180.0}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 4}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f439af4a077b4ebc', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S10', 'start': 1795612800.0, 'end': 1795616400.0, 'block_end': 1795617300.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795612857.7273943, 'qr': {'token': 'emobility:parking:qXP3Sl2Hza0FEEjibwh4C8JPEf_gSVKQphwCwbl3MkI', 'issued_at': 1795612857.7273943, 'expires_at': 1795613400.0}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 4}",
       "action": "arrive",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1026,7 +1026,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f81ca96c050f4205', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S10', 'right_id': 'c62c67c9b10549cf', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795352635.991294}, 'revision': 7}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'b9993928cf734035', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S10', 'right_id': 'f439af4a077b4ebc', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612857.7273943}, 'revision': 7}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1239,7 +1239,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '654bd2ecd75e4b28', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795353236.991294, 'expires_at': 1795353836.991294, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:6EYV0JB1PCYU4xuHak1j0Ck_WAeCpVDTn_A_0TPT0V8', 'issued_at': 1795353236.991294, 'expires_at': 1795353836.991294}}, 'revision': 16}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '8ed702e5af264970', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795613458.7273943, 'expires_at': 1795614058.7273943, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:KUY3SQHn7MmlVyULRMr2ns2Yxoc8tj7tr7UyilMjLaI', 'issued_at': 1795613458.7273943, 'expires_at': 1795614058.7273943}}, 'revision': 16}",
       "action": "pickup",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1298,7 +1298,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f812ea13e41b41ef', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '654bd2ecd75e4b28', 'status': 'HANDOVER_PENDING', 'started_at': 1795353236.991294, 'ended_at': None, 'return_right_id': 'ae01e84e4bcb43f6'}, 'revision': 18}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '1d0ebac769244d14', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '8ed702e5af264970', 'status': 'HANDOVER_PENDING', 'started_at': 1795613458.7273943, 'ended_at': None, 'return_right_id': '4ab8b3bacfe64e1e'}, 'revision': 18}",
       "action": "return_vehicle",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1474,7 +1474,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice arrive",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'edf0f6d3bf474b31', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795352640.0, 'end': 1795356240.0, 'block_end': 1795357140.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795352644.3321204, 'qr': {'token': 'emobility:parking:6Ep27jHbGnpDrFG0WKs11VsLuW1GL1TmKMEq4HhQMX0', 'issued_at': 1795352644.3321204, 'expires_at': 1795353240.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 6}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c65402d2c39547d3', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795612860.0, 'end': 1795616460.0, 'block_end': 1795617360.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795612878.9355414, 'qr': {'token': 'emobility:parking:bupDFGgmasdSushOYAKhP4jGjkIdBVP5lV99MiMQB8E', 'issued_at': 1795612878.9355414, 'expires_at': 1795613460.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 6}",
       "action": "arrive",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1533,7 +1533,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'aa6632c0622743c4', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'edf0f6d3bf474b31', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795352644.3321204, 'end': 1795356240.0, 'scheduled_start': 1795352644.3321204, 'scheduled_end': 1795353509.1969852, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795352644.3321204, 'created_parking': True}, 'revision': 8}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '525bf16c28f44923', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'c65402d2c39547d3', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612878.9355414, 'end': 1795616460.0, 'scheduled_start': 1795612878.9355414, 'scheduled_end': 1795613743.8004062, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612878.9355414, 'created_parking': True}, 'revision': 8}",
       "action": "plug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1574,7 +1574,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'aa6632c0622743c4', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'edf0f6d3bf474b31', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795352644.3321204, 'end': 1795356240.0, 'scheduled_start': 1795352644.3321204, 'scheduled_end': 1795353509.1969852, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795352644.3321204, 'created_parking': True}, 'revision': 10}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '525bf16c28f44923', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'c65402d2c39547d3', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795612878.9355414, 'end': 1795616460.0, 'scheduled_start': 1795612878.9355414, 'scheduled_end': 1795613743.8004062, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612878.9355414, 'created_parking': True}, 'revision': 10}",
       "action": "start_charge",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1685,7 +1685,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice unplug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'aa6632c0622743c4', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'edf0f6d3bf474b31', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795352644.3321204, 'end': 1795356240.0, 'scheduled_start': 1795352644.3321204, 'scheduled_end': 1795353509.1969852, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795352644.3321204, 'created_parking': True, 'started_at': 1795352644.3321204, 'completed_at': 1795352644.3321204}, 'revision': 14}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '525bf16c28f44923', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'c65402d2c39547d3', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612878.9355414, 'end': 1795616460.0, 'scheduled_start': 1795612878.9355414, 'scheduled_end': 1795613743.8004062, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612878.9355414, 'created_parking': True, 'started_at': 1795612878.9355414, 'completed_at': 1795612878.9355414}, 'revision': 14}",
       "action": "unplug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1744,7 +1744,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f82c69f627f24279', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': 'edf0f6d3bf474b31', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795352644.3321204}, 'revision': 16}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c19d7ec562494885', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': 'c65402d2c39547d3', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612878.9355414}, 'revision': 16}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -2285,7 +2285,7 @@
       "case": "fleet",
       "status": "PASS",
       "step": "Legacy API operator plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0317f537094c4548', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '91d26e2b15864ea6', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 90.0, 'start': 1795352657.3602946, 'end': 1795395857.3602946, 'scheduled_start': 1795352657.3602946, 'scheduled_end': 1795352981.684619, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795352657.3602946, 'created_parking': True, 'plan_id': '5f3ed835564c44c2'}, 'revision': 18}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '24a1e7460e1a41bc', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '79a47d6a5511452e', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 90.0, 'start': 1795612915.0372972, 'end': 1795656115.0372972, 'scheduled_start': 1795612915.0372972, 'scheduled_end': 1795613239.3616216, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795612915.0372972, 'created_parking': True, 'plan_id': '500a4a495f4b4c90'}, 'revision': 18}",
       "action": "plug",
       "actor": "operator",
       "interface": "LEGACY_HTTP_API"
@@ -2332,7 +2332,7 @@
       "case": "fleet",
       "status": "PASS",
       "step": "Legacy API operator start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0317f537094c4548', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '91d26e2b15864ea6', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 90.0, 'start': 1795352657.3602946, 'end': 1795395857.3602946, 'scheduled_start': 1795352657.3602946, 'scheduled_end': 1795352981.684619, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795352657.3602946, 'created_parking': True, 'plan_id': '5f3ed835564c44c2'}, 'revision': 20}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '24a1e7460e1a41bc', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '79a47d6a5511452e', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 90.0, 'start': 1795612915.0372972, 'end': 1795656115.0372972, 'scheduled_start': 1795612915.0372972, 'scheduled_end': 1795613239.3616216, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795612915.0372972, 'created_parking': True, 'plan_id': '500a4a495f4b4c90'}, 'revision': 20}",
       "action": "start_charge",
       "actor": "operator",
       "interface": "LEGACY_HTTP_API"
@@ -2575,7 +2575,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "alice tab visibility",
-      "detail": "{'support', 'journeys', 'history', 'charging', 'overview', 'parking'}"
+      "detail": "{'parking', 'support', 'history', 'charging', 'overview', 'journeys'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2605,7 +2605,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "bob tab visibility",
-      "detail": "{'support', 'journeys', 'history', 'charging', 'overview', 'parking'}"
+      "detail": "{'parking', 'support', 'history', 'charging', 'overview', 'journeys'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2635,7 +2635,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "operator tab visibility",
-      "detail": "{'support', 'operations', 'technical', 'journeys', 'history', 'charging', 'overview', 'parking', 'network'}"
+      "detail": "{'operations', 'parking', 'support', 'network', 'history', 'charging', 'overview', 'journeys', 'technical'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2665,7 +2665,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "dispatcher tab visibility",
-      "detail": "{'overview', 'history', 'network'}"
+      "detail": "{'network', 'history', 'overview'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2695,7 +2695,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "technician tab visibility",
-      "detail": "{'overview', 'history', 'network'}"
+      "detail": "{'network', 'history', 'overview'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2915,7 +2915,7 @@
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
       "step": "Legacy API alice pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'eb9a7a9f516142d9', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795352678.3155303, 'expires_at': 1795353278.3155303, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:-B1JcuzkazWr4YqhjbtEDwu3X-NFUVtDc0eNrhe7W7Y', 'issued_at': 1795352678.3155303, 'expires_at': 1795353278.3155303}}, 'revision': 8}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '89454a29cc7247ed', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612976.1729147, 'expires_at': 1795613576.1729147, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:mHNibW5xRngAR3nYBvUiVl9xJ7TI2KHAMOKSXqXhiVk', 'issued_at': 1795612976.1729147, 'expires_at': 1795613576.1729147}}, 'revision': 8}",
       "action": "pickup",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -2962,7 +2962,7 @@
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
       "step": "Legacy API alice return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '554d54a0ebdb4367', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': 'eb9a7a9f516142d9', 'status': 'HANDOVER_PENDING', 'started_at': 1795352678.3155303, 'ended_at': None, 'return_right_id': '9dd4639406ec4ede'}, 'revision': 10}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0dc520787f734e64', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '89454a29cc7247ed', 'status': 'HANDOVER_PENDING', 'started_at': 1795612976.1729147, 'ended_at': None, 'return_right_id': 'd6a3b90b51b54bba'}, 'revision': 10}",
       "action": "return_vehicle",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -3151,7 +3151,7 @@
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
       "step": "Legacy API alice pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '09f4bbe5b57d4d12', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795352685.446243, 'expires_at': 1795353285.446243, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:7Rh8j6a2AwtiBGTtsAVn9bJRYNRkMwRpOvgFoMKwBA0', 'issued_at': 1795352685.446243, 'expires_at': 1795353285.446243}}, 'revision': 13}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'b16e631e7fda4c21', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612988.9453278, 'expires_at': 1795613588.9453278, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:zgyYaRVgy5hfh6KHJRDM1G6B9kAiH88DirW6hpER13Q', 'issued_at': 1795612988.9453278, 'expires_at': 1795613588.9453278}}, 'revision': 13}",
       "action": "pickup",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -3192,7 +3192,7 @@
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
       "step": "Legacy API alice return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0fd49dda32604724', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '09f4bbe5b57d4d12', 'status': 'ASSISTANCE_PENDING', 'started_at': 1795352685.446243, 'ended_at': None}, 'revision': 15}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0f36e6b51ebd4d41', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': 'b16e631e7fda4c21', 'status': 'ASSISTANCE_PENDING', 'started_at': 1795612988.9453278, 'ended_at': None}, 'revision': 15}",
       "action": "return_vehicle",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"

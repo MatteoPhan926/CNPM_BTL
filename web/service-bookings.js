@@ -97,7 +97,7 @@ function captureFormDrafts() {
   const active=document.activeElement;
   return Array.from(app.querySelectorAll('form')).filter(form=>form.dataset.dirty==='true'||form.contains(active)).map(form=>({
     key:formDraftKey(form),dirty:form.dataset.dirty,
-    fields:Array.from(form.elements).filter(el=>el.name).map(el=>({name:el.name,value:el.value,checked:el.checked})),
+    fields:Array.from(form.elements).filter(el=>el.name).map(el=>({name:el.name,type: el.type,value:el.value,checked:el.checked})),
     focus:form.contains(active)?active.name:null,
     selection:form.contains(active)&&typeof active.selectionStart==='number'?[active.selectionStart,active.selectionEnd]:null,
   }));
@@ -107,13 +107,48 @@ function restoreFormDrafts(drafts) {
     const form=Array.from(app.querySelectorAll('form')).find(item=>formDraftKey(item)===draft.key);
     if(!form) continue;
     if(draft.dirty) form.dataset.dirty=draft.dirty;
-    for(const field of draft.fields) {
-      const el=form.elements.namedItem(field.name);
-      if(!el) continue;
-      if(el.tagName!=='SELECT'||Array.from(el.options).some(o=>o.value===field.value)) el.value=field.value;
-      if(el.type==='checkbox'||el.type==='radio') el.checked=field.checked;
+    for (const field of draft.fields) {
+        const isChoice =
+            field.type === 'checkbox' ||
+            field.type === 'radio';
+
+        const el = isChoice
+            ? Array.from(form.elements).find(item =>
+                item.name === field.name &&
+                item.type === field.type &&
+                item.value === field.value
+            )
+            : form.elements.namedItem(field.name);
+
+        if (!el) continue;
+
+        if (isChoice) {
+            el.checked = field.checked;
+            continue;
+        }
+
+        if (el.tagName === 'SELECT') {
+            if (
+                Array.from(el.options).some(
+                    option => option.value === field.value
+                )
+            ) {
+                el.value = field.value;
+            }
+        } else if (
+            el instanceof HTMLInputElement ||
+            el instanceof HTMLTextAreaElement
+        ) {
+            if (el.type !== 'hidden') {
+                el.value = field.value;
+            }
+        }
     }
-    const focus=draft.focus?form.elements.namedItem(draft.focus):null;
+    const focus = draft.focus
+      ? Array.from(form.elements).find(
+          el => el.name === draft.focus
+      )
+      : null;
     if(focus) {focus.focus({preventScroll:true});if(draft.selection) focus.setSelectionRange(...draft.selection);}
   }
 }

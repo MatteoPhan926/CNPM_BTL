@@ -164,6 +164,14 @@ class Handler(BaseHTTPRequestHandler):
                      "/parking-qr.js": ("parking-qr.js", "text/javascript; charset=utf-8"),
                      "/service-bookings.js": ("service-bookings.js", "text/javascript; charset=utf-8"),
                      "/styles.css": ("styles.css", "text/css; charset=utf-8")}
+        for name in (
+            "brand", "overview", "journeys", "parking",
+            "charging", "support", "operations",
+            "technical", "network", "history"
+        ):
+            resources[f"/icons/{name}.svg"] = (
+                f"icons/{name}.svg", "image/svg+xml"
+            )
         resource = resources.get(path)
         if not resource:
             return self.reject(404, "NOT_FOUND", "Not found.")

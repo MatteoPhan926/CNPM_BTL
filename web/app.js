@@ -7,7 +7,9 @@ let tab = location.hash.slice(1).split('/')[0] || 'overview';
 let selectedHub = '';
 let busy = false;
 let noticeTimer;
+let noticeExitTimer;
 let refreshVersion = 0;
+let lastNotifiedPending = null;
 const tabs = [
   ['overview', '◈', 'Explore hubs'], ['journeys', '↗', 'My journeys'],
   ['parking', '▦', 'Parking'], ['charging', 'ϟ', 'Charging'],
@@ -38,12 +40,101 @@ async function request(path, data) {
   return result;
 }
 
-function showNotice(message, error=false, retry=false) {
-  clearTimeout(noticeTimer);
-  notice.hidden = false;
-  notice.className = `notice${error?' error':''}`;
-  notice.innerHTML = `<span>${esc(message)}</span><button data-notice="${retry?'retry':'close'}">${retry?'Retry same request':'Dismiss'}</button>`;
-  if (!error && !retry) noticeTimer = setTimeout(()=>notice.hidden=true, 9000);
+function showNotice(message, error = false, retry = false) {
+    clearTimeout(noticeTimer);
+    clearTimeout(noticeExitTimer);
+
+    const type = retry
+        ? 'warning'
+        : error
+            ? 'error'
+            : 'success';
+
+    const config = {
+        success: {
+            icon: '✓',
+            heading: 'Success'
+        },
+        error: {
+            icon: '!',
+            heading: 'Request failed'
+        },
+        warning: {
+            icon: '!',
+            heading: 'Confirmation required'
+        }
+    }[type];
+
+    notice.className = `notice toast-${type}`;
+    notice.hidden = false;
+
+    notice.innerHTML = `
+        <div class="toast-icon" aria-hidden="true">
+            ${config.icon}
+        </div>
+
+        <div class="toast-content">
+            <strong class="toast-title">
+                ${config.heading}
+            </strong>
+
+            <span class="toast-message">
+                ${esc(message)}
+            </span>
+        </div>
+
+        <button
+            type="button"
+            class="${retry ? 'toast-retry' : 'toast-close'}"
+            data-notice="${retry ? 'retry' : 'close'}"
+            aria-label="${retry ? 'Retry same request' : 'Dismiss'}"
+        >
+            ${retry ? 'Retry' : '×'}
+        </button>
+
+        <div class="toast-progress"></div>
+    `;
+
+    const duration = retry
+        ? 10000
+        : error
+            ? 6000
+            : 4000;
+
+    notice.style.setProperty(
+        '--toast-duration',
+        `${duration}ms`
+    );
+
+    void notice.offsetWidth;
+
+    notice.classList.add('toast-enter');
+
+    noticeTimer = setTimeout(() => {
+        hideNotice();
+    }, duration);
+}
+
+function hideNotice(immediate = false) {
+    clearTimeout(noticeTimer);
+    clearTimeout(noticeExitTimer);
+
+    notice.classList.remove('toast-enter');
+
+    if (immediate === true) {
+        notice.hidden = true;
+        notice.classList.remove('toast-exit');
+        return;
+    }
+
+    if (notice.hidden) return;
+
+    notice.classList.add('toast-exit');
+
+    noticeExitTimer = setTimeout(() => {
+        notice.hidden = true;
+        notice.classList.remove('toast-exit');
+    }, 250);
 }
 
 async function refresh(renderView=true, background=false) {
@@ -115,7 +206,7 @@ function renderLogin() {
   refreshVersion++;
   if (parkingQrDialog.open) parkingQrDialog.close();
   if (serviceQrDialog.open) serviceQrDialog.close();
-  app.innerHTML = `<div class="login-shell"><section class="login-story"><div class="brand"><span class="brand-symbol">ϟ</span><div><strong>Smart E-Mobility</strong><small>VNU–HCM MOBILITY NETWORK</small></div></div><div><div class="eyebrow">A better way across campus</div><h1>Your next journey.<br>A little greener.</h1><p>Find a shared vehicle, reserve a place to park, and manage your charging in one connected workspace.</p></div><div class="login-story-footer">Campus mobility services · Local demonstration</div></section><main class="login-panel" id="main"><div class="login-card"><div class="eyebrow">Welcome to the hub</div><h2>Sign in to get moving</h2><p class="muted">Use a local demo account to explore the working journeys.</p><form id="login-form" class="form"><label>Username<input name="username" autocomplete="username" required value="alice"></label><label>Password<input name="password" type="password" autocomplete="current-password" required value="alice-demo"></label><button type="submit">Sign in →</button><p class="login-error" id="login-error" role="alert"></p></form><div class="demo-note"><strong>Local demo accounts</strong><p><code>alice / alice-demo</code><br><code>bob / bob-demo</code><br><code>operator / operator-demo</code><br><code>dispatcher / dispatcher-demo</code><br><code>technician / technician-demo</code></p><p>Passwords may be overridden by the server environment. Staff accounts open the fleet workspace. The simulator is enabled separately at server startup.</p></div></div></main></div>`;
+  app.innerHTML = `<div class="login-shell"><section class="login-story"><div class="brand"><img class="brand-symbol" src="/icons/brand.svg" alt=""><div><strong>Smart E-Mobility</strong><small>VNU–HCM MOBILITY NETWORK</small></div></div><div><div class="eyebrow">A better way across campus</div><h1>Your next journey.<br>A little greener.</h1><p>Find a shared vehicle, reserve a place to park, and manage your charging in one connected workspace.</p></div><div class="login-story-footer">Campus mobility services · Local demonstration</div></section><main class="login-panel" id="main"><div class="login-card"><div class="eyebrow">Welcome to the hub</div><h2>Sign in to get moving</h2><p class="muted">Use a local demo account to explore the working journeys.</p><form id="login-form" class="form"><label>Username<input name="username" autocomplete="username" required value="alice"></label><label>Password<input name="password" type="password" autocomplete="current-password" required value="alice-demo"></label><button type="submit">Sign in →</button><p class="login-error" id="login-error" role="alert"></p></form><div class="demo-note"><strong>Local demo accounts</strong><p><code>alice / alice-demo</code><br><code>bob / bob-demo</code><br><code>operator / operator-demo</code><br><code>dispatcher / dispatcher-demo</code><br><code>technician / technician-demo</code></p><p>Passwords may be overridden by the server environment. Staff accounts open the fleet workspace. The simulator is enabled separately at server startup.</p></div></div></main></div>`;
   if (location.hostname.endsWith('.onrender.com')) {
     const input = app.querySelector('input[name="password"]');
     if (input) input.value = '';
@@ -137,8 +228,39 @@ function render() {
   });
   if (!availableTabs.some(([id]) => id === tab)) tab = staff ? 'network' : 'overview';
   const views = {overview, journeys, parking, charging, support, operations, history: activityHistory, network: fleetWorkspace, technical: technicalSimulator};
-  app.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-symbol">ϟ</span><div class="brand-text"><strong>Smart<br>E-Mobility</strong><small>VNU–HCM NETWORK</small></div></div><div class="nav-label">YOUR WORKSPACE</div><nav class="nav" aria-label="Main navigation">${availableTabs.map(([id,icon,label])=>`<button data-tab="${id}" class="${tab===id?'active':''}" ${tab===id?'aria-current="page"':''} title="${label}" aria-label="${label}"><span class="icon" aria-hidden="true">${icon}</span><span class="nav-text">${label}</span></button>`).join('')}</nav><div class="sidebar-foot"><strong>Connected campus.<br>Considered journeys.</strong><p class="spaced">Rentals & journeys<br>Parking & capacity<br>Charging & schedules<br>Fleet operations</p><p class="spaced">Local MVP · ${esc(title(state.actor.role))} access</p></div></aside><div class="main-column"><header class="topbar"><div class="breadcrumb">VNU–HCM / Mobility services / <strong>${esc(tabs.find(row=>row[0]===tab)[2])}</strong></div><div class="account"><span class="avatar">${esc(state.actor.id[0].toUpperCase())}</span><div><strong>${esc(title(state.actor.id))}</strong><div class="small-text muted">${esc(title(state.actor.role))}</div></div><button class="secondary small" id="logout">Sign out</button></div></header><main class="content" id="main"><div class="mode-banner"><strong>${state.simulator?'◇ Controlled simulation enabled':'◇ Device simulator offline'}</strong><span>${state.simulator?'All device evidence is synthetic. An operator must explicitly deliver each simulated outcome.':'Handover and charging requests stay pending until evidence arrives.'}</span></div>${views[tab]()}</main></div></div>`;
-  if (pending()) showNotice('A request has an uncertain outcome. Recover it using the same saved intent.', true, true);
+  app.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><img class="brand-symbol" src="/icons/brand.svg" alt=""><div class="brand-text"><strong>Smart<br>E-Mobility</strong><small>VNU–HCM NETWORK</small></div></div><div class="nav-label">YOUR WORKSPACE</div><nav class="nav" aria-label="Main navigation">${availableTabs.map(([id,icon,label])=>`<button data-tab="${id}" class="${tab===id?'active':''}" ${tab===id?'aria-current="page"':''} title="${label}" aria-label="${label}"><img class="icon" src="/icons/${id}.svg" alt=""><span class="nav-text">${label}</span></button>`).join('')}</nav><div class="sidebar-foot"><strong>Connected campus.<br>Considered journeys.</strong><p class="spaced">Rentals & journeys<br>Parking & capacity<br>Charging & schedules<br>Fleet operations</p><p class="spaced">Local MVP · ${esc(title(state.actor.role))} access</p></div></aside><div class="main-column"><header class="topbar"><div class="breadcrumb">VNU–HCM / Mobility services / <strong>${esc(tabs.find(row=>row[0]===tab)[2])}</strong></div><div class="account"><span class="avatar">${esc(state.actor.id[0].toUpperCase())}</span><div><strong>${esc(title(state.actor.id))}</strong><div class="small-text muted">${esc(title(state.actor.role))}</div></div><button class="secondary small" id="logout">Sign out</button></div></header><main class="content" id="main"><div class="mode-banner">${pending() ? `
+    <div class="record-note spaced">
+        <strong>Pending request</strong>
+        <p>
+            A previous request requires confirmation.
+        </p>
+        <button
+            type="button"
+            class="secondary small"
+            id="recover-pending"
+        >
+            Recover request
+        </button>
+    </div>
+` : ''}<strong>${state.simulator?'◇ Controlled simulation enabled':'◇ Device simulator offline'}</strong><span>${state.simulator?'All device evidence is synthetic. An operator must explicitly deliver each simulated outcome.':'Handover and charging requests stay pending until evidence arrives.'}</span></div>${views[tab]()}</main></div></div>`;
+  const saved = pending();
+
+  if (!saved) {
+      lastNotifiedPending = null;
+  } else {
+      const pendingId =
+          `${state.actor.id}:${saved.intent_id}`;
+
+      if (lastNotifiedPending !== pendingId) {
+          lastNotifiedPending = pendingId;
+
+          showNotice(
+              'A request has an uncertain outcome. Recover it using the same saved intent.',
+              true,
+              true
+          );
+      }
+  }
 }
 
 function heading(kicker, name, description, extra='') {
@@ -150,7 +272,15 @@ function overview() {
   return heading('Explore the network', 'Where are you heading?', 'Live resource snapshots, committed reservations and observed occupancy — together in one view.')+
     `<section class="stats" aria-label="Network summary"><div class="stat"><div class="label">Mobility hubs</div><div class="number">${hubs.length}</div><div class="hint">Metro · campus · dormitories</div></div><div class="stat"><div class="label">Available shared vehicles</div><div class="number">${list('vehicles').filter(v=>v.kind==='shared'&&v.available).length}</div><div class="hint">Fresh, eligible and unclaimed</div></div><div class="stat"><div class="label">Available parking spaces</div><div class="number">${hubs.reduce((n,h)=>n+(h.available||0),0)}</div><div class="hint">Subject to time and reception policy</div></div><div class="stat"><div class="label">Your active services</div><div class="number">${state.active_services}</div><div class="hint">Manage from your workspace</div></div></section>`+
     `<div class="section-heading"><h2>Find your hub</h2><span class="state-age">Updated ${esc(date(state.now))} · Revision ${esc(state.revision)}</span></div><div class="grid">${hubs.map((hub,i)=>`<article class="card hub-card"><div class="hub-art"><span>0${i+1} / ${esc(hub.name)}</span></div><div class="card-body"><div class="card-heading"><div><h3>${esc(hub.name)}</h3><p class="muted small-text">${esc(hub.id)} · ${esc(hub.power_kw)} kW charging budget</p></div>${chip(hub.level||'OPEN')}</div><div class="capacity"><div class="capacity-line"><span>Effective commitments</span><strong>${(hub.occupied||0)+(hub.unknown||0)+(hub.held||0)} / ${hub.capacity}</strong></div><progress class="meter ${hub.available<3?'warn':''}" max="${hub.capacity||1}" value="${(hub.occupied||0)+(hub.unknown||0)+(hub.held||0)}" aria-label="Effective parking commitments"></progress><div class="facts"><span>${hub.occupied||0} occupied</span><span>${hub.held||0} held</span><span>${hub.unknown||0} unknown</span></div></div><div class="card-footer"><span class="small-text muted">${list('vehicles').filter(v=>v.kind==='shared'&&v.hub_id===hub.id&&v.available).length} vehicles available</span><button class="link" data-hub="${esc(hub.id)}">View vehicles →</button></div></div></article>`).join('')}</div>`+
-    `<div class="section-heading"><h2>Shared vehicles</h2><label class="visually-hidden" for="hub-filter">Filter by hub</label><select id="hub-filter" class="inline-input">${option('','All hubs',!selectedHub)}${hubs.map(h=>option(h.id,h.name,h.id===selectedHub)).join('')}</select></div>${vehicles.length?`<div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Location</th><th>Battery</th><th>Observation</th><th>Availability</th><th>Action</th></tr></thead><tbody>${vehicles.map(v=>`<tr><td class="vehicle-name">${esc(v.label||v.id)}</td><td>${esc(hubName(v.hub_id))}</td><td><span class="battery">▰ ${esc(v.soc)}%</span></td><td>${chip(v.freshness||(now()-v.observed_at>90?'STALE':'FRESH'))}</td><td>${chip(v.available?'AVAILABLE':v.health!=='OPERABLE'?v.health:'UNAVAILABLE')}</td><td>${state.actor.role==='student'&&v.available?actionButton('Reserve · 10 min','reserve_vehicle',{vehicle_id:v.id},'small'):'—'}</td></tr>`).join('')}</tbody></table></div>`:empty('No shared vehicles here','Choose another hub or check back after a verified arrival.')}<p class="muted small-text spaced">A vehicle hold lasts 10 minutes. Destination parking is reserved separately. Stale observations cannot support a new allocation.</p>`;
+    `<div class="section-heading"><h2>Shared vehicles</h2><label class="visually-hidden" for="hub-filter">Filter by hub</label><select id="hub-filter" class="inline-input">${option('','All hubs',!selectedHub)}${hubs.map(h=>option(h.id,h.name,h.id===selectedHub)).join('')}</select></div>${vehicles.length?`<div class="table-wrap"><table><thead><tr><th>Vehicle</th><th>Location</th><th>Battery</th><th>Observation</th><th>Availability</th><th>Action</th></tr></thead><tbody>${vehicles.map(v=>`<tr><td class="vehicle-name">${esc(v.label||v.id)}</td><td>
+    ${esc(hubName(v.hub_id))}
+    <br>
+    <span class="muted small-text">
+        ${v.spot_id
+            ? `Bay ${esc(v.spot_id)}`
+            : 'No assigned bay'}
+    </span>
+</td><td><span class="battery">▰ ${esc(v.soc)}%</span></td><td>${chip(v.freshness||(now()-v.observed_at>90?'STALE':'FRESH'))}</td><td>${chip(v.available?'AVAILABLE':v.health!=='OPERABLE'?v.health:'UNAVAILABLE')}</td><td>${state.actor.role==='student'&&v.available?actionButton('Reserve · 10 min','reserve_vehicle',{vehicle_id:v.id},'small'):'—'}</td></tr>`).join('')}</tbody></table></div>`:empty('No shared vehicles here','Choose another hub or check back after a verified arrival.')}<p class="muted small-text spaced">A vehicle hold lasts 10 minutes. Destination parking is reserved separately. Stale observations cannot support a new allocation.</p>`;
 }
 
 function journeys() {
@@ -557,6 +687,9 @@ app.addEventListener('click', async event => {
       .querySelector('#detail-dialog')
       .showModal();
   }
+  else if (button.id === 'recover-pending') {
+      await command(null, null, true);
+  }
 });
 
 app.addEventListener('change', event => {
@@ -609,10 +742,52 @@ app.addEventListener('submit', async event => {
 });
 
 notice.addEventListener('click', event => {
-  const button=event.target.closest('button');
-  if (button?.dataset.notice==='retry') command(null,null,true);
-  else if (button) notice.hidden=true;
+    const button = event.target.closest(
+        'button[data-notice]'
+    );
+
+    if (!button) return;
+
+    if (button.dataset.notice === 'retry') {
+        command(null, null, true);
+    } else {
+        hideNotice();
+    }
 });
+
 document.querySelector('#close-dialog').addEventListener('click',()=>document.querySelector('#detail-dialog').close());
+let autoRefreshing = false;
+
+async function autoRefresh() {
+    if (
+        !state ||
+        busy ||
+        document.hidden ||
+        autoRefreshing
+    ) {
+        return;
+    }
+
+    autoRefreshing = true;
+
+    try {
+        await refresh(true, true);
+    } finally {
+        autoRefreshing = false;
+    }
+}
+
 refresh();
-setInterval(()=>{if(state&&!busy&&!document.hidden) refresh(true,true);},4000);
+
+setInterval(autoRefresh, 4000);
+
+document.addEventListener(
+    'visibilitychange',
+    () => {
+        if (!document.hidden) {
+            autoRefresh();
+        }
+    }
+);
+
+window.addEventListener('focus', autoRefresh);
