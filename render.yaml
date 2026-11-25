@@ -7,6 +7,6 @@ services:
     repo: https://github.com/MatteoPhan926/CNPM_BTL
     branch: main
     autoDeployTrigger: commit
-    buildCommand: python --version
+    buildCommand: pip install -r requirements.txt
     startCommand: python -m emobility.cloud_server
     healthCheckPath: /api/health
