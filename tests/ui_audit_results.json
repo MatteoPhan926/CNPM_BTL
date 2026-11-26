@@ -1,6 +1,6 @@
 {
   "summary": {
-    "PASS": 539,
+    "PASS": 541,
     "FINDING": 6
   },
   "results": [
@@ -49,7 +49,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "alice Reserve · 10 min",
+      "step": "alice Giữ xe · 10 phút",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "alice"
@@ -57,10 +57,23 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "bob Reserve · 10 min [reject VEHICLE_UNAVAILABLE]",
+      "step": "Legacy API bob reserve_vehicle rejects VEHICLE_UNAVAILABLE",
       "detail": "{'error': {'code': 'VEHICLE_UNAVAILABLE', 'message': 'Vehicle is claimed, stale, charging or unsuitable for rental.'}}",
       "action": "reserve_vehicle",
-      "actor": "bob"
+      "actor": "bob",
+      "interface": "LEGACY_HTTP_API"
+    },
+    {
+      "case": "rentals",
+      "status": "PASS",
+      "step": "bob Refresh",
+      "detail": ""
+    },
+    {
+      "case": "rentals",
+      "status": "PASS",
+      "step": "Bob cannot reserve V1 after Alice holds it",
+      "detail": ""
     },
     {
       "case": "rentals",
@@ -71,7 +84,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "alice Cancel reservation",
+      "step": "alice Hủy giữ xe",
       "detail": "CANCELLED",
       "action": "cancel_hold",
       "actor": "alice"
@@ -91,7 +104,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "bob Reserve · 10 min",
+      "step": "bob Giữ xe · 10 phút",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "bob"
@@ -106,7 +119,7 @@
       "case": "rentals",
       "status": "PASS",
       "step": "Legacy API bob pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f543fd58999b4c27', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612821.0889363, 'expires_at': 1795613421.0889363, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:bkl8FrNHMcFC9zqMZnI3X7bmYbfIB86KNQlathls-MQ', 'issued_at': 1795612821.0889363, 'expires_at': 1795613421.0889363}}, 'revision': 6}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '06f7e2e485ae4ec7', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795627201.9511554, 'expires_at': 1795627801.9511554, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:jlaf9-Z4tjn2pE4tsb2MXPa9DFq3vLgsJfyS13YjNU4', 'issued_at': 1795627201.9511554, 'expires_at': 1795627801.9511554}}, 'revision': 6}",
       "action": "pickup",
       "actor": "bob",
       "interface": "LEGACY_HTTP_API"
@@ -138,7 +151,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "operator Simulate unknown outcome",
+      "step": "operator Mô phỏng kết quả không xác định",
       "detail": "PENDING",
       "action": "simulate",
       "actor": "operator"
@@ -158,7 +171,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "operator Simulate rejection",
+      "step": "operator Mô phỏng từ chối",
       "detail": "REJECTED",
       "action": "simulate",
       "actor": "operator"
@@ -173,7 +186,7 @@
       "case": "rentals",
       "status": "PASS",
       "step": "Legacy API bob pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f543fd58999b4c27', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612821.0889363, 'expires_at': 1795613421.0889363, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:bkl8FrNHMcFC9zqMZnI3X7bmYbfIB86KNQlathls-MQ', 'issued_at': 1795612821.0889363, 'expires_at': 1795613421.0889363}}, 'revision': 9}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '06f7e2e485ae4ec7', 'owner_id': 'bob', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795627201.9511554, 'expires_at': 1795627801.9511554, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:jlaf9-Z4tjn2pE4tsb2MXPa9DFq3vLgsJfyS13YjNU4', 'issued_at': 1795627201.9511554, 'expires_at': 1795627801.9511554}}, 'revision': 9}",
       "action": "pickup",
       "actor": "bob",
       "interface": "LEGACY_HTTP_API"
@@ -199,7 +212,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -226,7 +239,7 @@
       "case": "rentals",
       "status": "PASS",
       "step": "Legacy API bob return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '18aac94af49a4800', 'owner_id': 'bob', 'vehicle_id': 'V1', 'hold_id': 'f543fd58999b4c27', 'status': 'HANDOVER_PENDING', 'started_at': 1795612821.0889363, 'ended_at': None, 'return_right_id': 'fcf0110e71ca4dab'}, 'revision': 11}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c7e0d749e5c0464f', 'owner_id': 'bob', 'vehicle_id': 'V1', 'hold_id': '06f7e2e485ae4ec7', 'status': 'HANDOVER_PENDING', 'started_at': 1795627201.9511554, 'ended_at': None, 'return_right_id': '9b83fdf8122a4e52'}, 'revision': 11}",
       "action": "return_vehicle",
       "actor": "bob",
       "interface": "LEGACY_HTTP_API"
@@ -252,7 +265,7 @@
     {
       "case": "rentals",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -314,7 +327,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Register vehicle",
+      "step": "alice Đăng ký phương tiện",
       "detail": "",
       "action": "register_vehicle",
       "actor": "alice"
@@ -334,7 +347,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -372,7 +385,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Cancel unused right",
+      "step": "alice Hủy quyền đỗ chưa sử dụng",
       "detail": "CANCELLED",
       "action": "cancel_parking",
       "actor": "alice"
@@ -386,7 +399,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -400,7 +413,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Cancel unused session",
+      "step": "alice Hủy phiên sạc chưa sử dụng",
       "detail": "CANCELLED",
       "action": "cancel_charge",
       "actor": "alice"
@@ -420,7 +433,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -471,7 +484,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice arrive",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'cc3c6f5353244b66', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795612800.0, 'end': 1795616400.0, 'block_end': 1795617300.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795612840.547522, 'qr': {'token': 'emobility:parking:mwOmCoqOCtRbmY--74nB85uSxmdSIJ3ODC-OdNnuucI', 'issued_at': 1795612840.547522, 'expires_at': 1795613400.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 10}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '11fb5a90ffc14d08', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795627200.0, 'end': 1795630800.0, 'block_end': 1795631700.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795627228.950977, 'qr': {'token': 'emobility:parking:o0zlCzRMGOYBTphjURDESgY5UMUeW3Pf8KQPR0nPQwk', 'issued_at': 1795627228.950977, 'expires_at': 1795627800.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 10}",
       "action": "arrive",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -503,7 +516,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -530,7 +543,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'e4e7b0a533614dfb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'cc3c6f5353244b66', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612840.547522, 'end': 1795616400.0, 'scheduled_start': 1795612840.547522, 'scheduled_end': 1795613705.412387, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612840.547522, 'created_parking': True}, 'revision': 12}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '464d1306ba434fe5', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '11fb5a90ffc14d08', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795627228.950977, 'end': 1795630800.0, 'scheduled_start': 1795627228.950977, 'scheduled_end': 1795628093.815842, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795627228.950977, 'created_parking': True}, 'revision': 12}",
       "action": "plug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -556,7 +569,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -571,7 +584,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'e4e7b0a533614dfb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'cc3c6f5353244b66', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795612840.547522, 'end': 1795616400.0, 'scheduled_start': 1795612840.547522, 'scheduled_end': 1795613705.412387, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612840.547522, 'created_parking': True}, 'revision': 14}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '464d1306ba434fe5', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '11fb5a90ffc14d08', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795627228.950977, 'end': 1795630800.0, 'scheduled_start': 1795627228.950977, 'scheduled_end': 1795628093.815842, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795627228.950977, 'created_parking': True}, 'revision': 14}",
       "action": "start_charge",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -597,7 +610,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -644,7 +657,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "alice Stop charging",
+      "step": "alice Dừng sạc",
       "detail": "STOP_PENDING",
       "action": "stop_charge",
       "actor": "alice"
@@ -664,7 +677,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -685,7 +698,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice unplug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'e4e7b0a533614dfb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'cc3c6f5353244b66', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612840.547522, 'end': 1795616400.0, 'scheduled_start': 1795612840.547522, 'scheduled_end': 1795613705.412387, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612840.547522, 'created_parking': True, 'started_at': 1795612840.547522, 'completed_at': 1795612840.547522}, 'revision': 19}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '464d1306ba434fe5', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '11fb5a90ffc14d08', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795627228.950977, 'end': 1795630800.0, 'scheduled_start': 1795627228.950977, 'scheduled_end': 1795628093.815842, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795627228.950977, 'created_parking': True, 'started_at': 1795627228.950977, 'completed_at': 1795627228.950977}, 'revision': 19}",
       "action": "unplug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -711,7 +724,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -732,7 +745,7 @@
       "case": "parking_charging",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '86357b2e805c4d6a', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': 'cc3c6f5353244b66', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612840.547522}, 'revision': 21}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0f4bd1cd39194432', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': '11fb5a90ffc14d08', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795627228.950977}, 'revision': 21}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -758,7 +771,7 @@
     {
       "case": "parking_charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -820,7 +833,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -922,7 +935,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice arrive",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f439af4a077b4ebc', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S10', 'start': 1795612800.0, 'end': 1795616400.0, 'block_end': 1795617300.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795612857.7273943, 'qr': {'token': 'emobility:parking:qXP3Sl2Hza0FEEjibwh4C8JPEf_gSVKQphwCwbl3MkI', 'issued_at': 1795612857.7273943, 'expires_at': 1795613400.0}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 4}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'ed22525f032749ef', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S10', 'start': 1795627260.0, 'end': 1795630860.0, 'block_end': 1795631760.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795627271.5359797, 'qr': {'token': 'emobility:parking:I0OAhZGbmo5RyuQewM70ZuYOZvko07Bb-stsh0WWM-g', 'issued_at': 1795627271.5359797, 'expires_at': 1795627860.0}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 4}",
       "action": "arrive",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -978,7 +991,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1026,7 +1039,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'b9993928cf734035', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S10', 'right_id': 'f439af4a077b4ebc', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612857.7273943}, 'revision': 7}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '453b927e7a244523', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S10', 'right_id': 'ed22525f032749ef', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795627271.5359797}, 'revision': 7}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1064,7 +1077,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1096,7 +1109,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -1104,7 +1117,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "alice Cancel unused right",
+      "step": "alice Hủy quyền đỗ chưa sử dụng",
       "detail": "CANCELLED",
       "action": "cancel_parking",
       "actor": "alice"
@@ -1151,7 +1164,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -1165,7 +1178,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "operator Refresh simulated observations",
+      "step": "operator Làm mới dữ liệu mô phỏng",
       "detail": "SIMULATED",
       "action": "sim_refresh",
       "actor": "operator"
@@ -1212,7 +1225,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "alice Reserve · 10 min",
+      "step": "alice Giữ xe · 10 phút",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "alice"
@@ -1239,7 +1252,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '8ed702e5af264970', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795613458.7273943, 'expires_at': 1795614058.7273943, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:KUY3SQHn7MmlVyULRMr2ns2Yxoc8tj7tr7UyilMjLaI', 'issued_at': 1795613458.7273943, 'expires_at': 1795614058.7273943}}, 'revision': 16}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '832258fae0fd4576', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795627872.5359797, 'expires_at': 1795628472.5359797, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:VZN_5l_PqBY5oqyPZvbToYdXKU8-Ca3JjCjOICloWRE', 'issued_at': 1795627872.5359797, 'expires_at': 1795628472.5359797}}, 'revision': 16}",
       "action": "pickup",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1265,7 +1278,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1298,7 +1311,7 @@
       "case": "active_services_and_qr",
       "status": "PASS",
       "step": "Legacy API alice return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '1d0ebac769244d14', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '8ed702e5af264970', 'status': 'HANDOVER_PENDING', 'started_at': 1795613458.7273943, 'ended_at': None, 'return_right_id': '4ab8b3bacfe64e1e'}, 'revision': 18}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '5a7c8cd560374221', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '832258fae0fd4576', 'status': 'HANDOVER_PENDING', 'started_at': 1795627872.5359797, 'ended_at': None, 'return_right_id': 'eca37ad4dd774a56'}, 'revision': 18}",
       "action": "return_vehicle",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1324,7 +1337,7 @@
     {
       "case": "active_services_and_qr",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1368,7 +1381,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -1424,7 +1437,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Submit synthetic observation",
+      "step": "operator Gửi dữ liệu quan sát mô phỏng",
       "detail": "",
       "action": "sim_observe",
       "actor": "operator"
@@ -1465,7 +1478,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Submit synthetic observation",
+      "step": "operator Gửi dữ liệu quan sát mô phỏng",
       "detail": "",
       "action": "sim_observe",
       "actor": "operator"
@@ -1474,7 +1487,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice arrive",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c65402d2c39547d3', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795612860.0, 'end': 1795616460.0, 'block_end': 1795617360.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795612878.9355414, 'qr': {'token': 'emobility:parking:bupDFGgmasdSushOYAKhP4jGjkIdBVP5lV99MiMQB8E', 'issued_at': 1795612878.9355414, 'expires_at': 1795613460.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 6}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '837bab1892884abb', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795627260.0, 'end': 1795630860.0, 'block_end': 1795631760.0, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795627302.3333833, 'qr': {'token': 'emobility:parking:XPClNrS9jnKmhGkkjArb12KdzjzDAjZX3RymoBP3zTw', 'issued_at': 1795627302.3333833, 'expires_at': 1795627860.0}, 'reservation_type': 'PARKING_AND_CHARGING'}, 'revision': 6}",
       "action": "arrive",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1500,7 +1513,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1533,7 +1546,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '525bf16c28f44923', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'c65402d2c39547d3', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612878.9355414, 'end': 1795616460.0, 'scheduled_start': 1795612878.9355414, 'scheduled_end': 1795613743.8004062, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612878.9355414, 'created_parking': True}, 'revision': 8}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f2a8a4e937e842d9', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '837bab1892884abb', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795627302.3333833, 'end': 1795630860.0, 'scheduled_start': 1795627302.3333833, 'scheduled_end': 1795628167.1982481, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795627302.3333833, 'created_parking': True}, 'revision': 8}",
       "action": "plug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1559,7 +1572,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1574,7 +1587,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '525bf16c28f44923', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'c65402d2c39547d3', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795612878.9355414, 'end': 1795616460.0, 'scheduled_start': 1795612878.9355414, 'scheduled_end': 1795613743.8004062, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612878.9355414, 'created_parking': True}, 'revision': 10}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f2a8a4e937e842d9', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '837bab1892884abb', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 70.0, 'start': 1795627302.3333833, 'end': 1795630860.0, 'scheduled_start': 1795627302.3333833, 'scheduled_end': 1795628167.1982481, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795627302.3333833, 'created_parking': True}, 'revision': 10}",
       "action": "start_charge",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1600,7 +1613,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1632,7 +1645,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "alice Stop charging",
+      "step": "alice Dừng sạc",
       "detail": "STOP_PENDING",
       "action": "stop_charge",
       "actor": "alice"
@@ -1652,7 +1665,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1685,7 +1698,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice unplug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '525bf16c28f44923', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': 'c65402d2c39547d3', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795612878.9355414, 'end': 1795616460.0, 'scheduled_start': 1795612878.9355414, 'scheduled_end': 1795613743.8004062, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795612878.9355414, 'created_parking': True, 'started_at': 1795612878.9355414, 'completed_at': 1795612878.9355414}, 'revision': 14}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f2a8a4e937e842d9', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '837bab1892884abb', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 70.0, 'start': 1795627302.3333833, 'end': 1795630860.0, 'scheduled_start': 1795627302.3333833, 'scheduled_end': 1795628167.1982481, 'kw': 3.7, 'duration': 864.8648648648649, 'created_at': 1795627302.3333833, 'created_parking': True, 'started_at': 1795627302.3333833, 'completed_at': 1795627302.3333833}, 'revision': 14}",
       "action": "unplug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1711,7 +1724,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1744,7 +1757,7 @@
       "case": "bundle_service_counter",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'c19d7ec562494885', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': 'c65402d2c39547d3', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612878.9355414}, 'revision': 16}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'ff8fb04dfde148de', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H2-S1', 'right_id': '837bab1892884abb', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795627302.3333833}, 'revision': 16}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -1770,7 +1783,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -1802,7 +1815,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -1810,7 +1823,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "alice Cancel unused right",
+      "step": "alice Hủy quyền đỗ chưa sử dụng",
       "detail": "CANCELLED",
       "action": "cancel_parking",
       "actor": "alice"
@@ -1836,7 +1849,7 @@
     {
       "case": "bundle_service_counter",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -1880,7 +1893,7 @@
     {
       "case": "recovery",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -1894,7 +1907,7 @@
     {
       "case": "recovery",
       "status": "PASS",
-      "step": "alice Send support request",
+      "step": "alice Gửi yêu cầu hỗ trợ",
       "detail": "OPEN",
       "action": "support",
       "actor": "alice"
@@ -1914,7 +1927,7 @@
     {
       "case": "recovery",
       "status": "PASS",
-      "step": "operator Propose reception",
+      "step": "operator Đề xuất tiếp nhận",
       "detail": "OFFERED",
       "action": "capacity_plan",
       "actor": "operator"
@@ -1928,7 +1941,7 @@
     {
       "case": "recovery",
       "status": "PASS",
-      "step": "alice Decline proposal",
+      "step": "alice Từ chối phương án",
       "detail": "DECLINED",
       "action": "accept_capacity",
       "actor": "alice"
@@ -1942,7 +1955,7 @@
     {
       "case": "recovery",
       "status": "PASS",
-      "step": "operator Propose reception",
+      "step": "operator Đề xuất tiếp nhận",
       "detail": "OFFERED",
       "action": "capacity_plan",
       "actor": "operator"
@@ -1956,7 +1969,7 @@
     {
       "case": "recovery",
       "status": "PASS",
-      "step": "alice Accept proposed reception",
+      "step": "alice Chấp nhận phương án",
       "detail": "WAITING_FOR_RECEPTION",
       "action": "accept_capacity",
       "actor": "alice"
@@ -2000,7 +2013,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Deactivate",
+      "step": "operator Vô hiệu hóa",
       "detail": "",
       "action": "d_resource_state",
       "actor": "operator"
@@ -2014,7 +2027,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Reactivate",
+      "step": "operator Kích hoạt lại",
       "detail": "",
       "action": "d_resource_state",
       "actor": "operator"
@@ -2034,7 +2047,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Run forecast",
+      "step": "operator Chạy dự báo",
       "detail": "",
       "action": "what_if",
       "actor": "operator"
@@ -2042,7 +2055,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Create transfer draft",
+      "step": "operator Tạo bản nháp điều chuyển",
       "detail": "DRAFT",
       "action": "what_if_draft",
       "actor": "operator"
@@ -2056,7 +2069,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Preview transfer",
+      "step": "operator Xem trước phương án điều chuyển",
       "detail": "DRAFT",
       "action": "transfer_preview",
       "actor": "operator"
@@ -2064,7 +2077,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Issue transfer",
+      "step": "operator Phát hành lệnh điều chuyển",
       "detail": "ISSUED",
       "action": "transfer_issue",
       "actor": "operator"
@@ -2090,7 +2103,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "dispatcher Start transfer",
+      "step": "dispatcher Bắt đầu điều chuyển",
       "detail": "IN_PROGRESS",
       "action": "transfer_start",
       "actor": "dispatcher"
@@ -2098,7 +2111,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "dispatcher Request handover",
+      "step": "dispatcher Yêu cầu bàn giao",
       "detail": "PENDING",
       "action": "transfer_handover",
       "actor": "dispatcher"
@@ -2136,7 +2149,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Simulate rejection",
+      "step": "operator Mô phỏng từ chối",
       "detail": "REJECTED",
       "action": "simulate",
       "actor": "operator"
@@ -2150,7 +2163,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "dispatcher Request handover",
+      "step": "dispatcher Yêu cầu bàn giao",
       "detail": "PENDING",
       "action": "transfer_handover",
       "actor": "dispatcher"
@@ -2170,7 +2183,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -2190,7 +2203,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "dispatcher Request handover",
+      "step": "dispatcher Yêu cầu bàn giao",
       "detail": "PENDING",
       "action": "transfer_handover",
       "actor": "dispatcher"
@@ -2210,7 +2223,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -2242,7 +2255,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Book fleet charging",
+      "step": "operator Đăng ký sạc cho đội xe",
       "detail": "BOOKED",
       "action": "fleet_charge",
       "actor": "operator"
@@ -2250,7 +2263,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Create schedule preview",
+      "step": "operator Tạo phương án lịch sạc",
       "detail": "DRAFT",
       "action": "schedule_preview",
       "actor": "operator"
@@ -2264,7 +2277,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Confirm schedule",
+      "step": "operator Xác nhận lịch sạc",
       "detail": "APPLIED",
       "action": "schedule_confirm",
       "actor": "operator"
@@ -2285,7 +2298,7 @@
       "case": "fleet",
       "status": "PASS",
       "step": "Legacy API operator plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '24a1e7460e1a41bc', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '79a47d6a5511452e', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 90.0, 'start': 1795612915.0372972, 'end': 1795656115.0372972, 'scheduled_start': 1795612915.0372972, 'scheduled_end': 1795613239.3616216, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795612915.0372972, 'created_parking': True, 'plan_id': '500a4a495f4b4c90'}, 'revision': 18}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'd6fa690e69044937', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '4b8c68f17e7f4fed', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 90.0, 'start': 1795627338.7184036, 'end': 1795670538.7184036, 'scheduled_start': 1795627338.7184036, 'scheduled_end': 1795627663.042728, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795627338.7184036, 'created_parking': True, 'plan_id': 'd9885aa61a4a4c4f'}, 'revision': 18}",
       "action": "plug",
       "actor": "operator",
       "interface": "LEGACY_HTTP_API"
@@ -2311,7 +2324,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -2332,7 +2345,7 @@
       "case": "fleet",
       "status": "PASS",
       "step": "Legacy API operator start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '24a1e7460e1a41bc', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '79a47d6a5511452e', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 90.0, 'start': 1795612915.0372972, 'end': 1795656115.0372972, 'scheduled_start': 1795612915.0372972, 'scheduled_end': 1795613239.3616216, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795612915.0372972, 'created_parking': True, 'plan_id': '500a4a495f4b4c90'}, 'revision': 20}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'd6fa690e69044937', 'owner_id': 'operator', 'vehicle_id': 'V1', 'right_id': '4b8c68f17e7f4fed', 'port_id': 'H2-C1', 'reservation_type': 'PARKING_AND_CHARGING', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 90.0, 'start': 1795627338.7184036, 'end': 1795670538.7184036, 'scheduled_start': 1795627338.7184036, 'scheduled_end': 1795627663.042728, 'kw': 3.7, 'duration': 324.3243243243243, 'created_at': 1795627338.7184036, 'created_parking': True, 'plan_id': 'd9885aa61a4a4c4f'}, 'revision': 20}",
       "action": "start_charge",
       "actor": "operator",
       "interface": "LEGACY_HTTP_API"
@@ -2358,7 +2371,7 @@
     {
       "case": "fleet",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -2384,7 +2397,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "operator Open maintenance ticket",
+      "step": "operator Tạo phiếu bảo trì",
       "detail": "OPEN",
       "action": "d_open_incident",
       "actor": "operator"
@@ -2416,7 +2429,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "technician Record outcome",
+      "step": "technician Ghi nhận kết quả",
       "detail": "RESOLVED",
       "action": "d_update_incident",
       "actor": "technician"
@@ -2436,7 +2449,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "operator Open maintenance ticket",
+      "step": "operator Tạo phiếu bảo trì",
       "detail": "OPEN",
       "action": "d_open_incident",
       "actor": "operator"
@@ -2450,7 +2463,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "technician Record outcome",
+      "step": "technician Ghi nhận kết quả",
       "detail": "ESCALATED_WORKSHOP",
       "action": "d_update_incident",
       "actor": "technician"
@@ -2470,7 +2483,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "operator Send simulated reading",
+      "step": "operator Gửi dữ liệu mô phỏng",
       "detail": "",
       "action": "d_telemetry",
       "actor": "operator"
@@ -2496,7 +2509,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "operator Submit synthetic observation",
+      "step": "operator Gửi dữ liệu quan sát mô phỏng",
       "detail": "",
       "action": "sim_observe",
       "actor": "operator"
@@ -2510,7 +2523,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "operator Submit synthetic observation",
+      "step": "operator Gửi dữ liệu quan sát mô phỏng",
       "detail": "",
       "action": "sim_observe",
       "actor": "operator"
@@ -2542,7 +2555,7 @@
     {
       "case": "maintenance_telemetry",
       "status": "PASS",
-      "step": "operator Refresh simulated observations",
+      "step": "operator Làm mới dữ liệu mô phỏng",
       "detail": "SIMULATED",
       "action": "sim_refresh",
       "actor": "operator"
@@ -2575,7 +2588,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "alice tab visibility",
-      "detail": "{'parking', 'support', 'history', 'charging', 'overview', 'journeys'}"
+      "detail": "{'journeys', 'charging', 'history', 'support', 'parking', 'overview'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2605,7 +2618,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "bob tab visibility",
-      "detail": "{'parking', 'support', 'history', 'charging', 'overview', 'journeys'}"
+      "detail": "{'journeys', 'charging', 'history', 'support', 'parking', 'overview'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2635,7 +2648,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "operator tab visibility",
-      "detail": "{'operations', 'parking', 'support', 'network', 'history', 'charging', 'overview', 'journeys', 'technical'}"
+      "detail": "{'journeys', 'charging', 'network', 'operations', 'history', 'support', 'parking', 'overview', 'technical'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2665,7 +2678,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "dispatcher tab visibility",
-      "detail": "{'network', 'history', 'overview'}"
+      "detail": "{'history', 'overview', 'network'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2695,7 +2708,7 @@
       "case": "roles_and_sessions",
       "status": "PASS",
       "step": "technician tab visibility",
-      "detail": "{'network', 'history', 'overview'}"
+      "detail": "{'history', 'overview', 'network'}"
     },
     {
       "case": "roles_and_sessions",
@@ -2802,7 +2815,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "alice Reserve charging [reject INVALID_TARGET]",
+      "step": "alice Đăng ký sạc điện [reject INVALID_TARGET]",
       "detail": "{'error': {'code': 'INVALID_TARGET', 'message': 'Target SOC must exceed current SOC.'}}",
       "action": "register_charge",
       "actor": "alice"
@@ -2810,7 +2823,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "alice Reserve charging",
+      "step": "alice Đăng ký sạc điện",
       "detail": "BOOKED",
       "action": "register_charge",
       "actor": "alice"
@@ -2818,7 +2831,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "alice Cancel unused session",
+      "step": "alice Hủy phiên sạc chưa sử dụng",
       "detail": "CANCELLED",
       "action": "cancel_charge",
       "actor": "alice"
@@ -2874,7 +2887,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "alice Reserve · 10 min",
+      "step": "alice Giữ xe · 10 phút",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "alice"
@@ -2900,7 +2913,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice Xác nhận đặt chỗ",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -2915,7 +2928,7 @@
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
       "step": "Legacy API alice pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '89454a29cc7247ed', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612976.1729147, 'expires_at': 1795613576.1729147, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:mHNibW5xRngAR3nYBvUiVl9xJ7TI2KHAMOKSXqXhiVk', 'issued_at': 1795612976.1729147, 'expires_at': 1795613576.1729147}}, 'revision': 8}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '09b976e6c85144b4', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795627406.4038353, 'expires_at': 1795628006.4038353, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:xY1ivSgFqJ-_9mZLpnrR4lms53a5-2gg5sbY3t7LCcQ', 'issued_at': 1795627406.4038353, 'expires_at': 1795628006.4038353}}, 'revision': 8}",
       "action": "pickup",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -2947,7 +2960,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -2962,7 +2975,7 @@
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
       "step": "Legacy API alice return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0dc520787f734e64', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '89454a29cc7247ed', 'status': 'HANDOVER_PENDING', 'started_at': 1795612976.1729147, 'ended_at': None, 'return_right_id': 'd6a3b90b51b54bba'}, 'revision': 10}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '78f7d4d03bc44ce0', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '09b976e6c85144b4', 'status': 'HANDOVER_PENDING', 'started_at': 1795627406.4038353, 'ended_at': None, 'return_right_id': '42b79c2b62e5407c'}, 'revision': 10}",
       "action": "return_vehicle",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -2988,7 +3001,7 @@
     {
       "case": "existing_right_and_reserved_return",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -3074,7 +3087,7 @@
     {
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
-      "step": "operator Register vehicle [reject FORBIDDEN]",
+      "step": "operator Đăng ký phương tiện [reject FORBIDDEN]",
       "detail": "{'error': {'code': 'FORBIDDEN', 'message': 'Student role required.'}}",
       "action": "register_vehicle",
       "actor": "operator"
@@ -3136,7 +3149,7 @@
     {
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
-      "step": "alice Reserve · 10 min",
+      "step": "alice Giữ xe · 10 phút",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "alice"
@@ -3151,7 +3164,7 @@
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
       "step": "Legacy API alice pickup",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'b16e631e7fda4c21', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612988.9453278, 'expires_at': 1795613588.9453278, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:zgyYaRVgy5hfh6KHJRDM1G6B9kAiH88DirW6hpER13Q', 'issued_at': 1795612988.9453278, 'expires_at': 1795613588.9453278}}, 'revision': 13}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '5698aed4326b4246', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795627426.6645637, 'expires_at': 1795628026.6645637, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:a8P575XVjJ8G2ewBgZlwwk31G7XHCGBLNF9Ys-lI3uY', 'issued_at': 1795627426.6645637, 'expires_at': 1795628026.6645637}}, 'revision': 13}",
       "action": "pickup",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -3177,7 +3190,7 @@
     {
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator Mô phỏng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -3192,7 +3205,7 @@
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
       "step": "Legacy API alice return_vehicle",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0f36e6b51ebd4d41', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': 'b16e631e7fda4c21', 'status': 'ASSISTANCE_PENDING', 'started_at': 1795612988.9453278, 'ended_at': None}, 'revision': 15}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'fc2d07fb55e54ba4', 'owner_id': 'alice', 'vehicle_id': 'V1', 'hold_id': '5698aed4326b4246', 'status': 'ASSISTANCE_PENDING', 'started_at': 1795627426.6645637, 'ended_at': None}, 'revision': 15}",
       "action": "return_vehicle",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -3218,7 +3231,7 @@
     {
       "case": "full_hub_and_operator_controls",
       "status": "PASS",
-      "step": "alice Confirm reservation [reject HUB_CAPACITY]",
+      "step": "alice Xác nhận đặt chỗ [reject HUB_CAPACITY]",
       "detail": "{'error': {'code': 'HUB_CAPACITY', 'message': 'No ordinary reception capacity; request operator assistance.'}}",
       "action": "reserve_parking",
       "actor": "alice"

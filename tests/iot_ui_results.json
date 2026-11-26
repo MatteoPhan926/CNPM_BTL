@@ -60,7 +60,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "alice Reserve charging",
+      "step": "alice \u0110\u0103ng k\u00fd s\u1ea1c \u0111i\u1ec7n",
       "detail": "PENDING",
       "action": "submit_charge_request",
       "actor": "alice"
@@ -80,7 +80,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Confirm charging proposal",
+      "step": "operator Ph\u00ea duy\u1ec7t \u0111\u1ec1 xu\u1ea5t s\u1ea1c",
       "detail": "BOOKED",
       "action": "approve_charge_request",
       "actor": "operator"
@@ -118,7 +118,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Simulate QR scan",
+      "step": "operator M\u00f4 ph\u1ecfng qu\u00e9t QR",
       "detail": "HANDOVER_PENDING",
       "action": "sim_iot_scan",
       "actor": "operator"
@@ -156,7 +156,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -182,7 +182,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "ACKNOWLEDGED",
       "action": "sim_iot_event",
       "actor": "operator"
@@ -214,7 +214,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -229,7 +229,7 @@
       "case": "charging",
       "status": "PASS",
       "step": "Legacy API operator sim_observe",
-      "detail": "{'status': 'CONFIRMED', 'code': 'OK', 'record': {'id': 'P1', 'label': 'P1', 'owner_id': 'alice', 'kind': 'personal', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'soc': 80.0, 'battery_kwh': 2.0, 'connector': 'TYPE2', 'health': 'OPERABLE', 'observed_at': 1795612715.7369235, 'sequence': 3, 'evidence': 'SIMULATED'}, 'revision': 8}",
+      "detail": "{'status': 'CONFIRMED', 'code': 'OK', 'record': {'id': 'P1', 'label': 'P1', 'owner_id': 'alice', 'kind': 'personal', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'soc': 80.0, 'battery_kwh': 2.0, 'connector': 'TYPE2', 'health': 'OPERABLE', 'observed_at': 1795655781.4237225, 'sequence': 3, 'evidence': 'SIMULATED'}, 'revision': 8}",
       "action": "sim_observe",
       "actor": "operator",
       "interface": "LEGACY_HTTP_API"
@@ -261,7 +261,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -293,7 +293,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "ACKNOWLEDGED",
       "action": "sim_iot_event",
       "actor": "operator"
@@ -313,7 +313,7 @@
     {
       "case": "charging",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "ACKNOWLEDGED",
       "action": "sim_iot_event",
       "actor": "operator"
@@ -357,7 +357,7 @@
     {
       "case": "rental",
       "status": "PASS",
-      "step": "alice Reserve \u00b7 10 min",
+      "step": "alice Gi\u1eef xe \u00b7 10 ph\u00fat",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "alice"
@@ -389,7 +389,7 @@
     {
       "case": "rental",
       "status": "PASS",
-      "step": "operator Simulate QR scan",
+      "step": "operator M\u00f4 ph\u1ecfng qu\u00e9t QR",
       "detail": "HANDOVER_PENDING",
       "action": "sim_iot_scan",
       "actor": "operator"
@@ -409,7 +409,7 @@
     {
       "case": "rental",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -423,7 +423,7 @@
     {
       "case": "rental",
       "status": "PASS",
-      "step": "alice Save return destination",
+      "step": "alice L\u01b0u tr\u1ea1m tr\u1ea3 xe",
       "detail": "OPEN",
       "action": "select_return_hub",
       "actor": "alice"
@@ -449,7 +449,7 @@
     {
       "case": "rental",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "HANDOVER_PENDING",
       "action": "sim_iot_event",
       "actor": "operator"
@@ -475,7 +475,7 @@
     {
       "case": "rental",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "ACKNOWLEDGED",
       "action": "sim_iot_event",
       "actor": "operator"
@@ -519,7 +519,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "alice Confirm reservation",
+      "step": "alice X\u00e1c nh\u1eadn \u0111\u1eb7t ch\u1ed7",
       "detail": "CONFIRMED",
       "action": "reserve_parking",
       "actor": "alice"
@@ -545,7 +545,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "operator Simulate QR scan",
+      "step": "operator M\u00f4 ph\u1ecfng qu\u00e9t QR",
       "detail": "HANDOVER_PENDING",
       "action": "sim_iot_scan",
       "actor": "operator"
@@ -565,7 +565,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -591,7 +591,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "ACKNOWLEDGED",
       "action": "sim_iot_event",
       "actor": "operator"
@@ -606,7 +606,7 @@
       "case": "parking_and_add",
       "status": "PASS",
       "step": "Legacy API alice reserve_parking",
-      "detail": "{'status': 'CONFIRMED', 'code': 'OK', 'record': {'id': '5bd849be29134694', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795612775.185599, 'end': 1795616375.185599, 'block_end': 1795617275.185599, 'status': 'CONFIRMED', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795612775.185599, 'qr': {'token': 'emobility:parking:iDTDyZShrGTj6xp8E_A-QF9_4E7XmRM14MUyo2PWvsw', 'issued_at': 1795612775.185599, 'expires_at': 1795613375.185599}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 6}",
+      "detail": "{'status': 'CONFIRMED', 'code': 'OK', 'record': {'id': '22e4d11a35c54760', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H2', 'spot_id': 'H2-S1', 'start': 1795655874.8110266, 'end': 1795659474.8110266, 'block_end': 1795660374.8110266, 'status': 'CONFIRMED', 'hold_id': None, 'created_by_charge': False, 'recovery': False, 'created_at': 1795655874.8110266, 'qr': {'token': 'emobility:parking:EG2W2CU_8-U6oJ1W4mLULk9XXX2C_iHwQMZxJSb7pMc', 'issued_at': 1795655874.8110266, 'expires_at': 1795656474.8110266}, 'reservation_type': 'PARKING_ONLY'}, 'revision': 6}",
       "action": "reserve_parking",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -632,7 +632,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "operator Simulate QR scan",
+      "step": "operator M\u00f4 ph\u1ecfng qu\u00e9t QR",
       "detail": "HANDOVER_PENDING",
       "action": "sim_iot_scan",
       "actor": "operator"
@@ -652,7 +652,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -672,7 +672,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "alice Reserve charging",
+      "step": "alice \u0110\u0103ng k\u00fd s\u1ea1c \u0111i\u1ec7n",
       "detail": "BOOKED",
       "action": "register_charge",
       "actor": "alice"
@@ -692,7 +692,7 @@
     {
       "case": "parking_and_add",
       "status": "PASS",
-      "step": "operator Submit simulated event",
+      "step": "operator G\u1eedi s\u1ef1 ki\u1ec7n m\u00f4 ph\u1ecfng",
       "detail": "ACKNOWLEDGED",
       "action": "sim_iot_event",
       "actor": "operator"

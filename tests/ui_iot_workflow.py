@@ -49,7 +49,7 @@ def charging(a):
     expect(page.locator('#service-qr-content img')).to_be_visible()
     a.check('QR is presentation only with reader instructions',
         page.locator('#service-qr-dialog [data-action]').count()==0 and
-        'Present this QR code at the assigned Hub or parking bay.' in page.locator('#service-qr-content').inner_text())
+        'Xuất trình mã QR tại trạm hoặc ô đỗ được chỉ định.' in ' '.join(page.locator('#service-qr-content').inner_text().split()))
     a.check('Opening QR creates no physical command',not a.rows('commands'))
     page.locator('#close-service-qr').click()
     # A background state update must not erase a user editing a separate form.
@@ -69,7 +69,7 @@ def charging(a):
     student_status(a,'sessions',session['id'],'STOP_PENDING')
     a.ack('STOP'); student_status(a,'sessions',session['id'],'COMPLETED')
     a.check('Completion keeps bay and offers collection guidance',
-        a.row('spots',booked['spot_id'])['state']=='OCCUPIED' and 'Please collect your vehicle' in page.inner_text('main'))
+        a.row('spots',booked['spot_id'])['state']=='OCCUPIED' and 'Vui lòng ngắt kết nối sạc và đưa phương tiện ra khỏi ô đỗ.' in ' '.join(page.inner_text('main').split()))
     event(a,'UNPLUG',session,'H2',booked['spot_id'],session['port_id'])
     visit = next(v for v in a.rows('visits') if v.get('right_id')==booked['right_id'])
     event(a,'DEPARTURE',visit,'H2',visit['spot_id'])

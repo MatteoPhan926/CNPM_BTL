@@ -49,11 +49,11 @@ def charging_only(a):
             not a.rows('rights') and not a.rows('sessions') and page.locator('[data-service-qr=charging]').count()==0)
     op = a.nav('operator','operations')
     a.check('Operator sees calculated energy duration and collection estimate', all(
-        text in op.inner_text('main') for text in ['Energy required:', 'Estimated duration:', 'Expected collection:', 'Requested by alice']))
+        text in ' '.join(op.inner_text('main').split()) for text in ['Năng lượng cần cấp:', 'Thời lượng sạc ước tính:', 'Thời gian nhận xe dự kiến:', 'Người đăng ký: alice']))
     booked = a.button('operator','approve_charge_request','request_id',request['id'],outcome='BOOKED')
     a.refresh('alice')
-    a.check('Student sees confirmed allocation and estimates', all(text in page.inner_text('main') for text in [
-        booked['spot_id'],booked['port_id'],'Estimated charging end:','Expected collection:']))
+    a.check('Student sees confirmed allocation and estimates', all(text in ' '.join(page.inner_text('main').split()) for text in [
+        booked['spot_id'],booked['port_id'],'Thời gian kết thúc dự kiến:','Thời gian nhận xe dự kiến:']))
     show_qr(a,page,'charging',booked['id'],booked['qr']['token'])
     a.check('Charging QR has no student scan action',page.locator('#service-qr-dialog button[data-action]').count()==0)
     a.legacy_api('alice','scan_charge',dict(request_id=booked['id'],qr_token=booked['qr']['token']))
@@ -69,7 +69,7 @@ def charging_only(a):
             a.legacy_button('alice',action,'session_id',sid)
         a.ack(kind); a.refresh('alice')
     a.check('Completed charging still occupies the bay and prompts collection',
-            a.row('spots',booked['spot_id'])['state']=='OCCUPIED' and 'Please collect your vehicle' in page.inner_text('main'))
+            a.row('spots',booked['spot_id'])['state']=='OCCUPIED' and 'Vui lòng ngắt kết nối sạc và đưa phương tiện ra khỏi ô đỗ.' in ' '.join(page.inner_text('main').split()))
     a.legacy_button('alice','unplug','session_id',sid); a.ack('UNPLUG'); a.refresh('alice')
     visit = next(v for v in a.rows('visits') if v.get('right_id')==booked['right_id'])
     a.legacy_button('alice','depart','visit_id',visit['id'])

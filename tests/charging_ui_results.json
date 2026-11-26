@@ -30,7 +30,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "alice Reserve charging",
+      "step": "alice \u0110\u0103ng k\u00fd s\u1ea1c \u0111i\u1ec7n",
       "detail": "PENDING",
       "action": "submit_charge_request",
       "actor": "alice"
@@ -62,7 +62,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Confirm charging proposal",
+      "step": "operator Ph\u00ea duy\u1ec7t \u0111\u1ec1 xu\u1ea5t s\u1ea1c",
       "detail": "BOOKED",
       "action": "approve_charge_request",
       "actor": "operator"
@@ -101,7 +101,7 @@
       "case": "charging_only",
       "status": "PASS",
       "step": "Legacy API alice scan_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0a32fcbfb077404e', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H1', 'spot_id': 'H1-S2', 'start': 1795612657.0773609, 'end': 1795613954.374658, 'block_end': 1795614854.374658, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795612657.0773609, 'qr': {'token': 'emobility:parking:7tq7HxdkaFWYl8LcI-k-eHPRbRuLdmpEWF-0JTV4NqA', 'issued_at': 1795612657.0773609, 'expires_at': 1795613257.0773609}, 'reservation_type': 'CHARGING_ONLY', 'charge_request_id': '119a12483a844bf0'}, 'revision': 4}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '0b9070d516f04235', 'owner_id': 'alice', 'vehicle_id': 'P1', 'hub_id': 'H1', 'spot_id': 'H1-S2', 'start': 1795656136.9954605, 'end': 1795657434.2927577, 'block_end': 1795658334.2927577, 'status': 'HANDOVER_PENDING', 'hold_id': None, 'created_by_charge': True, 'recovery': False, 'created_at': 1795656136.9954605, 'qr': {'token': 'emobility:parking:j0S280bA8p1Pqo0xWiPwxHlRh4PX_c_2QpTDuV2O_JM', 'issued_at': 1795656136.9954605, 'expires_at': 1795656736.9954605}, 'reservation_type': 'CHARGING_ONLY', 'charge_request_id': 'e5c05f7c83fa422a'}, 'revision': 4}",
       "action": "scan_charge",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -127,7 +127,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -142,7 +142,7 @@
       "case": "charging_only",
       "status": "PASS",
       "step": "Legacy API alice plug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'a54fe93d034e4a31', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '0a32fcbfb077404e', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 80.0, 'start': 1795612657.0773609, 'end': 1795613954.374658, 'scheduled_start': 1795612657.0773609, 'scheduled_end': 1795613954.374658, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795612657.0773609, 'created_parking': True, 'charge_request_id': '119a12483a844bf0', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED'}, 'revision': 6}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '6630826cdff5466e', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '0b9070d516f04235', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 80.0, 'start': 1795656136.9954605, 'end': 1795657434.2927577, 'scheduled_start': 1795656136.9954605, 'scheduled_end': 1795657434.2927577, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795656136.9954605, 'created_parking': True, 'charge_request_id': 'e5c05f7c83fa422a', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED'}, 'revision': 6}",
       "action": "plug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -168,7 +168,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -183,7 +183,7 @@
       "case": "charging_only",
       "status": "PASS",
       "step": "Legacy API alice start_charge",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'a54fe93d034e4a31', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '0a32fcbfb077404e', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 80.0, 'start': 1795612657.0773609, 'end': 1795613954.374658, 'scheduled_start': 1795612657.0773609, 'scheduled_end': 1795613954.374658, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795612657.0773609, 'created_parking': True, 'charge_request_id': '119a12483a844bf0', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED'}, 'revision': 8}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '6630826cdff5466e', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '0b9070d516f04235', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'START_PENDING', 'target_soc': 80.0, 'start': 1795656136.9954605, 'end': 1795657434.2927577, 'scheduled_start': 1795656136.9954605, 'scheduled_end': 1795657434.2927577, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795656136.9954605, 'created_parking': True, 'charge_request_id': 'e5c05f7c83fa422a', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED'}, 'revision': 8}",
       "action": "start_charge",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -209,7 +209,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -223,7 +223,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "alice Stop charging",
+      "step": "alice D\u1eebng s\u1ea1c",
       "detail": "STOP_PENDING",
       "action": "stop_charge",
       "actor": "alice"
@@ -243,7 +243,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -264,7 +264,7 @@
       "case": "charging_only",
       "status": "PASS",
       "step": "Legacy API alice unplug",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'a54fe93d034e4a31', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '0a32fcbfb077404e', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 80.0, 'start': 1795612657.0773609, 'end': 1795613954.374658, 'scheduled_start': 1795612657.0773609, 'scheduled_end': 1795613954.374658, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795612657.0773609, 'created_parking': True, 'charge_request_id': '119a12483a844bf0', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED', 'started_at': 1795612657.0773609, 'completed_at': 1795612657.0773609}, 'revision': 12}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '6630826cdff5466e', 'owner_id': 'alice', 'vehicle_id': 'P1', 'right_id': '0b9070d516f04235', 'port_id': 'H1-C2', 'reservation_type': 'CHARGING_ONLY', 'iot_managed': False, 'status': 'PENDING', 'target_soc': 80.0, 'start': 1795656136.9954605, 'end': 1795657434.2927577, 'scheduled_start': 1795656136.9954605, 'scheduled_end': 1795657434.2927577, 'kw': 3.7, 'duration': 1297.2972972972973, 'created_at': 1795656136.9954605, 'created_parking': True, 'charge_request_id': 'e5c05f7c83fa422a', 'declared_soc': 20.0, 'soc_source': 'USER_DECLARED', 'started_at': 1795656136.9954605, 'completed_at': 1795656136.9954605}, 'revision': 12}",
       "action": "unplug",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -290,7 +290,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -305,7 +305,7 @@
       "case": "charging_only",
       "status": "PASS",
       "step": "Legacy API alice depart",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '454a4baee15e4ab4', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H1-S2', 'right_id': '0a32fcbfb077404e', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795612657.0773609}, 'revision': 14}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '7ab30561625f438e', 'owner_id': 'alice', 'vehicle_id': 'P1', 'spot_id': 'H1-S2', 'right_id': '0b9070d516f04235', 'status': 'HANDOVER_PENDING', 'arrived_at': 1795656136.9954605}, 'revision': 14}",
       "action": "depart",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -337,7 +337,7 @@
     {
       "case": "charging_only",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"
@@ -381,7 +381,7 @@
     {
       "case": "rejection_and_cancellation",
       "status": "PASS",
-      "step": "alice Reserve charging",
+      "step": "alice \u0110\u0103ng k\u00fd s\u1ea1c \u0111i\u1ec7n",
       "detail": "PENDING",
       "action": "submit_charge_request",
       "actor": "alice"
@@ -401,7 +401,7 @@
     {
       "case": "rejection_and_cancellation",
       "status": "PASS",
-      "step": "operator Reject charging request",
+      "step": "operator T\u1eeb ch\u1ed1i y\u00eau c\u1ea7u s\u1ea1c",
       "detail": "REJECTED",
       "action": "reject_charge_request",
       "actor": "operator"
@@ -421,7 +421,7 @@
     {
       "case": "rejection_and_cancellation",
       "status": "PASS",
-      "step": "alice Reserve charging",
+      "step": "alice \u0110\u0103ng k\u00fd s\u1ea1c \u0111i\u1ec7n",
       "detail": "PENDING",
       "action": "submit_charge_request",
       "actor": "alice"
@@ -435,7 +435,7 @@
     {
       "case": "rejection_and_cancellation",
       "status": "PASS",
-      "step": "operator Confirm charging proposal",
+      "step": "operator Ph\u00ea duy\u1ec7t \u0111\u1ec1 xu\u1ea5t s\u1ea1c",
       "detail": "BOOKED",
       "action": "approve_charge_request",
       "actor": "operator"
@@ -449,7 +449,7 @@
     {
       "case": "rejection_and_cancellation",
       "status": "PASS",
-      "step": "alice Cancel charging reservation",
+      "step": "alice H\u1ee7y \u0111\u0103ng k\u00fd s\u1ea1c",
       "detail": "CANCELLED",
       "action": "cancel_charge_request",
       "actor": "alice"
@@ -481,7 +481,7 @@
     {
       "case": "rental_confirmation",
       "status": "PASS",
-      "step": "alice Reserve \u00b7 10 min",
+      "step": "alice Gi\u1eef xe \u00b7 10 ph\u00fat",
       "detail": "ACTIVE",
       "action": "reserve_vehicle",
       "actor": "alice"
@@ -514,7 +514,7 @@
       "case": "rental_confirmation",
       "status": "PASS",
       "step": "Legacy API alice scan_rental",
-      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': 'f8db55557cfa4726', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795612689.566249, 'expires_at': 1795613289.566249, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:3uRHHvZq_UtH-f4aQnjzGUFPbN8vf4BgYI8QrYYJvgY', 'issued_at': 1795612689.566249, 'expires_at': 1795613289.566249}}, 'revision': 3}",
+      "detail": "{'status': 'PENDING_VERIFICATION', 'code': 'OK', 'record': {'id': '8e607659eb544317', 'owner_id': 'alice', 'vehicle_id': 'V1', 'status': 'HANDOVER_PENDING', 'created_at': 1795656170.6513753, 'expires_at': 1795656770.6513753, 'pickup_hub_id': 'H1', 'qr': {'token': 'emobility:rental:yM_lu0dQc0dKkXsH4hL7b6PLxg-gLS_9Zf7XURzlfiU', 'issued_at': 1795656170.6513753, 'expires_at': 1795656770.6513753}}, 'revision': 3}",
       "action": "scan_rental",
       "actor": "alice",
       "interface": "LEGACY_HTTP_API"
@@ -546,7 +546,7 @@
     {
       "case": "rental_confirmation",
       "status": "PASS",
-      "step": "operator Simulate ACK",
+      "step": "operator M\u00f4 ph\u1ecfng ACK",
       "detail": "ACKNOWLEDGED",
       "action": "simulate",
       "actor": "operator"

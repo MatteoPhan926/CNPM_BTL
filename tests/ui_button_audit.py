@@ -8,6 +8,7 @@ calls; they are not reported as student UI buttons. IoT UI is tested separately.
 from __future__ import annotations
 
 import json
+import re
 import argparse
 import os
 import sys
@@ -44,6 +45,9 @@ class Audit:
         # start with a consistent time, preserving all production code paths.
         if simulator:
             self.service.command(OP, 'sim_refresh', {}, 'audit-initial-refresh')
+        # Wait for HTTP request workers before removing the temporary database.
+        self.server.daemon_threads = False
+        self.server.block_on_close = True
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.url = f"http://127.0.0.1:{self.server.server_port}"
@@ -53,11 +57,16 @@ class Audit:
         self.page_errors = []
 
     def close(self):
-        for context in self.contexts:
-            context.close()
-        self.server.close()
-        self.thread.join(5)
-        self.directory.cleanup()
+        try:
+            for context in self.contexts:
+                context.close()
+        finally:
+            # AppServer.close() already calls shutdown() and server_close().
+            self.server.close()
+            self.thread.join(10)
+            if self.thread.is_alive():
+                raise RuntimeError('Test HTTP server did not shut down')
+            self.directory.cleanup()
 
     def record(self, status, label, details=""):
         row = {"case": self.name, "status": status, "step": label, "detail": details}
@@ -80,14 +89,35 @@ class Audit:
             page = context.new_page()
             page.set_default_timeout(5000)
             page.on('pageerror', lambda error: self.page_errors.append(str(error)))
-            page.goto(self.url)
-            expect(page.locator('#login-form')).to_be_visible()
-            page.locator('[name=username]').fill(actor)
-            page.locator('[name=password]').fill(actor+'-demo')
-            with page.expect_response(lambda r: r.url.endswith('/api/login')) as response:
-                page.locator('#login-form button[type=submit]').click()
-            self.check(actor + ' Sign in', response.value.status == 200)
-            expect(page.locator('#logout')).to_be_visible()
+            login_events = []
+            page.on('request', lambda r: login_events.append('POST /api/login sent')
+                    if r.url.endswith('/api/login') and r.method == 'POST' else None)
+            page.on('requestfailed', lambda r: login_events.append(f'{r.method} /api/login failed: {r.failure}')
+                    if r.url.endswith('/api/login') else None)
+            try:
+                page.goto(self.url, wait_until='load')
+                expect(page.locator('#login-form')).to_be_visible(timeout=15000)
+                page.locator('[name=username]').fill(actor)
+                page.locator('[name=password]').fill(actor+'-demo')
+                expect(page.locator('[name=username]')).to_have_value(actor)
+                expect(page.locator('#login-form button[type=submit]')).to_be_enabled()
+                with page.expect_response(
+                    lambda r: r.url.endswith('/api/login') and r.request.method == 'POST',
+                    timeout=15000
+                ) as response:
+                    page.locator('#login-form button[type=submit]').click()
+                self.check(actor + ' Sign in', response.value.status == 200)
+                expect(page.locator('#logout')).to_be_visible(timeout=15000)
+            except Exception:
+                print('[DEBUG] Login actor:', actor, flush=True)
+                print('[DEBUG] Login network:', login_events, flush=True)
+                print('[DEBUG] JavaScript errors:', self.page_errors, flush=True)
+                if not page.is_closed():
+                    try:
+                        print('[DEBUG] Login feedback:', page.locator('#login-error').all_text_contents(), flush=True)
+                    except Exception as diagnostic_error:
+                        print('[DEBUG] Feedback unavailable:', type(diagnostic_error).__name__, flush=True)
+                raise
             self.pages[actor] = page
         return self.pages[actor]
 
@@ -217,8 +247,14 @@ def rentals(a):
     a.check('Filter H2',alice.locator('tbody tr').count()==1)
     alice.locator('[data-hub="H1"]').click()
     a.check('View vehicles H1',alice.locator('tbody tr').count()==2)
-    h=a.button('alice','reserve_vehicle','vehicle_id','V1',outcome='ACTIVE')
-    a.button('bob','reserve_vehicle','vehicle_id','V1',error='VEHICLE_UNAVAILABLE')
+    h = a.button('alice','reserve_vehicle','vehicle_id','V1',outcome='ACTIVE')
+    # Bob's UI may already have removed the button during background polling.
+    # Exercise the conflicting request through the authenticated HTTP API.
+    # legacy_api also refreshes Bob's page when no dialog is open.
+    a.legacy_api('bob','reserve_vehicle',{'vehicle_id': 'V1'},error='VEHICLE_UNAVAILABLE')
+    a.check('Bob cannot reserve V1 after Alice holds it', bob.locator(
+        'button[data-action="reserve_vehicle"]'
+    ).evaluate_all('buttons => !buttons.some(b => JSON.parse(b.dataset.payload).vehicle_id === "V1")'))
     a.nav('alice','journeys')
     a.button('alice','cancel_hold','hold_id',h['id'],outcome='CANCELLED')
     a.nav('bob','overview'); a.refresh('bob')
@@ -288,7 +324,7 @@ def active_services_and_qr(a):
     token = show_qr(right)
     a.check('QR modal shows correct reservation metadata', all(
         text in page.locator('#parking-qr-content').inner_text()
-        for text in (right['id'], right['vehicle_id'], right['spot_id'], 'Arrival time', 'Arrival code valid until')))
+        for text in (right['id'], right['vehicle_id'], right['spot_id'], 'Thời gian đến', 'Mã vào bãi có hiệu lực đến')))
     decoded = zxingcpp.read_barcode(Image.open(BytesIO(page.locator('.parking-qr-image').screenshot())))
     a.check('Rendered QR decodes to persisted backend code', decoded is not None and decoded.text == token == right['qr']['token'])
     evidence = Path(__file__).resolve().parent / 'artifacts'
@@ -313,14 +349,14 @@ def active_services_and_qr(a):
     a.legacy_api('alice','arrive', {'qr_token':token}, outcome='HANDOVER_PENDING')
     a.check('QR check does not occupy bay or create visit', a.row('spots',right['spot_id'])['state']=='EMPTY' and not any(v['right_id']==right['id'] for v in a.rows('visits')))
     show_qr(right)
-    expect(page.locator('#parking-qr-status')).to_contain_text('awaiting reception evidence')
+    expect(page.locator('#parking-qr-status')).to_contain_text('đang chờ bằng chứng tiếp nhận')
     a.check('Pending QR cannot request second check-in in modal', page.locator('#parking-qr-dialog button[data-action="arrive"]').count()==0)
     page.locator('#close-parking-qr').click()
     a.counter('alice', 1, 'Arrival pending remains one service')
     a.ack('ARRIVAL')
     a.refresh('alice'); a.counter('alice', 1, 'Right transitions to visit without double count')
     a.nav('alice','parking'); show_qr(right)
-    expect(page.locator('#parking-qr-status')).to_contain_text('Already used')
+    expect(page.locator('#parking-qr-status')).to_contain_text('Mã đã được sử dụng')
     page.locator('#close-parking-qr').click()
     a.legacy_api('alice','arrive',{'qr_token':token},error='INVALID_RIGHT')
     visit = next(v for v in a.rows('visits') if v['right_id']==right['id'])
@@ -328,13 +364,13 @@ def active_services_and_qr(a):
     a.ack('DEPARTURE'); a.refresh('alice'); a.counter('alice',0,'Verified checkout ends parking service')
     right = a.booking(); cancelled_token=right['qr']['token']
     a.button('alice','cancel_parking','right_id',right['id'])
-    show_qr(right); expect(page.locator('#parking-qr-status')).to_contain_text('cancelled')
+    show_qr(right); expect(page.locator('#parking-qr-status')).to_contain_text('đã bị hủy')
     page.locator('#close-parking-qr').click()
     a.counter('alice',0,'Cancelled parking is not active')
     a.nav('alice','parking'); a.legacy_api('alice','arrive',{'qr_token':cancelled_token},error='INVALID_RIGHT')
     right = a.booking(); a.t += 601
     a.nav('operator','operations'); a.action('operator','sim_refresh'); a.refresh('alice')
-    show_qr(right); expect(page.locator('#parking-qr-status')).to_contain_text('expired')
+    show_qr(right); expect(page.locator('#parking-qr-status')).to_contain_text('đã hết hạn')
     page.locator('#close-parking-qr').click()
     a.legacy_api('alice','arrive',{'qr_token':right['qr']['token']},error='INVALID_RIGHT')
     a.counter('alice',0,'Expired parking is not active')
@@ -372,7 +408,7 @@ def bundle_service_counter(a):
     a.submit('operator','sim_observe',{'resource_ref':'spots:'+right['spot_id'],'health':'OPERABLE'})
     a.legacy_api('alice','arrive',dict(right_id=right['id'],qr_token=right['qr']['token']),outcome='HANDOVER_PENDING')
     page.locator(f'[data-parking-qr="{right["id"]}"]').click()
-    expect(page.locator('#parking-qr-status')).to_contain_text('awaiting reception evidence')
+    expect(page.locator('#parking-qr-status')).to_contain_text('đang chờ bằng chứng tiếp nhận')
     page.locator('#close-parking-qr').click()
     a.ack('ARRIVAL'); a.refresh('alice'); a.counter('alice',1,'Bundle stays one after arrival')
     session = next(s for s in a.rows('sessions') if s['right_id']==right['id'])
@@ -424,8 +460,8 @@ def fleet(a):
     a.button('dispatcher','transfer_start','order_id',order['id'],outcome='IN_PROGRESS')
     a.submit('dispatcher','transfer_handover',checks={'vehicle_ids':'V1'})
     a.nav('operator','network','transfers'); a.refresh('operator')
-    p.get_by_role('button',name='Open device outbox',exact=False).click()
-    a.check('Open device outbox link',p.get_by_text('Device command outbox',exact=True).is_visible())
+    p.locator('#app main button[data-tab="operations"]').click()
+    a.check('Open device outbox link',p.get_by_text('Danh sách lệnh thiết bị',exact=True).is_visible())
     a.ack('TRANSFER','REJECT'); a.refresh('dispatcher')
     a.submit('dispatcher','transfer_handover',checks={'vehicle_ids':'V1'}); a.ack('TRANSFER'); a.refresh('dispatcher')
     a.check('Partial transfer',a.row('orders',order['id'])['delivered']==['V1'])
@@ -455,7 +491,7 @@ def maintenance_telemetry(a):
     a.submit('operator','d_telemetry',{'resourceId':'V1','batterySoc':12,'speed':115,'temperatureC':27,'destinationHubId':'H2'})
     a.check('Telemetry changes SOC and records alerts',a.row('vehicles','V1')['soc']==12 and bool(a.row('vehicles','V1')['last_telemetry']['alerts']))
     a.service.command(OP,'d_telemetry',{'resourceId':'V2','event_id':uuid.uuid4().hex,'batterySoc':52,'speed':10},uuid.uuid4().hex)
-    expect(p.locator('#telemetry-readings').get_by_text('52% battery',exact=False)).to_be_visible(timeout=7000)
+    expect(p.locator('#telemetry-readings').get_by_text('52% pin',exact=False)).to_be_visible(timeout=7000)
     a.check('Live updates renders new reading without page Refresh',True)
     a.nav('operator','operations'); a.submit('operator','sim_observe',{'resource_ref':'spots:H1-S5','health':'OUT_OF_SERVICE'})
     a.check('Synthetic fault persisted',a.row('spots','H1-S5')['health']=='OUT_OF_SERVICE')
@@ -500,14 +536,14 @@ def existing_right_and_reserved_return(a):
     session=next(s for s in a.rows('sessions') if s['right_id']==first['id'])
     a.button('alice','cancel_charge','session_id',session['id'],outcome='CANCELLED')
     a.check('Added charging cancellation keeps independently booked parking',a.row('rights',first['id'])['status']=='CONFIRMED')
-    p.get_by_role('button',name='Book parking + charging',exact=False).click()
+    p.locator('#app main button[data-tab="parking"]').click()
     a.check('Book parking + charging link opens Parking',p.locator('form[data-command="reserve_parking"]').is_visible())
     a.finding('Choose a specific bay in Parking UI',p.locator('form[data-command="reserve_parking"] [name=spot_id]').count()>0,'Backend supports spot_id; UI has no spot selector')
-    a.finding('Parking UI has live availability preview',p.locator('form[data-command="reserve_parking"] button').filter(has_text='Preview').count()>0,'No preview control for selected time or charging compatibility')
-    a.nav('alice','overview'); a.finding('Per-hub counts for ordinary and charging bays',p.locator('.hub-card').first.get_by_text('charging spaces',exact=False).count()>0,'Hub cards show commitments, not the two free-bay categories')
-    a.nav('alice','journeys'); p.get_by_role('button',name='Find a vehicle',exact=False).click(); a.check('Find a vehicle opens Explore hubs',p.locator('#hub-filter').is_visible())
+    a.finding('Parking UI has live availability preview',p.locator('form[data-command="reserve_parking"] button').filter(has_text=re.compile(r'Preview|Xem trước', re.I)).count()>0,'No preview control for selected time or charging compatibility')
+    a.nav('alice','overview'); a.finding('Per-hub counts for ordinary and charging bays',p.locator('.hub-card').first.get_by_text(re.compile(r'charging spaces|chỗ đỗ có sạc|ô đỗ có sạc|chỗ đỗ sạc điện|ô đỗ sạc điện', re.I)).count()>0,'Hub cards show commitments, not the two free-bay categories')
+    a.nav('alice','journeys'); p.locator('#app main button[data-tab="overview"]').click(); a.check('Find a vehicle opens Explore hubs',p.locator('#hub-filter').is_visible())
     h=a.button('alice','reserve_vehicle','vehicle_id','V1')
-    a.nav('alice','journeys'); p.get_by_role('button',name='Reserve parking',exact=False).click(); a.check('Reserve parking navigation',p.locator('form[data-command="reserve_parking"]').is_visible())
+    a.nav('alice','journeys'); p.locator("#app main aside button.link.spaced[data-tab='parking']").click(); a.check('Reserve parking navigation',p.locator('form[data-command="reserve_parking"]').is_visible())
     right=a.booking(vehicle='V1',hub='H3'); a.nav('alice','journeys'); a.legacy_button('alice','pickup','hold_id',h['id']); a.ack('PICKUP'); a.refresh('alice')
     trip=next(t for t in a.rows('trips') if t['vehicle_id']=='V1')
     a.legacy_api('alice','return_vehicle',{'trip_id':trip['id'],'hub_id':'H3','right_id':right['id']}); a.ack('RETURN'); a.refresh('alice')
@@ -523,17 +559,13 @@ def uncertain_response_and_login(a):
         route.abort()
     p.route('**/api/commands',lose_response,times=1)
     p.locator('button[data-action="reserve_vehicle"]').first.click()
-    expect(p.get_by_role('button',name='Retry same request')).to_be_visible()
+    expect(p.locator('#notice [data-notice=retry]')).to_be_visible()
     a.check('Network failure offers retry',len(a.rows('holds'))==1)
     with p.expect_response(lambda r:r.url.endswith('/api/commands')) as reply:
-        p.get_by_role('button',name='Retry same request').click()
+        p.locator('#notice [data-notice=retry]').click()
     p.wait_for_function('() => !busy')
     a.check('Retry same request retrieves receipt without duplicate hold',reply.value.status==200 and len(a.rows('holds'))==1)
-    p.get_by_role(
-        'button',
-        name='Dismiss',
-        exact=True
-    ).click()
+    p.locator('#notice [data-notice=close]').click()
 
     expect(
         p.locator('#notice')
@@ -562,9 +594,9 @@ def full_hub_and_operator_controls(a):
     p=a.nav('operator','parking')
     a.finding('Operator UI hides student-only registration form',p.locator('form[data-command="register_vehicle"]').count()==0,'Registration is rendered for operator even though it requires student role')
     a.submit('operator','register_vehicle',{'label':'Operator test only','battery_kwh':2,'soc':30,'connector':'TYPE2'},error='FORBIDDEN')
-    a.nav('operator','operations'); p.get_by_role('button',name='Manage charging sessions',exact=False).click(); a.check('Manage charging sessions link',p.locator('form[data-command="register_charge"]').is_visible())
-    a.nav('operator','operations'); p.get_by_role('button',name='View support records',exact=False).click(); a.check('View support records link',p.locator('form[data-command="support"]').is_visible())
-    a.nav('operator','operations'); p.get_by_role('button',name='Open fleet operations',exact=False).click(); a.check('Open fleet operations link',p.locator('#fleet-workspace').is_visible())
+    a.nav('operator','operations'); p.locator('#app main button[data-tab="charging"]').click(); a.check('Manage charging sessions link',p.locator('form[data-command="register_charge"]').is_visible())
+    a.nav('operator','operations'); p.locator('#app main button[data-tab="support"]').click(); a.check('View support records link',p.locator('form[data-command="support"]').is_visible())
+    a.nav('operator','operations'); p.locator('#app main button[data-tab="network"]').click(); a.check('Open fleet operations link',p.locator('#fleet-workspace').is_visible())
     # Use a deterministic fixture to exhaust destination capacity; the actual
     # return and booking attempts are initiated from the student's browser.
     for spot in a.rows('spots'):
@@ -583,11 +615,21 @@ def full_hub_and_operator_controls(a):
 def responsive_and_stale_ui(a):
     p=a.nav('alice','overview')
     a.t+=91
-    p.wait_for_function("()=>[...document.querySelectorAll('.stat .number')].slice(1,3).every(e=>e.textContent==='0')",timeout=15000)
+    p.wait_for_function(
+        """() => {
+            const numbers = [
+                ...document.querySelectorAll('.stat .number')
+            ].slice(1, 3);
+
+            return numbers.length === 2 &&
+                numbers.every(e => e.textContent.trim() === '0');
+        }""",
+        timeout=15000
+    )
     a.check('Overview reflects expired observations through polling',p.locator('.stat .number').all_inner_texts()[1:3]==['0','0'])
     a.refresh('alice')
     a.check('Manual Refresh reflects current availability',p.locator('.stat .number').all_inner_texts()[1:3]==['0','0'])
-    a.finding('Student dashboard explicitly explains stale-zero capacity',p.locator('.mode-banner').get_by_text('stale',exact=False).count()>0,'No distinct stale warning in mode banner; resource labels and footnotes still show STALE')
+    a.finding('Student dashboard explicitly explains stale-zero capacity',p.locator('.mode-banner').get_by_text(re.compile(r'stale|dữ liệu đã cũ|dữ liệu quan sát đã cũ', re.I)).count()>0,'No distinct stale warning in mode banner; resource labels and footnotes still show STALE')
     p.set_viewport_size({'width':390,'height':844})
     for tab in ['overview','journeys','parking','charging','support','history']:
         a.nav('alice',tab)
