@@ -158,7 +158,8 @@ const deviceCommandLabels = {
     STOP_CHARGE: 'Dừng sạc',
     PLUG: 'Kết nối cổng sạc',
     UNPLUG: 'Ngắt kết nối cổng sạc',
-    DEPARTURE: 'Xác nhận rời bãi'
+    DEPARTURE: 'Xác nhận rời bãi',
+    TRANSFER: 'Bàn giao xe điều chuyển'
 };
 
 const deviceCommandName = kind =>
@@ -1556,7 +1557,7 @@ function parking() {
 
     return heading(
         'Đỗ xe và sức chứa',
-        'Đặt chỗ đỗ xe khi bạn cần',
+        'Đặt chỗ đỗ xe',
         'Đặt trước tối đa 24 giờ. Thời gian đỗ xe cá nhân từ 15 phút đến 12 giờ, với khoảng cách 15 phút giữa hai lượt đặt.'
     ) +
 
@@ -1939,7 +1940,7 @@ function charging() {
 
     return heading(
         'Dịch vụ sạc điện',
-        'Sạc điện an tâm',
+        'Sạc điện phương tiện',
         'Đăng ký sạc trực tiếp, nhận thông tin cấp phát và mã QR sau khi nhân viên điều hành xác nhận.'
     ) +
 
@@ -2323,7 +2324,7 @@ function support() {
 
     return heading(
         'Hỗ trợ hành trình',
-        'Luôn đồng hành cùng bạn',
+        'Luôn hỗ trợ khi bạn cần',
         'Ghi nhận các sự cố hoặc khó khăn khi tiếp nhận phương tiện. Phương án của nhân viên điều hành cần được bạn phản hồi và không tự động kết thúc hành trình.'
     ) +
 

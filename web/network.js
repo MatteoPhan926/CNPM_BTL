@@ -47,7 +47,7 @@ function fleetWorkspace() {
 
     return heading(
         'Quản lý vận hành',
-        'Quản lý đội xe và tài nguyên',
+        'Quản lý xe và tài nguyên',
         {
             operator: 'Theo dõi sức chứa của các trạm, điều phối nhân viên và xem dữ liệu quan sát phương tiện.',
             dispatcher: 'Tiếp nhận các phương tiện được phân công và ghi nhận việc bàn giao tại trạm đích.',
