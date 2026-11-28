@@ -20,7 +20,7 @@ from .charging_requests import ChargingRequestsMixin
 from .iot_workflow import IotWorkflowMixin
 from .monitoring import MonitoringMixin
 from .operations import OperationsMixin
-from .parking_qr import issue_parking_qr, qr_details
+from .parking_qr import checkin_window_open, issue_parking_qr, qr_details
 from .rental_qr import issue_rental_qr, rental_qr_details
 from .shared import DomainError, LIVE_RIGHT, LIVE_SESSION, POLICY, fingerprint, number, overlap, require
 
@@ -121,17 +121,26 @@ class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, Monitori
                     vehicle_id=vid, spot_id=spot, right_id=None, status='PARKED', arrived_at=self.clock())
         return s
 
-    def load(self, db):
+    def load(self, db, *, include_audit=True):
         s = {k: {} for k in COLLECTIONS}
-        for kind, rid, body in db.execute('SELECT kind,id,body FROM documents'):
+        query = 'SELECT kind,id,body FROM documents'
+        if not include_audit:
+            # Commands and timers append audit entries. Only snapshots need history.
+            query += " WHERE kind <> 'audit'"
+        for kind, rid, body in db.execute(query):
             s[kind][rid] = json.loads(body)
         return s
 
     def save(self, db, s):
         # Documents never disappear: cancellation and expiry are retained states.
-        for kind in COLLECTIONS:
-            db.executemany('INSERT INTO documents VALUES(?,?,?) ON CONFLICT(kind,id) DO UPDATE SET body=excluded.body',
-                [(kind, rid, json.dumps(row, allow_nan=False)) for rid, row in s[kind].items()])
+        db.executemany('''
+            INSERT INTO documents(kind, id, body) VALUES (?, ?, ?)
+            ON CONFLICT(kind, id) DO UPDATE SET body = excluded.body
+            WHERE documents.body <> excluded.body
+        ''', (
+            (kind, rid, json.dumps(row, allow_nan=False))
+            for kind in COLLECTIONS for rid, row in s[kind].items()
+        ))
 
     def new(self, s, collection, **fields):
         row = dict(id=uuid.uuid4().hex[:16], **fields)
@@ -178,7 +187,7 @@ class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, Monitori
                 if receipt[2]:
                     raise DomainError(**result)
                 return result
-            s = self.load(db)
+            s = self.load(db, include_audit=False)
             self.expire(s)
             baseline = copy.deepcopy(s)
             revision = db.execute('SELECT revision FROM meta').fetchone()[0]
@@ -220,7 +229,7 @@ class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, Monitori
 
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            s = self.load(db)
+            s = self.load(db, include_audit=False)
             before = fingerprint(s)
 
             if refresh_simulated:
@@ -506,7 +515,14 @@ class Service(IotWorkflowMixin, ChargingRequestsMixin, OperationsMixin, Monitori
         require(r['status'] in ('CONFIRMED', 'HANDOVER_PENDING'),
                 'INVALID_RIGHT', 'Parking right is not valid for arrival.')
         require(s['vehicles'][r['vehicle_id']]['kind']=='personal','USE_RETURN','Shared vehicles must use return journey.')
-        if r['status']=='HANDOVER_PENDING': return r
+        if r.get('charge_request_id'):
+            require(checkin_window_open(r, self.clock()), 'OUTSIDE_SCHEDULE',
+                    'Charging check-in opens ten minutes before arrival and closes after its grace period.')
+        if r['status'] == 'HANDOVER_PENDING':
+            return r
+        require(not any(other['vehicle_id'] == r['vehicle_id'] and other['status'] == 'HANDOVER_PENDING'
+                        for other in s['rights'].values()), 'ARRIVAL_PENDING',
+                'Another arrival for this vehicle is awaiting reception evidence.')
         self.reception(s,r)
         require(not s['vehicles'][r['vehicle_id']].get('spot_id'),'ALREADY_PARKED','Vehicle is already parked.')
         r['status']='HANDOVER_PENDING'

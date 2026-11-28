@@ -3,7 +3,7 @@ import copy
 import hmac
 import secrets
 
-from .parking_qr import qr_svg
+from .parking_qr import checkin_window_open, qr_svg
 from .shared import DomainError, POLICY, number, require
 
 
@@ -129,8 +129,6 @@ class ChargingRequestsMixin:
         require(request['status'] == 'BOOKED' and request.get('qr'), 'INVALID_STATE', 'Charging request is not confirmed.')
         require(hmac.compare_digest(token, request['qr']['token']), 'INVALID_QR', 'Charging code does not match.', 400)
         right = s['rights'][request['right_id']]
-        require(request['arrival_time'] - 600 <= self.clock() <= request['qr']['expires_at'],
-                'OUTSIDE_SCHEDULE', 'Charging check-in opens ten minutes before arrival and closes after its grace period.')
         return self.do_arrive(s, a, dict(right_id=right['id'], qr_token=right['qr']['token']), db, rev)
 
     def charging_qr(self, actor, request_id):
@@ -142,7 +140,7 @@ class ChargingRequestsMixin:
         self.own(request, actor)
         require(request.get('qr'), 'QR_UNAVAILABLE', 'Charging QR is issued only after approval.', 404)
         right = state['rights'][request['right_id']]
-        usable = request['status'] == 'BOOKED' and right['status'] == 'CONFIRMED' and request['arrival_time'] - 600 <= self.clock() <= request['qr']['expires_at']
+        usable = request['status'] == 'BOOKED' and right['status'] == 'CONFIRMED' and checkin_window_open(right, self.clock())
         return dict(request_id=request['id'], right_id=right['id'], session_id=request['session_id'],
                     **request['qr'], status=right['status'] if request['status'] == 'BOOKED' else request['status'],
                     usable=usable, message='Request arrival; physical reception and charging still require evidence.' if usable else 'This code is not available for another arrival.',

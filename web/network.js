@@ -569,6 +569,13 @@ document.addEventListener('click', event => {
 });
 
 
+function syncRepairConfirmation(form) {
+    const check = form.elements.safety_passed;
+    check.required = form.elements.outcome.value === 'RESOLVED';
+    check.closest('label').hidden = !check.required;
+    if (!check.required) check.checked = false;
+}
+
 document.addEventListener('change', event => {
     const input = event.target;
 
@@ -592,14 +599,8 @@ document.addEventListener('change', event => {
             .querySelector('[data-transfer-source]')
             ?.focus();
 
-    } else if (input.name === 'outcome') {
-        const check = input.form.elements.safety_passed;
-
-        check.required = input.value === 'RESOLVED';
-        check.closest('label').hidden = !check.required;
-
-        if (!check.required)
-            check.checked = false;
+    } else if (input.matches('form[data-command="d_update_incident"] [name="outcome"]')) {
+        syncRepairConfirmation(input.form);
     }
 });
 

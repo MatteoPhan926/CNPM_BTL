@@ -210,6 +210,30 @@ class ChargingRequestTests(unittest.TestCase):
         self.assertEqual(booked['scheduled_start'],payload['arrival_time'])
         self.rejects('OUTSIDE_SCHEDULE','scan_charge',dict(request_id=booked['id'],qr_token=booked['qr']['token']))
 
+    def test_linked_parking_and_charging_codes_share_the_checkin_window(self):
+        booked = self.approve(self.submit(arrival_time=self.now + 3600))
+        right = self.rows('rights')[0]
+        parking = dict(right_id=right['id'], qr_token=right['qr']['token'])
+        charging = dict(request_id=booked['id'], qr_token=booked['qr']['token'])
+        device = dict(vehicle_id=right['vehicle_id'], hub_id=right['hub_id'],
+                      spot_id=right['spot_id'], qr_token=parking['qr_token'])
+        self.now = booked['arrival_time'] - 601
+        self.cmd('sim_refresh', actor=OP)
+        self.assertFalse(self.service.parking_qr(ALICE, right['id'])['usable'])
+        self.assertFalse(self.service.charging_qr(ALICE, booked['id'])['usable'])
+        self.rejects('OUTSIDE_SCHEDULE', 'arrive', parking)
+        self.rejects('OUTSIDE_SCHEDULE', 'scan_charge', charging)
+        self.rejects('OUTSIDE_SCHEDULE', 'sim_iot_scan', device, OP)
+        self.assertEqual(self.rows('commands'), [])
+
+        self.now += 1
+        self.assertTrue(self.service.parking_qr(ALICE, right['id'])['usable'])
+        self.assertTrue(self.service.charging_qr(ALICE, booked['id'])['usable'])
+        self.cmd('arrive', parking)
+        self.cmd('scan_charge', charging)
+        self.assertEqual(len(self.rows('commands')), 1)
+        self.assertEqual(self.rows('rights')[0]['status'], 'HANDOVER_PENDING')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -11,7 +11,7 @@ Kiểm thử ban đầu: 21/11/2026. Cập nhật sửa UI-01/UI-02 và hồi qu
 | Backend/HTTP (`unittest discover`) | 59 PASS | **85 PASS, 0 lỗi** |
 | UI Chrome/Playwright | 13 nhóm; 351 PASS, 10 FINDING, 0 FAIL | **15 nhóm; 505 PASS, 8 FINDING, 0 FAIL** |
 
-Log trước sửa: [ui_audit_baseline.json](../tests/ui_audit_baseline.json). Log sau sửa: [ui_audit_results.json](../tests/ui_audit_results.json). Toàn bộ 34 action handler vẫn được kiểm qua UI; không xóa assertion cũ để làm test PASS. Hai kiểm tra UI-01/UI-02 chuyển từ finding sang assertion bắt buộc. UI-03…UI-10 vẫn là các finding ngoài phạm vi.
+Tên log trước sửa được ghi trong báo cáo là `tests/ui_audit_baseline.json`. Bản bàn giao lưu log sau sửa. Log sau sửa: [ui_audit_results.json](../tests/ui_audit_results.json). Toàn bộ 34 action handler vẫn được kiểm qua UI; không xóa assertion cũ để làm test PASS. Hai kiểm tra UI-01/UI-02 chuyển từ finding sang assertion bắt buộc. UI-03…UI-10 vẫn là các finding ngoài phạm vi.
 
 ### Nguyên nhân và cách tính bộ đếm
 

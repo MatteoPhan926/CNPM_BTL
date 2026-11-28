@@ -5,17 +5,11 @@ Uses isolated temporary databases and the real HTTP API.
 QR presentation and approval are exercised through the UI. Physical request
 compatibility calls are explicitly labelled legacy API; IoT UI has its own suite.
 """
-from collections import Counter
 from io import BytesIO
-import json
-import os
-from pathlib import Path
-import traceback
-
 from PIL import Image
 import zxingcpp
-from playwright.sync_api import sync_playwright, expect
-from ui_button_audit import Audit, RESULTS, ROLES
+from playwright.sync_api import expect
+from ui_button_audit import ARTIFACTS, run_cases
 
 
 def show_qr(a, page, kind, identifier, token):
@@ -28,9 +22,8 @@ def show_qr(a, page, kind, identifier, token):
     decoded = zxingcpp.read_barcode(Image.open(BytesIO(picture.screenshot())))
     a.check(kind+' mobile QR readable without horizontal overflow', decoded is not None and decoded.text == token and
             page.locator('#service-qr-dialog').evaluate('(e)=>e.scrollWidth <= e.clientWidth'))
-    artifacts = Path(__file__).parent / 'artifacts'
-    artifacts.mkdir(exist_ok=True)
-    page.locator('#service-qr-dialog').screenshot(path=str(artifacts / (kind+'_qr_mobile.png')))
+    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    page.locator('#service-qr-dialog').screenshot(path=str(ARTIFACTS / (kind+'_qr_mobile.png')))
     page.set_viewport_size({'width':1350,'height':850})
 
 
@@ -112,23 +105,5 @@ def rental_confirmation(a):
 
 
 if __name__ == '__main__':
-    for actor in ROLES:
-        os.environ[f'EMOBILITY_{actor.upper()}_PASSWORD'] = actor+'-demo'
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(channel='chrome',headless=True)
-        for case in (charging_only,rejection_and_cancellation,rental_confirmation):
-            audit = Audit(browser,case.__name__)
-            try:
-                case(audit)
-                audit.check('No browser JavaScript exceptions',not audit.page_errors,repr(audit.page_errors))
-            except Exception as error:
-                audit.record('FAIL','Scenario aborted',str(error))
-                traceback.print_exc()
-            finally:
-                audit.close()
-        browser.close()
-    summary = dict(Counter(row['status'] for row in RESULTS))
-    print('SUMMARY',summary)
-    Path(__file__).with_name('charging_ui_results.json').write_text(json.dumps(
-        {'summary':summary,'results':RESULTS},indent=2),encoding='utf-8')
-    raise SystemExit(1 if summary.get('FAIL') else 0)
+    cases = (charging_only, rejection_and_cancellation, rental_confirmation)
+    raise SystemExit(run_cases(cases, 'charging_ui_results.json', __doc__))

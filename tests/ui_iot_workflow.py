@@ -1,12 +1,6 @@
 """Browser journeys through the technical simulator; no student physical requests."""
-from collections import Counter
-import json
-import os
-from pathlib import Path
-import traceback
-
-from playwright.sync_api import sync_playwright, expect
-from ui_button_audit import Audit, RESULTS, ROLES
+from playwright.sync_api import expect
+from ui_button_audit import run_cases
 
 
 def student_status(a, collection, identifier, status):
@@ -118,21 +112,5 @@ def parking_and_add(a):
 
 
 if __name__ == '__main__':
-    for actor in ROLES:
-        os.environ[f'EMOBILITY_{actor.upper()}_PASSWORD']=actor+'-demo'
-    with sync_playwright() as playwright:
-        browser=playwright.chromium.launch(channel='chrome',headless=True)
-        for case in (charging,rental,parking_and_add):
-            audit=Audit(browser,case.__name__)
-            try:
-                case(audit)
-                audit.check('No browser JavaScript exceptions',not audit.page_errors,repr(audit.page_errors))
-            except Exception as exc:
-                audit.record('FAIL','Scenario aborted',str(exc)); traceback.print_exc()
-            finally:
-                audit.close()
-        browser.close()
-    summary=dict(Counter(row['status'] for row in RESULTS))
-    Path(__file__).with_name('iot_ui_results.json').write_text(json.dumps({'summary':summary,'results':RESULTS},indent=2),encoding='utf-8')
-    print('SUMMARY',summary)
-    raise SystemExit(1 if summary.get('FAIL') else 0)
+    cases = (charging, rental, parking_and_add)
+    raise SystemExit(run_cases(cases, 'iot_ui_results.json', __doc__))

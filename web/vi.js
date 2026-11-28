@@ -222,6 +222,7 @@ Object.assign(viTerms, {
   'Reservation expired. This code is no longer valid.':'Lệnh giữ chỗ đã hết hạn. Mã không còn hiệu lực.',
   'Alternative reception has not yet been accepted.':'Phương án tiếp nhận thay thế chưa được chấp nhận.',
   'This code is not valid for check-in.':'Mã này không hợp lệ để vào bãi.',
+  'Charging check-in opens ten minutes before arrival.':'Bạn có thể làm thủ tục vào sạc từ 10 phút trước giờ đến.',
   'Arrival grace period has elapsed. This code is no longer valid.':'Đã quá thời gian cho phép đến trễ. Mã không còn hiệu lực.',
   'Request arrival; physical reception and charging still require evidence.':'Đã yêu cầu vào bãi; việc tiếp nhận và sạc xe vẫn cần dữ liệu xác nhận.',
   'This code is not available for another arrival.':'Mã này không thể dùng để vào bãi lần nữa.',

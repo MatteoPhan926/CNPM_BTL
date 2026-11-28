@@ -24,10 +24,18 @@ def qr_svg(token):
     return code.make_image(image_factory=SvgPathFillImage).to_string(encoding='unicode')
 
 
+def checkin_window_open(right, now):
+    # Charging-only bookings issue two credentials for the same parking right.
+    # Ordinary parking permits early arrival when the bay is available.
+    if right.get('charge_request_id') and now < right['start'] - 600:
+        return False
+    return now <= right['qr']['expires_at']
+
+
 def qr_details(right, now):
     qr = right['qr']
     status = right['status']
-    usable = status == 'CONFIRMED' and now <= qr['expires_at']
+    usable = status == 'CONFIRMED' and checkin_window_open(right, now)
     messages = {
         'CONFIRMED': 'Valid for an arrival request. Reception conditions will be checked again.',
         'HANDOVER_PENDING': 'Arrival requested; awaiting reception evidence. Do not check in again.',
@@ -38,6 +46,7 @@ def qr_details(right, now):
     }
     message = messages.get(status, 'This code is not valid for check-in.')
     if status == 'CONFIRMED' and not usable:
-        message = 'Arrival grace period has elapsed. This code is no longer valid.'
+        message = ('Arrival grace period has elapsed. This code is no longer valid.'
+                   if now > qr['expires_at'] else 'Charging check-in opens ten minutes before arrival.')
     return dict(right_id=right['id'], **qr, status=status, usable=usable,
                 message=message, svg=qr_svg(qr['token']))

@@ -443,6 +443,7 @@ const apiErrorLabels = {
     HUB_CLOSED: 'Trạm đã đóng đối với yêu cầu cấp phát mới.',
     NO_SPOT: 'Không có ô đỗ trống phù hợp với dữ liệu còn mới.',
     ALREADY_PARKED: 'Phương tiện đã được đỗ trong bãi.',
+    ARRIVAL_PENDING: 'Phương tiện đang chờ xác nhận tiếp nhận cho một lượt đỗ khác.',
     PARKING_IN_USE: 'Không thể hủy quyền đỗ xe ở trạng thái hiện tại.',
     VEHICLE_PARKING_CONFLICT: 'Phương tiện có lượt đặt chỗ đỗ bị trùng thời gian.',
     INVALID_WINDOW: 'Khung thời gian đăng ký không hợp lệ.',
@@ -1836,7 +1837,7 @@ function parking() {
 
             </div>
 
-            <div class="card spaced">
+            ${state.actor.role === 'student' ? `<div class="card spaced">
 
                 <div class="card-body">
 
@@ -1846,7 +1847,7 @@ function parking() {
 
                 </div>
 
-            </div>
+            </div>` : ''}
 
         </aside>
 

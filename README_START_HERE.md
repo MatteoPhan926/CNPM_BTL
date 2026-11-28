@@ -1,5 +1,5 @@
 # Smart E-Mobility Hub
 
-Hướng dẫn chạy ứng dụng A/B/C/D, tài khoản demo, kịch bản liên vai trò và lệnh kiểm thử nằm trong [README.md](README.md).
+[README hiện hành](README.md) hướng dẫn chạy ứng dụng, theo dõi một lượt đỗ kèm sạc và kiểm tra kết quả. [Sổ tay của nhóm](docs/HANDBOOK.md) lưu hướng dẫn chi tiết ở phiên bản `462fc61`.
 
-Các tài liệu thiết kế và prototype gốc được lưu tại `docs/` và `prototype/`. `CODEX_TASK.md` mô tả nhiệm vụ A/B/C của giai đoạn trước khi tích hợp phân hệ D.
+Các bài nộp và sơ đồ nằm trong [docs](docs/). [Prototype gốc](prototype/smart-emobility-clean-ui.html) được giữ riêng. [CODEX_TASK.md](CODEX_TASK.md) ghi lại nhiệm vụ ở giai đoạn A/B/C trước khi tích hợp phân hệ D.

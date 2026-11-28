@@ -4,9 +4,19 @@ services:
     runtime: python
     plan: free
     region: singapore
-    repo: https://github.com/MatteoPhan926/CNPM_BTL
     branch: main
     autoDeployTrigger: commit
     buildCommand: pip install -r requirements.txt
-    startCommand: python -m emobility.cloud_server
+    startCommand: python -m emobility.cloud_server --auto-refresh
     healthCheckPath: /api/health
+    envVars:
+      - key: EMOBILITY_ALICE_PASSWORD
+        sync: false
+      - key: EMOBILITY_BOB_PASSWORD
+        sync: false
+      - key: EMOBILITY_OPERATOR_PASSWORD
+        sync: false
+      - key: EMOBILITY_DISPATCHER_PASSWORD
+        sync: false
+      - key: EMOBILITY_TECHNICIAN_PASSWORD
+        sync: false

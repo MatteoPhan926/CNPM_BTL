@@ -257,6 +257,36 @@ def create_server(db_path="data/hub.sqlite", simulator=False, host="127.0.0.1", 
     return AppServer((host, port), Service(db_path, simulator=simulator))
 
 
+def serve(server, *, auto_refresh=False):
+    """Run expiry maintenance for either adapter and drain it before returning."""
+    def maintain():
+        next_heartbeat = time.monotonic() + 30
+        while not server.stopping.wait(5):
+            try:
+                due = auto_refresh and time.monotonic() >= next_heartbeat
+                server.service.tick(refresh_simulated=due)
+                if due:
+                    next_heartbeat = time.monotonic() + 30
+            except Exception:
+                LOG.exception("Maintenance tick failed")
+
+    worker = threading.Thread(target=maintain, name="expiry-maintenance", daemon=True)
+    try:
+        if auto_refresh:
+            server.service.tick(refresh_simulated=True)
+            LOG.info("Automatic simulated heartbeat enabled (30 seconds)")
+        worker.start()
+        try:
+            server.serve_forever()
+        finally:
+            server.stopping.set()
+            worker.join()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default="data/hub.sqlite")
@@ -276,44 +306,10 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     server = create_server(args.db, args.simulator, args.host, args.port)
 
-    if args.auto_refresh:
-        server.service.tick(refresh_simulated=True)
-
-        LOG.info(
-            "Automatic simulated heartbeat enabled (30 seconds)"
-        )
-
-    def maintain():
-        next_heartbeat = time.monotonic() + 30
-
-        while not server.stopping.wait(5):
-            try:
-                due = (
-                    args.auto_refresh
-                    and time.monotonic() >= next_heartbeat
-                )
-
-                server.service.tick(
-                    refresh_simulated=due
-                )
-
-                if due:
-                    next_heartbeat = time.monotonic() + 30
-
-            except Exception:
-                LOG.exception("Maintenance tick failed")
-
-    threading.Thread(target=maintain, daemon=True, name="expiry-maintenance").start()
     print(f"Smart E-Mobility: http://{args.host}:{server.server_port}", flush=True)
     print(f"Controlled simulator: {'ENABLED — synthetic evidence only' if args.simulator else 'disabled; physical actions remain pending'}", flush=True)
     print(f"Demo accounts: {', '.join(ACTOR_ROLES)} (default password: <username>-demo).", flush=True)
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        server.stopping.set()
-        server.server_close()
+    serve(server, auto_refresh=args.auto_refresh)
 
 
 if __name__ == "__main__":

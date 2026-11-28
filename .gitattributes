@@ -1,0 +1,4 @@
+# Keep byte-for-byte source checks reproducible across Git checkouts.
+docs/01_requirements/*.txt text eol=lf
+docs/01_requirements/*.pdf binary
+prototype/smart-emobility-clean-ui.html text eol=lf

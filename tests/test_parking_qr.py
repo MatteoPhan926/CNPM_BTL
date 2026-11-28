@@ -186,6 +186,38 @@ class ParkingQrTests(unittest.TestCase):
         self.ack('ARRIVAL')
         self.assertEqual(len([v for v in self.rows('visits').values() if v['right_id'] == right['id']]), 1)
 
+    def test_two_reservations_for_one_vehicle_can_only_arrive_in_sequence(self):
+        first = self.reserve(spot_id='H2-S4')
+        later = dict(self.booking(), start=self.now + 7200, end=self.now + 10800, spot_id='H2-S5')
+        second = self.command('reserve_parking', later)['record']
+
+        def scan(right):
+            try:
+                return self.arrival(right)['record']['status']
+            except DomainError as error:
+                return error.code
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            outcomes = list(pool.map(scan, (first, second)))
+        self.assertCountEqual(outcomes, ['HANDOVER_PENDING', 'ARRIVAL_PENDING'])
+        waiting, remaining = (first, second) if outcomes[0] == 'HANDOVER_PENDING' else (second, first)
+        self.arrival(waiting)  # A retry for the winning right reuses its command.
+        self.assertEqual(len(self.rows('commands')), 1)
+        self.ack('ARRIVAL', 'REJECT')
+
+        self.arrival(remaining)
+        self.ack('ARRIVAL')
+        self.rejects('ALREADY_PARKED', 'arrive', dict(qr_token=waiting['qr']['token']))
+        visit = next(v for v in self.rows('visits').values() if v['right_id'] == remaining['id'])
+        self.command('depart', dict(visit_id=visit['id']))
+        self.rejects('ALREADY_PARKED', 'arrive', dict(qr_token=waiting['qr']['token']))
+        self.ack('DEPARTURE')
+        self.arrival(waiting)
+        self.ack('ARRIVAL')
+        self.assertEqual(self.rows('vehicles')['P1']['spot_id'], waiting['spot_id'])
+        self.assertEqual(sum(v['vehicle_id'] == 'P1' and v['status'] == 'PARKED'
+                             for v in self.rows('visits').values()), 1)
+
     def test_legacy_database_additive_migration_is_stable(self):
         right = self.reserve()
         # Manufacture a pre-QR DB only in this isolated fixture.

@@ -637,6 +637,7 @@ function restoreFormDrafts(drafts) {
             }
         }
     }
+    if (form.dataset.command === 'd_update_incident') syncRepairConfirmation(form);
     const focus = draft.focus
       ? Array.from(form.elements).find(
           el => el.name === draft.focus

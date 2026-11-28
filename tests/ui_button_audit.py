@@ -1,12 +1,13 @@
 """Browser-level smoke/regression audit against an isolated real HTTP server.
 
-Run from project root: python -m tests.ui_button_audit (or python tests/ui_button_audit.py).
-Requires Python Playwright and Chrome. No production database or credentials used.
+Run from project root: python tests/ui_button_audit.py (use --help for options).
+Requires Python Playwright and Chromium. Each scenario uses an isolated local database.
 Physical request regressions use explicitly labelled authenticated legacy API
 calls; they are not reported as student UI buttons. IoT UI is tested separately.
 """
 from __future__ import annotations
 
+from collections import Counter
 import json
 import re
 import argparse
@@ -31,6 +32,8 @@ from emobility.server import create_server
 ROLES = ("alice", "bob", "operator", "dispatcher", "technician")
 OP = {"id": "operator", "role": "operator"}
 RESULTS = []
+OUTPUT_DIR = Path(__file__).resolve().parents[1] / "test-results"
+ARTIFACTS = OUTPUT_DIR / "artifacts"
 
 
 class Audit:
@@ -327,13 +330,12 @@ def active_services_and_qr(a):
         for text in (right['id'], right['vehicle_id'], right['spot_id'], 'Thời gian đến', 'Mã vào bãi có hiệu lực đến')))
     decoded = zxingcpp.read_barcode(Image.open(BytesIO(page.locator('.parking-qr-image').screenshot())))
     a.check('Rendered QR decodes to persisted backend code', decoded is not None and decoded.text == token == right['qr']['token'])
-    evidence = Path(__file__).resolve().parent / 'artifacts'
-    evidence.mkdir(exist_ok=True)
-    page.locator('#parking-qr-dialog').screenshot(path=str(evidence / 'parking_qr_desktop.png'))
+    ARTIFACTS.mkdir(parents=True, exist_ok=True)
+    page.locator('#parking-qr-dialog').screenshot(path=str(ARTIFACTS / 'parking_qr_desktop.png'))
     page.set_viewport_size({'width':390, 'height':844})
     decoded = zxingcpp.read_barcode(Image.open(BytesIO(page.locator('.parking-qr-image').screenshot())))
     a.check('Mobile QR remains decodable without modal horizontal overflow', decoded is not None and decoded.text == token and page.locator('#parking-qr-dialog').evaluate('(e)=>e.scrollWidth <= e.clientWidth'))
-    page.locator('#parking-qr-dialog').screenshot(path=str(evidence / 'parking_qr_mobile.png'))
+    page.locator('#parking-qr-dialog').screenshot(path=str(ARTIFACTS / 'parking_qr_mobile.png'))
     page.locator('#close-parking-qr').click()
     a.check('Close dismisses QR modal', not page.locator('#parking-qr-dialog').is_visible())
     page.set_viewport_size({'width':1350, 'height':850})
@@ -482,7 +484,17 @@ def maintenance_telemetry(a):
     t=a.nav('technician','network','tickets'); a.refresh('technician')
     f=t.locator('form[data-command="d_update_incident"]'); f.locator('[name=outcome]').select_option('RESOLVED'); f.locator('[name=note]').fill('Inspection completed successfully')
     a.check('Safety checkbox required',f.locator('[name=safety_passed]').is_visible() and f.locator('[name=safety_passed]').evaluate('(el)=>el.required'))
-    f.locator('[name=safety_passed]').check(); a.action('technician','d_update_incident',f.locator('button[type=submit]'),outcome='RESOLVED')
+    # Another actor changes the snapshot while the technician is editing.
+    revision = a.service.command(OP, 'sim_refresh', {}, uuid.uuid4().hex)['revision']
+    t.wait_for_function('(revision) => state.revision >= revision', arg=revision, timeout=15000)
+    a.check('Polling keeps the repair outcome and inspection note',
+            f.locator('[name=outcome]').input_value() == 'RESOLVED' and
+            f.locator('[name=note]').input_value() == 'Inspection completed successfully')
+    safety = f.locator('[name=safety_passed]')
+    a.check('Polling keeps safety confirmation visible and mandatory',
+            safety.is_visible() and safety.evaluate('(el) => el.required && !el.checked'))
+    safety.check()
+    a.action('technician','d_update_incident',f.locator('button[type=submit]'),outcome='RESOLVED')
     a.check('Repair restored charger',a.row('ports','H2-C1')['health']=='OPERABLE')
     a.refresh('operator'); ticket=a.submit('operator','d_open_incident',{'resource_id':'H3-C1','message':'Connector casing damaged'},outcome='OPEN')
     a.refresh('technician'); a.submit('technician','d_update_incident',{'outcome':'ESCALATED_WORKSHOP','note':'Part replacement at workshop'},outcome='ESCALATED_WORKSHOP')
@@ -592,8 +604,8 @@ def uncertain_response_and_login(a):
 
 def full_hub_and_operator_controls(a):
     p=a.nav('operator','parking')
-    a.finding('Operator UI hides student-only registration form',p.locator('form[data-command="register_vehicle"]').count()==0,'Registration is rendered for operator even though it requires student role')
-    a.submit('operator','register_vehicle',{'label':'Operator test only','battery_kwh':2,'soc':30,'connector':'TYPE2'},error='FORBIDDEN')
+    a.check('Operator UI hides student-only registration form',p.locator('form[data-command="register_vehicle"]').count()==0)
+    a.legacy_api('operator','register_vehicle',{'label':'Operator test only','battery_kwh':2,'soc':30,'connector':'TYPE2'},error='FORBIDDEN')
     a.nav('operator','operations'); p.locator('#app main button[data-tab="charging"]').click(); a.check('Manage charging sessions link',p.locator('form[data-command="register_charge"]').is_visible())
     a.nav('operator','operations'); p.locator('#app main button[data-tab="support"]').click(); a.check('View support records link',p.locator('form[data-command="support"]').is_visible())
     a.nav('operator','operations'); p.locator('#app main button[data-tab="network"]').click(); a.check('Open fleet operations link',p.locator('#fleet-workspace').is_visible())
@@ -638,16 +650,18 @@ def responsive_and_stale_ui(a):
 
 def cloud_adapter(a):
     from http.client import HTTPConnection
-    from emobility.cloud_server import CloudHandler
+    from unittest.mock import patch
+    from emobility.cloud_server import create_cloud_server
     # Exercise the local adapter with the headers a TLS-terminating Render
     # proxy would deliver. No real deployment or external site is contacted.
     host='audit-test.onrender.com'
-    previous=os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-    os.environ['RENDER_EXTERNAL_HOSTNAME']=host
-    a.server.RequestHandlerClass=CloudHandler
+    with patch.dict(os.environ, {'RENDER_EXTERNAL_HOSTNAME': host, 'PORT': '0'}):
+        server = create_cloud_server(Path(a.directory.name) / 'cloud.sqlite', host='127.0.0.1')
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
     cookie=''
     def api(path,data=None,authenticated=False):
-        conn=HTTPConnection('127.0.0.1',a.server.server_port,timeout=5)
+        conn=HTTPConnection('127.0.0.1',server.server_port,timeout=5)
         headers={'Host':host,'Origin':'https://'+host,'Content-Type':'application/json'}
         if authenticated: headers['Cookie']=cookie
         try:
@@ -664,9 +678,8 @@ def cloud_adapter(a):
             a.check('Cloud adapter snapshot '+actor,status==200 and state['actor']['id']==actor)
             status,_,_=api('/api/logout',{},True); a.check('Cloud adapter logout '+actor,status==200)
     finally:
-        a.server.RequestHandlerClass=__import__('emobility.server',fromlist=['Handler']).Handler
-        if previous is None: os.environ.pop('RENDER_EXTERNAL_HOSTNAME',None)
-        else: os.environ['RENDER_EXTERNAL_HOSTNAME']=previous
+        server.close()
+        thread.join()
 
 
 def static_preview(a):
@@ -684,32 +697,48 @@ def static_preview(a):
     p.get_by_role('button',name='Reset demo',exact=True).click(); expect(p.locator('#login-form')).to_be_visible(); a.check('Static preview Reset demo',True)
 
 
-if __name__ == '__main__':
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('cases',nargs='*',help='Only run named scenarios; default: all')
-    parser.add_argument('--report',type=Path,help='Optional JSON file for the complete audit results')
-    args=parser.parse_args()
+def run_cases(cases, report_name, description):
+    """Run named scenarios in isolated servers and write a fresh JSON report."""
+    by_name = {case.__name__: case for case in cases}
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('cases', nargs='*', help='Scenarios (default: all): ' + ', '.join(by_name))
+    parser.add_argument('--browser-executable', help='Use this Chromium executable instead of Playwright Chromium')
+    parser.add_argument('--report', type=Path, default=OUTPUT_DIR / report_name,
+                        help='JSON output path (default: %(default)s)')
+    args = parser.parse_args()
+    unknown = set(args.cases) - by_name.keys()
+    if unknown:
+        parser.error('Unknown scenario(s): ' + ', '.join(sorted(unknown)))
+    selected = [by_name[name] for name in args.cases] if args.cases else cases
+
     for actor in ROLES:
-        os.environ[f'EMOBILITY_{actor.upper()}_PASSWORD']=actor+'-demo'
-    cases=[rentals,parking_charging,active_services_and_qr,bundle_service_counter,recovery,fleet,maintenance_telemetry,roles_and_sessions,no_simulator,existing_right_and_reserved_return,uncertain_response_and_login,full_hub_and_operator_controls,responsive_and_stale_ui,cloud_adapter,static_preview]
+        os.environ[f'EMOBILITY_{actor.upper()}_PASSWORD'] = actor + '-demo'
     with sync_playwright() as playwright:
-        browser=playwright.chromium.launch(channel='chrome',headless=True)
-        for case in cases:
-            if args.cases and case.__name__ not in args.cases: continue
-            a=Audit(browser,case.__name__,simulator=case is not no_simulator)
+        browser = playwright.chromium.launch(headless=True, executable_path=args.browser_executable)
+        for case in selected:
+            audit = Audit(browser, case.__name__, simulator=case is not no_simulator)
             try:
-                case(a)
-                a.check('No browser JavaScript exceptions',not a.page_errors,repr(a.page_errors))
+                case(audit)
+                audit.check('No browser JavaScript exceptions', not audit.page_errors, repr(audit.page_errors))
             except Exception as error:
-                a.record('FAIL','Scenario aborted',f'{type(error).__name__}: {error}')
+                audit.record('FAIL', 'Scenario aborted', f'{type(error).__name__}: {error}')
                 traceback.print_exc()
             finally:
-                a.close()
+                audit.close()
         browser.close()
-    from collections import Counter
-    summary=dict(Counter(row['status'] for row in RESULTS))
-    print('SUMMARY',summary,flush=True)
+    summary = dict(Counter(row['status'] for row in RESULTS))
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    args.report.write_text(json.dumps({'summary': summary, 'results': RESULTS},
+                                      ensure_ascii=False, indent=2), encoding='utf-8')
+    print('SUMMARY', summary, flush=True)
     print('ACTION COVERAGE', sorted({r['action'] for r in RESULTS if 'action' in r}), flush=True)
-    if args.report:
-        args.report.write_text(json.dumps({'summary':summary,'results':RESULTS},ensure_ascii=False,indent=2),encoding='utf-8')
-    sys.exit(1 if any(row['status']=='FAIL' for row in RESULTS) else 0)
+    print('REPORT', args.report, flush=True)
+    return 1 if summary.get('FAIL') else 0
+
+
+if __name__ == '__main__':
+    cases = (rentals, parking_charging, active_services_and_qr, bundle_service_counter, recovery,
+             fleet, maintenance_telemetry, roles_and_sessions, no_simulator, existing_right_and_reserved_return,
+             uncertain_response_and_login, full_hub_and_operator_controls, responsive_and_stale_ui,
+             cloud_adapter, static_preview)
+    raise SystemExit(run_cases(cases, 'ui_audit_results.json', __doc__))
